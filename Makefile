@@ -1,5 +1,5 @@
 MK_DIR = mkdir -p
-CC = gcc
+CC = gcc -lstdc++
 DEBUG = -g
 CFLAGS = -Wall $(DEBUG)
 LFLAGS = 

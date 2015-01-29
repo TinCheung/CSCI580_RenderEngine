@@ -173,7 +173,6 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
 }
 
 /* NOT part of API - just for general assistance */
-
 short	ctoi(float color)		/* convert float color to GzIntensity short */
 {
   return(short)((int)(color * ((1 << 12) - 1)));
