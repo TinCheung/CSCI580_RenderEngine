@@ -212,11 +212,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "rend.cpp"
-            timestampString = "444254281.690388"
+            timestampString = "444254430.778188"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "177"
-            endingLineNumber = "177"
+            startingLineNumber = "162"
+            endingLineNumber = "162"
             landmarkName = "GzPutTriangle(GzRender *render, int numParts, GzToken *nameList, GzPointer *valueList)"
             landmarkType = "7">
          </BreakpointContent>
@@ -298,38 +298,6 @@
             startingLineNumber = "101"
             endingLineNumber = "101"
             landmarkName = "GzPutDisplay(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity g, GzIntensity b, GzIntensity a, GzDepth z)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "rend.cpp"
-            timestampString = "444254281.690388"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "171"
-            endingLineNumber = "171"
-            landmarkName = "GzPutTriangle(GzRender *render, int numParts, GzToken *nameList, GzPointer *valueList)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "rend.cpp"
-            timestampString = "444253853.312326"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "163"
-            endingLineNumber = "163"
-            landmarkName = "GzPutTriangle(GzRender *render, int numParts, GzToken *nameList, GzPointer *valueList)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
