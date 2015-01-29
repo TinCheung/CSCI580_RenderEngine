@@ -116,10 +116,25 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                 y0[j] = vertexes[sub1][1];
             }
             
+            // Derive the normal vector for the surface which the triangle locates.
+            double normal[3];
+            double vector1[3], vector2[3], vector3[3]; // the two vectors in the surface.
+            float zValue;
+            
+            for (m = 0; m < 3; m++) {
+                vector1[m] = vertexes[1][m] - vertexes[0][m];
+                vector2[m] = vertexes[1][m] - vertexes[2][m];
+            }
+            
+            normal[0] = vector1[1] * vector2[2] - vector1[2] * vector2[1];
+            normal[1] = vector1[2] * vector2[0] - vector1[0] * vector2[2];
+            normal[2] = vector1[0] * vector2[1] - vector1[1] * vector2[0];
+            
             // Check the points and draw the triangle.
             for (j = minY; j <= maxY; j++) {
                 for (k = minX; k <= maxX; k++) {
                     draw = true;
+                    
                     for (m = 0; m < 3; m++) {
                         result = dy[m] * (k - x0[m]) + dx[m] * (y0[m] - j);
                         if (m == 0) {
@@ -136,9 +151,30 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                             }
                         }
                     }
+                    
                     if (draw) {
+                        // Get the z value.
+                        vector3[0] = vertexes[1][0] - k;
+                        vector3[1] = vertexes[1][1] - j;
+                        
+                        vector3[2] = 0;
+                        
+                        if (normal[2] != 0)
+                            vector3[2] = (normal[0] * vector3[0] + normal[1] * vector3[1]) / (-1 * normal[2]);
+                        zValue = vertexes[1][2] + vector3[2];
+                        
+                        
+                        float D;
+                        D = -1 * (normal[0] * vertexes[0][0] + normal[1] * vertexes[0][1] + normal[2] * vertexes[0][2]);
+                        zValue = (normal[0] * k + normal[1] * j + D) / (-1 * normal[2]);
+                        
+                        
+                        // For debug.
+                        printf("%f %f\n", normal[0] * vector3[0] + normal[1] * vector3[1] + vector3[2] * normal[2], zValue);
+                    
+
                         // draw the point
-                        GzPutDisplay(render->display, k, j, render->flatcolor[0] * 255, render->flatcolor[1] * 255, render->flatcolor[2] * 255, 0, 10);
+                        GzPutDisplay(render->display, k, j, render->flatcolor[0] * 4095, render->flatcolor[1] * 4095, render->flatcolor[2] * 4095, 0, zValue);
                     }
                 }
             }

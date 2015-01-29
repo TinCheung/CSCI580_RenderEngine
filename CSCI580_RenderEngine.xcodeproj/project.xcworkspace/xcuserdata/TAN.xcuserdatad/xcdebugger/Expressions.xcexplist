@@ -3,15 +3,20 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "GzInitDisplay(GzDisplay*):disp.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "display-&gt;zBuffer[i]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "GzPutTriangle(GzRender*, int, int*, void**):rend.cpp">
          <PersistentStrings>
             <PersistentString
                value = "((float *)valueList)[3 * j + k]">
             </PersistentString>
          </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "Application2::runRenderer():Application2.cpp">
       </ContextState>
       <ContextState
          contextName = "GzPutAttribute(GzRender*, int, int*, void**):rend.cpp">
@@ -23,6 +28,9 @@
                value = "(GzColor)(valueList[0])">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Application2::runRenderer():Application2.cpp">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

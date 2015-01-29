@@ -4,6 +4,7 @@
 
 #include	"mathLib.h"
 #include	<memory.h>
+#include    <limits.h>
 
 int GzNewFrameBuffer(char** framebuffer, int width, int height)
 {
@@ -81,6 +82,7 @@ int GzInitDisplay(GzDisplay	*display)
         display->fbuf[i].red = scale(128, 255, 4095);
         display->fbuf[i].green = scale(113, 255, 4095);
         display->fbuf[i].blue = scale(96, 255, 4095);
+        display->fbuf[i].z = INT_MAX;
     }
     
     return GZ_SUCCESS;
@@ -95,11 +97,13 @@ int GzPutDisplay(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity g,
     
     int sub = j * display->xres + i;
     
-    display->fbuf[sub].red = r;
-    display->fbuf[sub].green = g;
-    display->fbuf[sub].blue = b;
-    display->fbuf[sub].alpha = a;
-    display->fbuf[sub].z = z;
+    if (display->fbuf[sub].z > z && z > 0) {
+        display->fbuf[sub].red = r;
+        display->fbuf[sub].green = g;
+        display->fbuf[sub].blue = b;
+        display->fbuf[sub].alpha = a;
+        display->fbuf[sub].z = z;
+    }
     
     return GZ_SUCCESS;
 }
