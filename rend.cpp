@@ -1,6 +1,6 @@
 #include	"gz.h"
 #include	"rend.h"
-
+#include    "disp.h"
 
 int GzNewRender(GzRender **render, GzRenderClass renderClass, GzDisplay *display)
 {
@@ -10,6 +10,12 @@ int GzNewRender(GzRender **render, GzRenderClass renderClass, GzDisplay *display
 - span interpolator needs pointer to display for pixel writes
 - check for legal class GZ_Z_BUFFER_RENDER
 */
+    *render = new GzRender();
+    
+    if (*render == NULL) return GZ_FAILURE;
+    
+    (*render)->renderClass = renderClass;
+    (*render)->display = display;
 
 	return GZ_SUCCESS;
 }
@@ -20,6 +26,8 @@ int GzFreeRender(GzRender *render)
 /* 
 -free all renderer resources
 */
+    //GzFreeDisplay(render->display);
+    delete render;
 
 	return GZ_SUCCESS;
 }
@@ -30,6 +38,8 @@ int GzBeginRender(GzRender	*render)
 /* 
 - set up for start of each frame - init frame buffer
 */
+    GzInitDisplay(render->display);
+    
 	return GZ_SUCCESS;
 }
 
@@ -41,6 +51,13 @@ int GzPutAttribute(GzRender	*render, int numAttributes, GzToken	*nameList,
 - set renderer attribute states (e.g.: GZ_RGB_COLOR default color)
 - later set shaders, interpolaters, texture maps, and lights
 */
+    int i, j;
+    for (i = 0; i < numAttributes; i++) {
+        if (nameList[i] == GZ_RGB_COLOR) {
+            for (j = 0; j < 3; j++)
+                render->flatcolor[j] = ((float *)valueList[0])[j];
+        }
+    }
 
 	return GZ_SUCCESS;
 }
@@ -56,6 +73,80 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
       GZ_POSITION:		3 vert positions in model space
 - Invoke the scan converter and return an error code
 */
+    int i;
+    
+    for (i = 0; i < numParts; i++) {
+        if (nameList[i] == GZ_POSITION) {
+            
+            float maxX, maxY, minX, minY;
+            maxX = maxY = -1;
+            minX = MAXXRES + 1;
+            minY = MAXYRES + 1;
+            
+            int j, k, m;
+            float vertexes[3][3];
+            
+            // Get the vertexes data.
+            for (j = 0; j < 3; j++) {
+                for (k = 0; k < 3; k++) {
+                    vertexes[j][k] = ((float *)valueList[0])[3 * j + k];
+                }
+                // Determine the rectangle we gonna to draw the triangle.
+                maxX = vertexes[j][0] > maxX ? vertexes[j][0] : maxX;
+                maxY = vertexes[j][1] > maxY ? vertexes[j][1] : maxY;
+                minX = vertexes[j][0] < minX ? vertexes[j][0] : minX;
+                minY = vertexes[j][1] < minY ? vertexes[j][1] : minY;
+            }
+            
+            // We will check the points' sign in the line format
+            // dy * (x - x0) + dx * (y0 - y)
+            float dy[3], dx[3];
+            float x0[3], y0[3];
+            float result;
+            int sub1, sub2;
+            bool prevSign = true; // true for positive, false for negative
+            bool draw;
+            
+            for (j = 0; j < 3; j++) {
+                sub1 = j;
+                sub2 = j + 1 > 2 ? 0 : j + 1;
+                dx[j] = vertexes[sub1][0] - vertexes[sub2][0];
+                dy[j] = vertexes[sub1][1] - vertexes[sub2][1];
+                x0[j] = vertexes[sub1][0];
+                y0[j] = vertexes[sub1][1];
+            }
+            
+            // Check the points and draw the triangle.
+            for (j = minY; j <= maxY; j++) {
+                for (k = minX; k <= maxX; k++) {
+                    draw = true;
+                    for (m = 0; m < 3; m++) {
+                        result = dy[m] * (k - x0[m]) + dx[m] * (y0[m] - j);
+                        if (m == 0) {
+                            prevSign = result > 0 ? true : false;
+                        }
+                        else {
+                            if (prevSign && result < 0) {
+                                draw = false;
+                                break;
+                            }
+                            else if (!prevSign && result > 0) {
+                                draw = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (draw) {
+                        // draw the point
+                        GzPutDisplay(render->display, k, j, render->flatcolor[0] * 255, render->flatcolor[1] * 255, render->flatcolor[2] * 255, 0, 10);
+                    }
+                }
+            }
+        }
+        else if (nameList[i] == GZ_NULL_TOKEN) {
+            // do nothing.
+        }
+    }
 
 	return GZ_SUCCESS;
 }

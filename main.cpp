@@ -9,13 +9,13 @@
 int main(int argc, const char * argv[])
 {
     // For Application1 in HW1.
-    GzDisplayApplication dispApp;
-    runRenderer(&dispApp);
+    //GzDisplayApplication dispApp;
+    //runRenderer(&dispApp);
      
     
     // For Application 2
-    //Application2 application;
-    //application.runRenderer();
+    Application2 application;
+    application.runRenderer();
     
     return 0;
 }
