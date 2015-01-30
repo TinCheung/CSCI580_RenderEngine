@@ -10,7 +10,7 @@ int GzNewRender(GzRender **render, GzRenderClass renderClass, GzDisplay *display
 - span interpolator needs pointer to display for pixel writes
 - check for legal class GZ_Z_BUFFER_RENDER
 */
-    *render = new GzRender();
+    *render = new GzRender;
     
     if (*render == NULL) return GZ_FAILURE;
     
