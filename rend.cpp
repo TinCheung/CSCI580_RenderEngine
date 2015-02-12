@@ -1,6 +1,8 @@
 #include	"gz.h"
 #include	"rend.h"
 #include    "disp.h"
+#include	<stdio.h>
+#include	<math.h>
 
 int GzNewRender(GzRender **render, GzRenderClass renderClass, GzDisplay *display)
 {
@@ -172,9 +174,85 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
 	return GZ_SUCCESS;
 }
 
+int GzRotXMat(float degree, GzMatrix mat)
+{
+    // Create rotate matrix : rotate along x axis
+    // Pass back the matrix using mat value
+    
+    return GZ_SUCCESS;
+}
+
+
+int GzRotYMat(float degree, GzMatrix mat)
+{
+    // Create rotate matrix : rotate along y axis
+    // Pass back the matrix using mat value
+    
+    return GZ_SUCCESS;
+}
+
+
+int GzRotZMat(float degree, GzMatrix mat)
+{
+    // Create rotate matrix : rotate along z axis
+    // Pass back the matrix using mat value
+    
+    return GZ_SUCCESS;
+}
+
+
+int GzTrxMat(GzCoord translate, GzMatrix mat)
+{
+    // Create translation matrix
+    // Pass back the matrix using mat value
+    
+    return GZ_SUCCESS;
+}
+
+
+int GzScaleMat(GzCoord scale, GzMatrix mat)
+{
+    // Create scaling matrix
+    // Pass back the matrix using mat value
+    
+    return GZ_SUCCESS;
+}
+
+
+//----------------------------------------------------------
+// Begin main functions
+int GzPutCamera(GzRender *render, GzCamera *camera)
+{
+    /*
+     - overwrite renderer camera structure with new camera definition
+     */
+    return GZ_SUCCESS;
+}
+
+int GzPushMatrix(GzRender *render, GzMatrix matrix)
+{
+    /*
+     - push a matrix onto the Ximage stack
+     - check for stack overflow
+     */
+    return GZ_SUCCESS;
+}
+
+int GzPopMatrix(GzRender *render)
+{
+    /*
+     - pop a matrix off the Ximage stack
+     - check for stack underflow
+     */
+    return GZ_SUCCESS;
+}
+
 /* NOT part of API - just for general assistance */
+
 short	ctoi(float color)		/* convert float color to GzIntensity short */
 {
-  return(short)((int)(color * ((1 << 12) - 1)));
+    return(short)((int)(color * ((1 << 12) - 1)));
 }
+
+
 
