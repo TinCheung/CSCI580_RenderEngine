@@ -78,6 +78,9 @@ typedef float	GzMatrix[4][4];
 typedef int	GzDepth;	/* z is signed for clipping */
 typedef	int	(*GzTexture)();	/* pointer to texture sampling method */
 
+typedef float   GzPoint[4];
+typedef float   GzVector[3];
+
 /*
  * Gz camera definition - for making Xiw with rotations, scaling, translations.  
  * Perspective projection is separate Xpi. 

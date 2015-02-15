@@ -10,12 +10,20 @@
 
 #ifndef CSCI580_RenderEngine_mathLib_h
 #define CSCI580_RenderEngine_mathLib_h
+#define PI 3.14159265
+
+#include "rend.h"
+#include "gz.h"
 
 int scale(short v, int max, int tMax);
 
 // Vector operations.
-float dotProduct(float vector1[], float vector2[]);
-float crossProduct(float vector1[], float vector2[]);
-float normalization(float *x, float *y, float *z);
+float dotProduct(GzVector, GzVector);
+void crossProduct(GzVector, GzVector, GzVector);
+void normalization(GzVector);
+
+// Matrix operations.
+void matrixMultiply(GzMatrix , GzMatrix, GzMatrix);
+void matrixMultiplyVector(GzMatrix, GzPoint, GzPoint);
 
 #endif

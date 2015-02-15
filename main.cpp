@@ -7,6 +7,8 @@
 #include "Application2.h"
 #include "Application3.h"
 
+#include "test.h"
+
 int main(int argc, const char * argv[])
 {
     // For Application1 in HW1.
@@ -21,6 +23,10 @@ int main(int argc, const char * argv[])
     // For Application 3
     Application3 application;
     application.runRenderer();
+    
+    // For tests.
+    // testMatrixMultiply();
+    // testMatrixMultiplyVector();
     
     return 0;
 }

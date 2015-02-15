@@ -30,12 +30,12 @@ struct GzRender {			/* define a renderer */
     GzMatrix		Ximage[MATLEVELS];	/* stack of xforms (Xsm) */
     GzMatrix		Xnorm[MATLEVELS];	/* xforms for norms (Xim) */
     GzMatrix		Xsp;		        /* NDC to screen (pers-to-screen) */
-    GzColor		flatcolor;          /* color state for flat shaded triangles */
-    int			interp_mode;
-    int			numlights;
-    GzLight		lights[MAX_LIGHTS];
-    GzLight		ambientlight;
-    GzColor		Ka, Kd, Ks;
+    GzColor         flatcolor;          /* color state for flat shaded triangles */
+    int             interp_mode;
+    int             numlights;
+    GzLight         lights[MAX_LIGHTS];
+    GzLight         ambientlight;
+    GzColor         Ka, Kd, Ks;
     float		    spec;		/* specular power */
     GzTexture		tex_fun;    /* tex_fun(float u, float v, GzColor color) */
 };

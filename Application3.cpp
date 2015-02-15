@@ -6,7 +6,7 @@
  * application test code for homework assignment #3
 */
 
-#define INFILE3  "pot4.asc"
+#define INFILE3  "tri.asc"
 #define OUTFILE3 "output.ppm"
 
 #include "Application3.h"
@@ -24,8 +24,8 @@ int Application3::runRenderer()
 	GzCamera	camera;
 	GzToken		nameListTriangle[3]; 	/* vertex attribute names */
 	GzPointer	valueListTriangle[3]; 	/* vertex attribute pointers */
-	GzToken         nameListColor[3];       /* color type names */
-	GzPointer       valueListColor[3];      /* color type rgb pointers */
+	GzToken     nameListColor[3];       /* color type names */
+	GzPointer   valueListColor[3];      /* color type rgb pointers */
 	GzColor		color; 
 	GzCoord		vertexList[3];		/* vertex position coordinates */ 
 	GzCoord		normalList[3];		/* vertex normals */ 
