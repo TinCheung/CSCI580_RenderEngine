@@ -399,12 +399,10 @@ int GzPushMatrix(GzRender *render, GzMatrix matrix)
         for (j = 0; j < 4; j++)
             render->Ximage[render->matlevel][i][j] = matrix[i][j];
     
-    //printf("Push matrix: "); printMatrix(render->Ximage[render->matlevel]);
     if (render->matlevel > 0) {
         matrixMultiply(render->Ximage[render->matlevel - 1], render->Ximage[render->matlevel],
                        render->Ximage[render->matlevel]);
     }
-    //printf("Result is: "); printMatrix(render->Ximage[render->matlevel]);
     render->matlevel++;
     
     return GZ_SUCCESS;
