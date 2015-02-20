@@ -8,6 +8,7 @@
 #include "Application3.h"
 
 #include "test.h"
+#include "mathLib.h"
 
 int main(int argc, const char * argv[])
 {
@@ -24,9 +25,10 @@ int main(int argc, const char * argv[])
     Application3 application;
     application.runRenderer();
     
-    // For tests.
-    // testMatrixMultiply();
-    // testMatrixMultiplyVector();
+    float t[3] = {0, -3.25, 3.5};
+    float r[3] = {180, 0, 0};
+    int step = 100;
+    application.runAnimate(t, r, step);
     
     return 0;
 }

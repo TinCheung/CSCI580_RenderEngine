@@ -101,10 +101,11 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                 vertexes[j][3] = 1;
                 
                 matrixMultiplyVector(render->Ximage[render->matlevel - 1], vertexes[j], vertexes[j]);
+                // Convert the x,y,z to the screen space.
                 for (k = 0; k < 3; k++) {
                     vertexes[j][k] = vertexes[j][k] / vertexes[j][3];
                 }
-                printPoint(vertexes[j]);
+                // printPoint(vertexes[j]);
                 
                 // Determine the rectangle we gonna to draw the triangle.
                 maxX = vertexes[j][0] > maxX ? vertexes[j][0] : maxX;
@@ -132,18 +133,16 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
             }
             
             // Derive the normal vector for the surface which the triangle locates.
-            double normal[3];
-            double vector1[3], vector2[3]; // the two vectors in the surface.
+            float normal[3];
+            float vector1[3], vector2[3]; // the two vectors in the surface.
             float zValue;
             
             for (m = 0; m < 3; m++) {
                 vector1[m] = vertexes[1][m] - vertexes[0][m];
                 vector2[m] = vertexes[1][m] - vertexes[2][m];
             }
-            
-            normal[0] = vector1[1] * vector2[2] - vector1[2] * vector2[1];
-            normal[1] = vector1[2] * vector2[0] - vector1[0] * vector2[2];
-            normal[2] = vector1[0] * vector2[1] - vector1[1] * vector2[0];
+
+            crossProduct(vector1, vector2, normal);
             
             // Check the points and draw the triangle.
             for (j = minY; j <= maxY; j++) {
@@ -170,16 +169,14 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                     if (draw) {
                         // Get the z value.
                         float D;
-                        D = -1 * (normal[0] * vertexes[0][0] + normal[1] * vertexes[0][1] + normal[2] * vertexes[0][2]);
+                        D = -1 * dotProduct(normal, vertexes[0]);
                         zValue = (normal[0] * k + normal[1] * j + D) / (-1 * normal[2]);
-                        
+                        // printf("z value: %f\n", zValue);
                         // draw the point
                         GzPutDisplay(render->display, k, j, render->flatcolor[0] * 4095, render->flatcolor[1] * 4095, render->flatcolor[2] * 4095, 0, zValue);
                     }
                 }
             }
-            
-            //free(objectToWorldMatrix);
         }
         else if (nameList[i] == GZ_NULL_TOKEN) {
             // do nothing.
@@ -194,13 +191,15 @@ int GzRotXMat(float degree, GzMatrix mat)
     // Create rotate matrix : rotate along x axis
     // Pass back the matrix using mat value
     int i, j;
+    float r;
     for (i = 0; i < 4; i++)
         for (j = 0; j < 4; j++)
             mat[i][j] = 0;
     
+    r = degree * PI / 180;
     mat[0][0] = mat[3][3] = 1;
-    mat[1][1] = mat[2][2] = cos(degree);
-    mat[2][1] = sin(degree);
+    mat[1][1] = mat[2][2] = cos(r);
+    mat[2][1] = sin(r);
     mat[1][2] = -1 * mat[2][1];
     
     return GZ_SUCCESS;
@@ -212,14 +211,16 @@ int GzRotYMat(float degree, GzMatrix mat)
     // Create rotate matrix : rotate along y axis
     // Pass back the matrix using mat value
     int i, j;
+    float r;
     for (i = 0; i < 4; i++)
         for (j = 0; j < 4; j++)
             mat[i][j] = 0;
     
+    r = degree * PI / 180;
     mat[1][1] = mat[3][3] = 1;
-    mat[0][0] = mat[2][2] = cos(degree);
-    mat[0][2] = sin(degree);
-    mat[2][0] = -1 * mat[2][1];
+    mat[0][0] = mat[2][2] = cos(r);
+    mat[0][2] = sin(r);
+    mat[2][0] = -1 * mat[0][2];
     
     return GZ_SUCCESS;
 }
@@ -230,14 +231,16 @@ int GzRotZMat(float degree, GzMatrix mat)
     // Create rotate matrix : rotate along z axis
     // Pass back the matrix using mat value
     int i, j;
+    float r;
     for (i = 0; i < 4; i++)
         for (j = 0; j < 4; j++)
             mat[i][j] = 0;
     
+    r = degree * PI / 180;
     mat[2][2] = mat[3][3] = 1;
-    mat[0][0] = mat[1][1] = cos(degree);
-    mat[1][0] = sin(degree);
-    mat[0][1] = -1 * mat[2][1];
+    mat[0][0] = mat[1][1] = cos(r);
+    mat[1][0] = sin(r);
+    mat[0][1] = -1 * mat[1][0];
     
     return GZ_SUCCESS;
 }
@@ -326,7 +329,7 @@ int GzPutCamera(GzRender *render, GzCamera *camera)
     for (i = 0; i < 3; i++) {
         sum += Cy[i] * Cz[i];
     }
-    printf("sum: %f\n", sum);
+    // printf("sum: %f\n", sum);
     
     /*
     float unit;
@@ -353,7 +356,7 @@ int GzPutCamera(GzRender *render, GzCamera *camera)
         {0, 0, 0, 1}};
     
     float D = tanf(render->camera.FOV / 2 * (PI / 180));
-    printf("FOV: %f, d: %f\n", render->camera.FOV, D);
+    // printf("FOV: %f, d: %f\n", render->camera.FOV, D);
     GzMatrix b = {{1, 0, 0, 0},
         {0, 1, 0, 0},
         {0, 0, 1, 0},
@@ -378,9 +381,7 @@ int GzPutCamera(GzRender *render, GzCamera *camera)
     GzPushMatrix(render, render->camera.Xpi);
     GzPushMatrix(render, render->camera.Xiw);
     
-    //printMatrix(render->camera.Xiw);
-    //printMatrix(render->camera.Xpi);
-    //printMatrix(render->Xsp);
+    // printMatrix(render->Xsp);
     
     return GZ_SUCCESS;
 }
