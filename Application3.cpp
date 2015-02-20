@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <sstream>
 #include <queue>
+#include <string>
 
 using namespace std;
 
