@@ -1,5 +1,5 @@
 MK_DIR = mkdir -p
-CC = gcc -lstdc++
+CC = g++ -lstdc++
 DEBUG = -g
 CFLAGS = -Wall $(DEBUG)
 LFLAGS = 
@@ -10,6 +10,7 @@ all: directories $(patsubst %.cpp, %.o, $(wildcard, *.cpp)) CS580HW
 
 directories: 
 	${MK_DIR} obj
+	${MK_DIR} Images
 
 obj/%.o: %.cpp Makefile
 	$(CC) $(LFLAGS) -c -o $@ $<
@@ -23,6 +24,7 @@ clean:
 	rm -rf obj/*.o
 	rm -f CS580HW
 	rm -f output.ppm
+	rm -r Images
 
 CFLAGS += -MMD
 -include $(OBJ_FILES:.o=.d)
