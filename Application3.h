@@ -5,9 +5,6 @@
 #pragma once
 #include "gz.h"
 #include "rend.h"
-#include <queue>
-
-using namespace std;
 
 class Application3
 {
