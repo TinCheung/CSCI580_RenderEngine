@@ -26,7 +26,7 @@ int main(int argc, const char * argv[])
     application.runRenderer();
     
     float t[3] = {0, -3.25, 3.5};
-    float r[3] = {180, 180, 180};
+    float r[3] = {180, 0, 0};
     int step = 100;
     application.runAnimate(t, r, step);
     
