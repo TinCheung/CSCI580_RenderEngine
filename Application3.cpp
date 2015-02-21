@@ -214,12 +214,13 @@ void shade(GzCoord norm, GzCoord color)
 }
 
 /* The animate function */
-int Application3::runAnimate(float *translation, float *rotation, int step)
+int Application3::runAnimate(float *scale, float *translation, float *rotation, int step)
 {
     int status = 0;
     
     float translationInc[3];
     float rotationInc[3];
+    float scaleInc[3];
     
     GzToken		nameListTriangle[3]; 	/* vertex attribute names */
     GzPointer	valueListTriangle[3]; 	/* vertex attribute pointers */
@@ -263,9 +264,9 @@ int Application3::runAnimate(float *translation, float *rotation, int step)
         {0, 0, 1, 0},
         {0, 0, 0, 1}};
     
-    GzMatrix scaleMatrix = {{3.25, 0, 0, 0},
-        {0, 3.25, 0, 0},
-        {0, 0, 3.25, 0},
+    GzMatrix scaleMatrix = {{1, 0, 0, 0},
+        {0, 1, 0, 0},
+        {0, 0, 1, 0},
         {0, 0, 0, 1}};
     
     GzMatrix	rotateX;
@@ -307,24 +308,15 @@ int Application3::runAnimate(float *translation, float *rotation, int step)
         translateMatrix[0][3] = translationInc[0] * i;
         translateMatrix[1][3] = translationInc[1] * i;
         translateMatrix[2][3] = translationInc[2] * i;
-        /*
-        rotateX[1][1] = rotateX[2][2] = (float)cos(rotationInc[0] * i);
-        rotateX[2][1] = (float)(sin(rotationInc[0] * i));
-        rotateX[1][2] = (float)(-1 * sin(rotationInc[0] * i));
         
-        rotateY[0][0] = rotateY[2][2] = (float)cos(rotationInc[1] * i);
-        rotateY[0][2] = (float)(sin(rotationInc[1] * i));
-        rotateY[2][0] = (float)(-1 * sin(rotationInc[1] * i));
+        for (int j = 0; j < 3; j++) {
+            scaleInc[j] = scale[j] / step * i;
+        }
         
-        rotateZ[0][0] = rotateZ[1][1] = (float)cos(rotationInc[2] * i);
-        rotateZ[1][0] = (float)(sin(rotationInc[2] * i));
-        rotateZ[0][1] = (float)(-1 * sin(rotationInc[2] * i));
-        */
+        GzScaleMat(scaleInc, scaleMatrix);
         GzRotXMat(rotationInc[0] * i, rotateX);
         GzRotYMat(rotationInc[1] * i, rotateY);
         GzRotZMat(rotationInc[2] * i, rotateZ);
-        
-        //printMatrix(rotateY);
         
         status |= GzPushMatrix(this->render, translateMatrix);
         status |= GzPushMatrix(this->render, scaleMatrix);
@@ -368,7 +360,7 @@ int Application3::runAnimate(float *translation, float *rotation, int step)
             GzPutTriangle(render, 1, nameListTriangle, valueListTriangle);
         }
         GzFlushDisplay2File(outFile, display); 	/* write out or update display to file*/
-        printf("Finish %d\n", i);
+        //printf("Finish %d\n", i);
         fclose(infile);
         fclose(outFile);
         status |= GzFreeRender(render);

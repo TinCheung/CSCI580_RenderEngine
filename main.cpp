@@ -25,10 +25,11 @@ int main(int argc, const char * argv[])
     Application3 application;
     application.runRenderer();
     
+    float s[3] = {3.25, 3.25, 3.25};
     float t[3] = {0, -3.25, 3.5};
-    float r[3] = {180, 0, 0};
+    float r[3] = {360, 360, 360};
     int step = 100;
-    application.runAnimate(t, r, step);
+    application.runAnimate(s, t, r, step);
     
     return 0;
 }

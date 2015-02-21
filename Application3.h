@@ -13,7 +13,7 @@ class Application3
 {
 public:
 	int runRenderer();
-    int runAnimate(float [], float [], int);
+    int runAnimate(float [], float [], float [], int);
 protected:
 	GzDisplay* display; // the display
 	GzRender* render;   // the renderer

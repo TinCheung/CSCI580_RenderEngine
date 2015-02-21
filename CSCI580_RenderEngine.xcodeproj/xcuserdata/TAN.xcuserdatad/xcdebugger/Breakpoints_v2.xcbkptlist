@@ -484,12 +484,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Application3.cpp"
-            timestampString = "446158390.817336"
+            timestampString = "446178357.840396"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "361"
-            endingLineNumber = "361"
-            landmarkName = "Application3::runAnimate(float *translation, float *rotation, int step)"
+            startingLineNumber = "353"
+            endingLineNumber = "353"
+            landmarkName = "Application3::runAnimate(float *scale, float *translation, float *rotation, int step)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
