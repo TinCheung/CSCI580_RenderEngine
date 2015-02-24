@@ -3,28 +3,6 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "GzPutCamera(GzRender*, GzCamera*):rend.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "render-&gt;camera.lookat[i]">
-            </PersistentString>
-            <PersistentString
-               value = "render-&gt;camera.position[i]">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "GzPutAttribute(GzRender*, int, int*, void**):rend.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "*(float *)valueList[j]">
-            </PersistentString>
-            <PersistentString
-               value = "(GzColor)(valueList[0])">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
          contextName = "GzInitDisplay(GzDisplay*):disp.cpp">
          <PersistentStrings>
             <PersistentString
@@ -38,8 +16,16 @@
             <PersistentString
                value = "((float *)valueList)[3 * j + k]">
             </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "GzPutAttribute(GzRender*, int, int*, void**):rend.cpp">
+         <PersistentStrings>
             <PersistentString
-               value = "vertexes[j][0]/vertexes[j][3]">
+               value = "*(float *)valueList[j]">
+            </PersistentString>
+            <PersistentString
+               value = "(GzColor)(valueList[0])">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
