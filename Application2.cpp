@@ -8,7 +8,7 @@
 
 #include "Application2.h"
 
-#define INFILE2  "./pot4.screen.asc"
+#define INFILE2  "./tri.asc"
 #define OUTFILE2 "./output.ppm"
 
 #include <stdio.h>
