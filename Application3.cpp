@@ -6,7 +6,7 @@
  * application test code for homework assignment #3
 */
 
-#define INFILE3  "pot4.asc"
+#define INFILE3  "tri.asc"
 #define OUTFILE3 "output.ppm"
 
 #include "Application3.h"

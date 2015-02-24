@@ -1,7 +1,0 @@
-The Program provides the result of viewing tramsformation which is required in the file output.ppm.
-Moreover, I also add a function which is used to make some animation of the teapot in the Application3 class(no modification in the functions provided in the HW). The result is output in the Images folder.
-The animation is runAnimation(float *, float *, float *, int). It takes 3 float arrays to indicate the change of scales, translate and rotation during the animation. And it also accept a parameter which indicates how many images is going to be output.
-Besides, the Makefile is changed.
-The program has been tested in mint linux17. Contact me if you can't run it correctly. 
-Thanks.
-tianxiat@usc.edu

@@ -365,7 +365,7 @@ int GzPutCamera(GzRender *render, GzCamera *camera)
     GzMatrix temp2 = {
         {(float)render->display->xres/(float)2, 0, 0, (float)render->display->xres/(float)2},
         {0, -1 * (float)render->display->yres/(float)2, 0, (float)render->display->yres/(float)2},
-        {0, 0, INT_MAX * D, 0},
+        {0, 0, 100000 * D, 0},
         {0, 0, 0, 1}};
     
     int j;
@@ -381,7 +381,9 @@ int GzPutCamera(GzRender *render, GzCamera *camera)
     GzPushMatrix(render, render->camera.Xpi);
     GzPushMatrix(render, render->camera.Xiw);
     
-    // printMatrix(render->Xsp);
+    printMatrix(render->Xsp);
+    printMatrix(render->camera.Xpi);
+    printMatrix(render->camera.Xiw);
     
     return GZ_SUCCESS;
 }
@@ -394,7 +396,7 @@ int GzPushMatrix(GzRender *render, GzMatrix matrix)
      */
     if ((*render).matlevel == MATLEVELS)
         return GZ_FAILURE;
-    
+    //printf("Add: "); printMatrix(matrix);
     int i, j;
     for (i = 0; i < 4; i++)
         for (j = 0; j < 4; j++)
@@ -404,6 +406,7 @@ int GzPushMatrix(GzRender *render, GzMatrix matrix)
         matrixMultiply(render->Ximage[render->matlevel - 1], render->Ximage[render->matlevel],
                        render->Ximage[render->matlevel]);
     }
+    //printf("result: "); printMatrix(render->Ximage[render->matlevel]);
     render->matlevel++;
     
     return GZ_SUCCESS;
