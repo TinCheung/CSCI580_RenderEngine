@@ -168,7 +168,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "64"
-            endingLineNumber = "64">
+            endingLineNumber = "64"
+            landmarkName = "GzPutAttribute(GzRender *render, int numAttributes, GzToken *nameList, GzPointer *valueList)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -198,7 +200,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "175"
-            endingLineNumber = "175">
+            endingLineNumber = "175"
+            landmarkName = "GzPutTriangle(GzRender *render, int numParts, GzToken *nameList, GzPointer *valueList)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -229,7 +233,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "68"
             endingLineNumber = "68"
-            landmarkName = "GzPutTriangle(GzRender *render, int numParts, GzToken *nameList, GzPointer *valueList)"
+            landmarkName = "GzPutAttribute(GzRender *render, int numAttributes, GzToken *nameList, GzPointer *valueList)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -340,7 +344,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "311"
-            endingLineNumber = "311">
+            endingLineNumber = "311"
+            landmarkName = "GzPutCamera(GzRender *render, GzCamera *camera)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -354,7 +360,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "312"
-            endingLineNumber = "312">
+            endingLineNumber = "312"
+            landmarkName = "GzPutCamera(GzRender *render, GzCamera *camera)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -368,7 +376,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "388"
-            endingLineNumber = "388">
+            endingLineNumber = "388"
+            landmarkName = "GzPutCamera(GzRender *render, GzCamera *camera)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -382,7 +392,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "365"
-            endingLineNumber = "365">
+            endingLineNumber = "365"
+            landmarkName = "GzPutCamera(GzRender *render, GzCamera *camera)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -396,7 +408,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "366"
-            endingLineNumber = "366">
+            endingLineNumber = "366"
+            landmarkName = "GzPutCamera(GzRender *render, GzCamera *camera)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -475,7 +489,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "353"
             endingLineNumber = "353"
-            landmarkName = "Application3::runAnimate(float *translation, float *rotation, int step)"
+            landmarkName = "Application3::runAnimate(float *scale, float *translation, float *rotation, int step)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
