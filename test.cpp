@@ -85,3 +85,23 @@ void printVector(GzVector v)
         printf("%f ", v[i]);
     printf("\n");
 }
+
+void rememberPoints(GzPoint point)
+{
+    GzPoint tested[3] = {{2.400000f, 2.250000f, 1.000000f, 0.0f},
+                         {-1.291500f,1.250000f,	0.549500f, 0.0f},
+                         {0.273482f, -0.323828f,2.541834f, 0.0f}};
+    
+    int i, j;
+    float distance, total;
+    for (i = 0; i < 3; i++) {
+        total = 0;
+        for (j = 0; j < 3; j++) {
+            distance = point[j] - tested[i][j];
+            total += distance > 0 ? distance : -1*distance;
+            printf("distance%d: %f\n", j, distance);
+        }
+        printf("total: %f\n", total);
+        printf("\n");
+    }
+}

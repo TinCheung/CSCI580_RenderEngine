@@ -18,7 +18,6 @@
 #define	MATLEVELS	100		/* how many matrix pushes allowed */
 #define	MAX_LIGHTS	10		/* how many lights allowed */
 
-#define GzLight		GzPointer
 #define GzTexture	GzPointer
 
 struct GzRender {			/* define a renderer */

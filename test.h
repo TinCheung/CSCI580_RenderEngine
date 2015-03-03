@@ -11,11 +11,15 @@
 
 #include <stdio.h>
 #include "gz.h"
+#include <queue>
+
+using namespace std;
 
 void testMatrixMultiply();
 void testMatrixMultiplyVector();
 void printMatrix(GzMatrix);
 void printPoint(GzPoint);
 void printVector(GzVector);
+void rememberPoints(GzPoint);
 
 #endif /* defined(__CSCI580_RenderEngine__test__) */

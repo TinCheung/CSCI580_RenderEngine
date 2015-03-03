@@ -6,8 +6,8 @@
  * application test code for homework assignment #3
 */
 
-#define INFILE3  "tri.asc"
-#define OUTFILE3 "output.ppm"
+#define INFILE3  "pot3.asc"
+#define OUTFILE3 "output3.ppm"
 
 #include "Application3.h"
 #include "gz.h"
@@ -24,7 +24,7 @@
 
 using namespace std;
 
-void shade(GzCoord norm, GzCoord color);
+void shade3(GzCoord norm, GzCoord color);
 
 int Application3::runRenderer()
 {
@@ -154,7 +154,7 @@ int Application3::runRenderer()
 	    /* 
 	    * Set up shading attributes for each triangle 
 	    */ 
-	    shade(normalList[0], color);/* shade based on the norm of vert0 */
+	    shade3(normalList[0], color);/* shade based on the norm of vert0 */
 	    valueListColor[0] = (GzPointer)color; 
 	    nameListColor[0] = GZ_RGB_COLOR; 
 	    GzPutAttribute(render, 1, nameListColor, valueListColor); 
@@ -195,7 +195,7 @@ simplified case of a renderer that doesn't do any shading itself, this
 is the easiest place to put it.
 */
 
-void shade(GzCoord norm, GzCoord color)
+void shade3(GzCoord norm, GzCoord color)
 {
   GzCoord	light;
   float		coef;
@@ -347,7 +347,7 @@ int Application3::runAnimate(float *scale, float *translation, float *rotation, 
             /*
              * Set up shading attributes for each triangle
              */
-            shade(normalList[0], color);/* shade based on the norm of vert0 */
+            shade3(normalList[0], color);/* shade based on the norm of vert0 */
             valueListColor[0] = (GzPointer)color;
             nameListColor[0] = GZ_RGB_COLOR;
             GzPutAttribute(render, 1, nameListColor, valueListColor);

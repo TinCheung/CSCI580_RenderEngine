@@ -99,6 +99,7 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                     vertexes[j][k] = ((float *)valueList[0])[3 * j + k];
                 }
                 vertexes[j][3] = 1;
+                rememberPoints(vertexes[j]);
                 
                 matrixMultiplyVector(render->Ximage[render->matlevel - 1], vertexes[j], vertexes[j]);
                 // Convert the x,y,z to the screen space.
@@ -381,9 +382,9 @@ int GzPutCamera(GzRender *render, GzCamera *camera)
     GzPushMatrix(render, render->camera.Xpi);
     GzPushMatrix(render, render->camera.Xiw);
     
-    printMatrix(render->Xsp);
-    printMatrix(render->camera.Xpi);
-    printMatrix(render->camera.Xiw);
+    //printMatrix(render->Xsp);
+    //printMatrix(render->camera.Xpi);
+    //printMatrix(render->camera.Xiw);
     
     return GZ_SUCCESS;
 }

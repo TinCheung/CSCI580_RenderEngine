@@ -2,12 +2,11 @@
  * Gz.h - include file for the cs580 rendering library
  */
 
+#pragma once
+
 /*
  * universal constants
  */
-#ifndef GZ_H
-#define GZ_H
-
 #define GZ_SUCCESS      0
 #define GZ_FAILURE      1
 
@@ -32,10 +31,10 @@
 /* renderer-state color values for default (flat) shading */
 #define GZ_RGB_COLOR            99	/* we use RGB color space */
 
-
+#define GZ_INTERPOLATE      95	/* define the shade mode */
 #define GZ_SHADER			96	/* define the shade mode */
 
- /*
+/*
  * flags fields for value list attributes
  */
 
@@ -73,26 +72,37 @@ typedef void    *GzPointer;
 typedef float   GzColor[3];
 typedef short   GzIntensity;	/* 0 - 4095 in lower 12-bits */
 typedef float   GzCoord[3];
-typedef float	GzTextureIndex[2];
-typedef float	GzMatrix[4][4];
-typedef int	GzDepth;	/* z is signed for clipping */
-typedef	int	(*GzTexture)();	/* pointer to texture sampling method */
-
-typedef float   GzPoint[4];
-typedef float   GzVector[3];
+typedef float   GzTextureIndex[2];
+typedef float   GzMatrix[4][4];
+typedef int	    GzDepth;	/* z is signed for clipping */
 
 /*
- * Gz camera definition - for making Xiw with rotations, scaling, translations.  
- * Perspective projection is separate Xpi. 
+ * Gz camera definition - for making Xiw with rotations, scaling, translations.
+ * Perspective projection is separate Xpi.
  */
 struct  GzCamera
 {
-        GzMatrix        Xiw;  		    /* xform from world to image space */
-        GzMatrix        Xpi;            /* perspective projection xform */
-        GzCoord         position;       /* position of image plane origin */
-        GzCoord         lookat;         /* position of look-at-point */
-        GzCoord         worldup;        /* world up-vector (almost screen up) */
-        float           FOV;            /* horizontal field of view */
+    GzMatrix        Xiw;  		    /* xform from world to image space */
+    GzMatrix        Xpi;            /* perspective projection xform */
+    GzCoord         position;       /* position of image plane origin */
+    GzCoord         lookat;         /* position of look-at-point */
+    GzCoord         worldup;        /* world up-vector (almost screen up) */
+    float           FOV;            /* horizontal field of view */
+};
+
+struct GzLight
+{
+    GzCoord direction; /* vector from surface to light */
+    GzColor color;     /* light color intensity */
+};
+
+struct GzInput
+{
+    GzCoord  rotation;    /* object rotation */
+    GzCoord  translation; /* object translation */
+    GzCoord  scale;       /* object scaling */
+    GzCamera camera;      /* camera */
+    GzLight  light;       /* light */
 };
 
 #define RED     0               /* array indicies for color vector */
@@ -106,5 +116,8 @@ struct  GzCamera
 #define U       0               /* array indicies for texture coords */
 #define V       1
 
-#endif
+/* My definition. */
+typedef float   GzPoint[4];
+typedef float   GzVector[3];
+
 
