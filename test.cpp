@@ -99,9 +99,9 @@ void rememberPoints(GzPoint point)
         for (j = 0; j < 3; j++) {
             distance = point[j] - tested[i][j];
             total += distance > 0 ? distance : -1*distance;
-            printf("distance%d: %f\n", j, distance);
+            //printf("distance%d: %f\n", j, distance);
         }
-        printf("total: %f\n", total);
-        printf("\n");
+        //printf("total: %f\n", total);
+        //printf("\n");
     }
 }

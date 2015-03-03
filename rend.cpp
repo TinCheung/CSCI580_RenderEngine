@@ -23,6 +23,7 @@ int GzNewRender(GzRender **render, GzRenderClass renderClass, GzDisplay *display
     (*render)->renderClass = renderClass;
     (*render)->display = display;
     (*render)->matlevel = 0;
+    (*render)->numlights = 0;
 
 	return GZ_SUCCESS;
 }
@@ -60,9 +61,68 @@ int GzPutAttribute(GzRender	*render, int numAttributes, GzToken	*nameList,
 */
     int i, j;
     for (i = 0; i < numAttributes; i++) {
-        if (nameList[i] == GZ_RGB_COLOR) {
-            for (j = 0; j < 3; j++)
-                render->flatcolor[j] = ((float *)valueList[0])[j];
+        switch (nameList[i]) {
+            case GZ_RGB_COLOR:
+                for (j = 0; j < 3; j++)
+                    render->flatcolor[j] = ((float *)valueList[i])[j];
+                break;
+            case GZ_DIRECTIONAL_LIGHT:
+                if (render->numlights == MAX_LIGHTS) {
+                    return GZ_FAILURE;
+                }
+                else {
+                    int lightSub = render->numlights;
+                    for (int j = 0; j < 3; j++) {
+                        render->lights[lightSub].direction[j] = ((GzLight *)valueList[i])->direction[j];
+                        printf("add light direction %d: %f\n", lightSub, ((GzLight *)valueList[i])->direction[j]);
+                    }
+                    for (int j = 0; j < 3; j++) {
+                        render->lights[lightSub].color[j] = ((GzLight *)valueList[i])->color[j];
+                        printf("add light color %d: %f\n", lightSub, ((GzLight *)valueList[i])->color[j]);
+                    }
+                    render->numlights++;
+                }
+                break;
+            case GZ_AMBIENT_LIGHT:
+                for (int j = 0; j < 3; j++) {
+                    render->ambientlight.direction[j] = ((GzLight *)valueList[i])->direction[j];
+                    printf("ambient Light direction %d: %f\n", j, ((GzLight *)valueList[i])->direction[j]);
+                }
+                for (int j = 0; j < 3; j++) {
+                    render->ambientlight.color[j] = ((GzLight *)valueList[i])->color[j];
+                    printf("ambient Light color %d: %f\n", j, ((GzLight *)valueList[i])->color[j]);
+                }
+                break;
+            case GZ_DIFFUSE_COEFFICIENT:
+                for (int j = 0; j < 3; j++) {
+                    render->Kd[j] = (*((GzCoord *)valueList[i]))[j];
+                    printf("diffuse coefficient %d: %f\n", j, render->Kd[j]);
+                }
+                break;
+            case GZ_AMBIENT_COEFFICIENT:
+                for (int j = 0; j < 3; j++) {
+                    render->Ka[j] = (*((GzCoord *)valueList[i]))[j];
+                    printf("ambient coefficient %d: %f\n", j, render->Ka[j]);
+                }
+                break;
+            case GZ_SPECULAR_COEFFICIENT:
+                for (int j = 0; j < 3; j++) {
+                    render->Ks[j] = (*((GzCoord *)valueList[i]))[j];
+                    printf("specular coefficient %d: %f\n", j, render->Ks[j]);
+                }
+                break;
+            case GZ_INTERPOLATE:
+                render->interp_mode = *((int *)valueList[i]);
+                printf("interpolate mode %d: %d\n", i, render->interp_mode);
+                break;
+            case GZ_DISTRIBUTION_COEFFICIENT:
+                render->spec = *((float *)valueList[i]);
+                printf("specular pow %d: %f\n", i, render->spec);
+                break;
+            default:
+                printf("unexpected attribute name.\n");
+                return GZ_FAILURE;
+                break;
         }
     }
 

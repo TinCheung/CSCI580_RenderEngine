@@ -8,11 +8,11 @@
 
 int main(int argc, const char * argv[])
 {
-    Application3 application3;
-    application3.runRenderer();
-  //Application4 application;
+    //Application3 application3;
+    //application3.runRenderer();
+    Application4 application;
 
-  //application.runRenderer();
+    application.runRenderer();
   
   return 0;
 }
