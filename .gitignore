@@ -3,3 +3,5 @@
 *.xcbkptlist
 *.swp
 *.xcodeproj
+
+*.ppm
