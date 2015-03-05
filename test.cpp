@@ -105,3 +105,41 @@ void rememberPoints(GzPoint point)
         //printf("\n");
     }
 }
+
+void testInvert()
+{
+    GzMatrix A = {{1,2,3,0},
+                  {2,2,1,0},
+                  {3,4,3,0},
+                  {0,0,0,1}};
+    GzMatrix *result = (GzMatrix *)malloc(sizeof(GzMatrix));
+    
+    invertMatrix3(A, A);
+    printMatrix(A);
+    
+    free(result);
+}
+
+void testMatrixNormalization()
+{
+    GzMatrix A;
+    int i, j;
+    
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 4; j++) {
+            A[i][j] = i + j;
+        }
+    }
+    printMatrix(A);
+    matrixNormalization(A);
+    printMatrix(A);
+}
+
+void testTriangleArea()
+{
+    GzPoint A = {0, 0, 0, 0};
+    GzPoint B = {1, 1, 0, 0};
+    GzPoint C = {1, -1, 0, 0};
+    
+    printf("%f\n", triangleArea(A, B, C));
+}

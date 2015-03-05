@@ -21,5 +21,8 @@ void printMatrix(GzMatrix);
 void printPoint(GzPoint);
 void printVector(GzVector);
 void rememberPoints(GzPoint);
+void testInvert();
+void testMatrixNormalization();
+void testTriangleArea();
 
 #endif /* defined(__CSCI580_RenderEngine__test__) */

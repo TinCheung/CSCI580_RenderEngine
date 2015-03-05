@@ -60,3 +60,7 @@ int GzRotYMat(float degree, GzMatrix mat);
 int GzRotZMat(float degree, GzMatrix mat);
 int GzTrxMat(GzCoord translate, GzMatrix mat);
 int GzScaleMat(GzCoord scale, GzMatrix mat);
+
+/* My function for the management of the Xn stack. */
+int GzPushNormalTransformMatrix(GzMatrix mat);
+void GzShadePoint(GzColor pointColor, GzVector normal, GzVector eyeVector, GzRender *render);

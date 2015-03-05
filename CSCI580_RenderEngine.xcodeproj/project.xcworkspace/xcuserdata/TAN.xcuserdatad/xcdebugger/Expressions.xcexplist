@@ -3,6 +3,66 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "GzPutTriangle(GzRender*, int, int*, void**):rend.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "render">
+            </PersistentString>
+            <PersistentString
+               value = "vertexes">
+            </PersistentString>
+            <PersistentString
+               value = "curPoint">
+            </PersistentString>
+            <PersistentString
+               value = "vertexNormal">
+            </PersistentString>
+            <PersistentString
+               value = "eyeVector">
+            </PersistentString>
+            <PersistentString
+               value = "specularColor">
+            </PersistentString>
+            <PersistentString
+               value = "pointColor">
+            </PersistentString>
+            <PersistentString
+               value = "vertexesCameraSpacePosition[j]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Application2::runRenderer():Application2.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "GzPutAttribute(GzRender*, int, int*, void**):rend.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "*(float *)valueList[j]">
+            </PersistentString>
+            <PersistentString
+               value = "(GzColor)(valueList[0])">
+            </PersistentString>
+            <PersistentString
+               value = "(GzLight *)valueList[i]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "addColorInLight(float*, GzLight, float*, float*, float*, float):mathLib.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "coefficient[i]">
+            </PersistentString>
+            <PersistentString
+               value = "result[i]">
+            </PersistentString>
+            <PersistentString
+               value = "light.color[i]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "GzPutCamera(GzRender*, GzCamera*):rend.cpp">
          <PersistentStrings>
             <PersistentString
@@ -14,7 +74,15 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "Application2::runRenderer():Application2.cpp">
+         contextName = "GzShadePoint(float*, float*, float*, GzRender*):rend.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "pointColor[l]">
+            </PersistentString>
+            <PersistentString
+               value = "(GzVector)pointColor">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "GzInitDisplay(GzDisplay*):disp.cpp">
@@ -25,27 +93,10 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "GzPutAttribute(GzRender*, int, int*, void**):rend.cpp">
+         contextName = "GzPushMatrix(GzRender*, float (*) [4]):rend.cpp">
          <PersistentStrings>
             <PersistentString
-               value = "*(float *)valueList[j]">
-            </PersistentString>
-            <PersistentString
-               value = "(GzLight *)valueList[i]">
-            </PersistentString>
-            <PersistentString
-               value = "(GzColor)(valueList[0])">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "GzPutTriangle(GzRender*, int, int*, void**):rend.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "((float *)valueList)[3 * j + k]">
-            </PersistentString>
-            <PersistentString
-               value = "vertexes[j][0]/vertexes[j][3]">
+               value = "matrix[1]">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

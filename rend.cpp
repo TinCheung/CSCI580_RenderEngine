@@ -76,6 +76,7 @@ int GzPutAttribute(GzRender	*render, int numAttributes, GzToken	*nameList,
                         render->lights[lightSub].direction[j] = ((GzLight *)valueList[i])->direction[j];
                         printf("add light direction %d: %f\n", lightSub, ((GzLight *)valueList[i])->direction[j]);
                     }
+                    normalization(render->lights[lightSub].direction);
                     for (int j = 0; j < 3; j++) {
                         render->lights[lightSub].color[j] = ((GzLight *)valueList[i])->color[j];
                         printf("add light color %d: %f\n", lightSub, ((GzLight *)valueList[i])->color[j]);
@@ -86,6 +87,7 @@ int GzPutAttribute(GzRender	*render, int numAttributes, GzToken	*nameList,
             case GZ_AMBIENT_LIGHT:
                 for (int j = 0; j < 3; j++) {
                     render->ambientlight.direction[j] = ((GzLight *)valueList[i])->direction[j];
+                    normalization(render->ambientlight.direction);
                     printf("ambient Light direction %d: %f\n", j, ((GzLight *)valueList[i])->direction[j]);
                 }
                 for (int j = 0; j < 3; j++) {
@@ -151,7 +153,9 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
             minY = MAXYRES + 1;
             
             int j, k, m;
-            GzPoint vertexes[3];
+            GzPoint vertexes[3], vertexNormal[3], normalVertexes[3];
+            GzColor vertexesColor[3];
+            GzVector eyeVector = {0, 0, -1};
             
             for (j = 0; j < 3; j++) {
                 // Get the vertexes data.
@@ -159,15 +163,69 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                     vertexes[j][k] = ((float *)valueList[0])[3 * j + k];
                 }
                 vertexes[j][3] = 1;
-                rememberPoints(vertexes[j]);
                 
+                // Get the normal data.
+                for (k = 0; k < 3; k++) {
+                    vertexNormal[j][k] = ((float *)valueList[1])[3 * j + k];
+                    normalVertexes[j][k] = vertexes[j][k] + vertexNormal[j][k];
+                }
+                vertexNormal[j][3] = 1;
+                normalVertexes[j][k] = 1;
+                
+                // Do the viewing transformation for the vertexes and the normals.
                 matrixMultiplyVector(render->Ximage[render->matlevel - 1], vertexes[j], vertexes[j]);
-                // Convert the x,y,z to the screen space.
+                matrixMultiplyVector(render->Ximage[render->matlevel - 1], normalVertexes[j], normalVertexes[j]);
+                matrixMultiplyVector(render->Xnorm[render->matlevel - 1], vertexNormal[j], vertexNormal[j]);
+            }
+            
+            float dotProductNL, dotProductNE;
+            GzColor specularColor, diffuseColor, ambientColor;
+            
+            for (j = 0; j < 3; j++) {
+                GzPoint vertexesCameraSpacePosition[3], cs[3];
+                
+                // Turn the vertexes into camera space.
+                vertexesCameraSpacePosition[j][0] = vertexes[j][0]/(render->display->xres/2)-vertexes[j][3];
+                vertexesCameraSpacePosition[j][1] = (vertexes[j][1]/(render->display->yres/2)-vertexes[j][3]) * -1;
+                vertexesCameraSpacePosition[j][2] = vertexes[j][2]/(render->Ximage[0][2][2]);
+                
+                cs[j][0] = normalVertexes[j][0]/(render->display->xres/2)-normalVertexes[j][3];
+                cs[j][1] = (normalVertexes[j][1]/(render->display->yres/2)-normalVertexes[j][3]) * -1;
+                cs[j][2] = normalVertexes[j][2]/(render->Ximage[0][2][2]);
+                
+                vertexNormal[j][0] = (cs[j][0] - vertexesCameraSpacePosition[j][0]) * 1;
+                vertexNormal[j][1] = (cs[j][1] - vertexesCameraSpacePosition[j][1]) * 1;
+                vertexNormal[j][2] = (cs[j][2] - vertexesCameraSpacePosition[j][2]) * 1;
+            }
+            
+            // For Ground Model, calculate the three vertexes' color.
+            if (render->interp_mode == GZ_COLOR) {
+                for (j = 0; j < 3; j++) {
+                    normalization(vertexNormal[j]);
+                    
+                    for (k = 0; k < 3; k++) {
+                        specularColor[k] = diffuseColor[k] = ambientColor[k] = vertexesColor[j][k] = 0;
+                    }
+                    
+                    GzShadePoint(vertexesColor[j], vertexNormal[j], eyeVector, render);
+                }
+            }
+            
+            // Calculate the surface normal in the camera space.
+            GzVector surfaceNormal;
+            GzVector vector01, vector02;
+            
+            for (k = 0; k < 3; k++) {
+                vector01[k] = vertexes[1][k] - vertexes[0][k];
+                vector02[k] = vertexes[2][k] - vertexes[0][k];
+            }
+            crossProduct(vector01, vector02, surfaceNormal);
+            
+            // Convert the x,y,z to the screen space.
+            for (j = 0; j < 3; j++) {
                 for (k = 0; k < 3; k++) {
                     vertexes[j][k] = vertexes[j][k] / vertexes[j][3];
                 }
-                // printPoint(vertexes[j]);
-                
                 // Determine the rectangle we gonna to draw the triangle.
                 maxX = vertexes[j][0] > maxX ? vertexes[j][0] : maxX;
                 maxY = vertexes[j][1] > maxY ? vertexes[j][1] : maxY;
@@ -177,9 +235,7 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
             
             // We will check the points' sign in the line format
             // dy * (x - x0) + dx * (y0 - y)
-            float dy[3], dx[3];
-            float x0[3], y0[3];
-            float result;
+            float dy[3], dx[3], x0[3], y0[3], result;
             int sub1, sub2;
             bool prevSign = true; // true for positive, false for negative
             bool draw;
@@ -194,16 +250,18 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
             }
             
             // Derive the normal vector for the surface which the triangle locates.
-            float normal[3];
-            float vector1[3], vector2[3]; // the two vectors in the surface.
-            float zValue;
-            
-            for (m = 0; m < 3; m++) {
-                vector1[m] = vertexes[1][m] - vertexes[0][m];
-                vector2[m] = vertexes[1][m] - vertexes[2][m];
-            }
+            float normal[3], vector1[3], vector2[3], zValue, Cx, Cy, Cz;
 
-            crossProduct(vector1, vector2, normal);
+            if (render->interp_mode == GZ_NORMALS) {
+                for (m = 0; m < 3; m++) {
+                    vector1[m] = vertexes[1][m] - vertexes[0][m];
+                    vector2[m] = vertexes[1][m] - vertexes[2][m];
+                }
+                crossProduct(vector1, vector2, normal);
+                Cx = -1 * vertexes[0][0];
+                Cy = -1 * vertexes[0][1];
+                Cz = -1 * vertexes[0][2];
+            }
             
             // Check the points and draw the triangle.
             for (j = minY; j <= maxY; j++) {
@@ -229,12 +287,44 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                     
                     if (draw) {
                         // Get the z value.
-                        float D;
-                        D = -1 * dotProduct(normal, vertexes[0]);
-                        zValue = (normal[0] * k + normal[1] * j + D) / (-1 * normal[2]);
-                        // printf("z value: %f\n", zValue);
+                        GzPoint curPoint = {(float)k, (float)j, 0, 0};
+                        GzPoint tempPoints[3];
+                        GzVector comb;
+                        for (int l = 0; l < 3; l++) {
+                            tempPoints[l][0] = vertexes[l][0];
+                            tempPoints[l][1] = vertexes[l][1];
+                            tempPoints[l][2] = tempPoints[l][3] = 0;
+                        }
+                        
+                        bilinearInterpolationInTriangle(curPoint, tempPoints[0], tempPoints[1], tempPoints[2], comb);
+                        zValue = comb[0] * vertexes[0][2] + comb[1] * vertexes[1][2] + comb[2] * vertexes[2][2];
+
+                        GzColor pointColor;
+                        // Ground Model shading.
+                        if (render->interp_mode == GZ_COLOR) {
+                            // Calculate the combination of the current point.
+                            for (int l = 0; l < 3; l++) {
+                                pointColor[l] = comb[0] * vertexesColor[0][l]
+                                              + comb[1] * vertexesColor[1][l]
+                                              + comb[2] * vertexesColor[2][l];
+                            }
+                        }
+                        // Phong Model shading.
+                        else if (render->interp_mode == GZ_NORMALS) {
+                            GzVector pointNormal;
+                            for (int l = 0; l < 3; l++) {
+                                pointNormal[l] = comb[0] * vertexNormal[0][l]
+                                               + comb[1] * vertexNormal[1][l]
+                                               + comb[2] * vertexNormal[2][l];
+                            }
+                            
+                            GzShadePoint(pointColor, pointNormal, eyeVector, render);
+                        }
+                        
                         // draw the point
-                        GzPutDisplay(render->display, k, j, render->flatcolor[0] * 4095, render->flatcolor[1] * 4095, render->flatcolor[2] * 4095, 0, zValue);
+                        printVector(pointColor);
+                        GzPutDisplay(render->display, k, j, pointColor[0] * 4095, pointColor[1] * 4095, pointColor[2] * 4095, 0, zValue);
+                        //GzPutDisplay(render->display, k, j, render->flatcolor[0] * 4095, render->flatcolor[1] * 4095, render->flatcolor[2] * 4095, 0, zValue);
                     }
                 }
             }
@@ -390,15 +480,6 @@ int GzPutCamera(GzRender *render, GzCamera *camera)
     for (i = 0; i < 3; i++) {
         sum += Cy[i] * Cz[i];
     }
-    // printf("sum: %f\n", sum);
-    
-    /*
-    float unit;
-    for (i = 0, unit = 0; i < 3; i++) {
-        unit = Cz[i] / (camera->lookat[i] - camera->position[i]);
-        printf("Unit: %f\n", unit);
-    }
-    */
     
     float temp[3];
     float negPos[3];
@@ -417,7 +498,6 @@ int GzPutCamera(GzRender *render, GzCamera *camera)
         {0, 0, 0, 1}};
     
     float D = tanf(render->camera.FOV / 2 * (PI / 180));
-    // printf("FOV: %f, d: %f\n", render->camera.FOV, D);
     GzMatrix b = {{1, 0, 0, 0},
         {0, 1, 0, 0},
         {0, 0, 1, 0},
@@ -442,10 +522,6 @@ int GzPutCamera(GzRender *render, GzCamera *camera)
     GzPushMatrix(render, render->camera.Xpi);
     GzPushMatrix(render, render->camera.Xiw);
     
-    //printMatrix(render->Xsp);
-    //printMatrix(render->camera.Xpi);
-    //printMatrix(render->camera.Xiw);
-    
     return GZ_SUCCESS;
 }
 
@@ -459,15 +535,48 @@ int GzPushMatrix(GzRender *render, GzMatrix matrix)
         return GZ_FAILURE;
     //printf("Add: "); printMatrix(matrix);
     int i, j;
+    bool pushNormalMatrix = true;
+    bool toNormalized = false;
+    if (isSameMatrix(matrix, render->Xsp)) {
+        pushNormalMatrix = false;
+    }
+    else if (isSameMatrix(matrix, render->camera.Xpi)) {
+        pushNormalMatrix = false;
+    }
+    else if (isSameMatrix(matrix, render->camera.Xiw)) {
+        pushNormalMatrix = true;
+    }
+    else if (isScaleMatrix(matrix)) {
+        pushNormalMatrix = false;
+    }
+    else if (isTranslateMatrix(matrix)) {
+        pushNormalMatrix = false;
+    }
+    else {
+        pushNormalMatrix = true;
+        toNormalized = true;
+    }
+    
     for (i = 0; i < 4; i++)
-        for (j = 0; j < 4; j++)
+        for (j = 0; j < 4; j++) {
             render->Ximage[render->matlevel][i][j] = matrix[i][j];
+            if (pushNormalMatrix) {
+                render->Xnorm[render->matlevel][i][j] = matrix[i][j];
+            }
+            else {
+                render->Xnorm[render->matlevel][i][j] = i == j ? 1 : 0;
+            }
+        }
+    
+    if (toNormalized) matrixNormalization(render->Xnorm[render->matlevel]);
     
     if (render->matlevel > 0) {
         matrixMultiply(render->Ximage[render->matlevel - 1], render->Ximage[render->matlevel],
                        render->Ximage[render->matlevel]);
+        matrixMultiply(render->Xnorm[render->matlevel - 1], render->Xnorm[render->matlevel],
+                       render->Xnorm[render->matlevel]);
     }
-    //printf("result: "); printMatrix(render->Ximage[render->matlevel]);
+    //printf("result: "); printMatrix(render->Xnorm[render->matlevel]);
     render->matlevel++;
     
     return GZ_SUCCESS;
@@ -495,5 +604,45 @@ short	ctoi(float color)		/* convert float color to GzIntensity short */
     return(short)((int)(color * ((1 << 12) - 1)));
 }
 
-
-
+void GzShadePoint(GzColor pointColor, GzVector normal, GzVector eyeVector, GzRender *render)
+{
+    GzColor specularColor, diffuseColor, ambientColor;
+    normalization(normal);
+    float dotProductNL, dotProductNE;
+    
+    int k;
+    for (k = 0; k < 3; k++) {
+        specularColor[k] = diffuseColor[k] = ambientColor[k] = pointColor[k] = 0;
+    }
+    
+    for (k = 0; k < render->numlights; k++) {
+        GzLight light = render->lights[k];
+        GzLight reflectLight;
+        
+        dotProductNL = dotProduct(light.direction, normal);
+        dotProductNE = dotProduct(normal, eyeVector);
+        
+        if (dotProductNL * dotProductNE < 0) {
+            continue;
+        }
+        if (dotProductNL < 0 && dotProductNE < 0)
+            for (int m = 0; m < 3; m++) normal[m] *= -1;
+        
+        normalization(normal);
+        normalization(light.direction);
+        normalization(eyeVector);
+        
+        getReflectLightDirection(light.direction, normal, reflectLight.direction);
+        normalization(reflectLight.direction);
+        addColorInLight(specularColor, light, render->Ks, reflectLight.direction,
+                        eyeVector, render->spec);
+        addColorInLight(diffuseColor, light, render->Kd, normal, light.direction, 1);
+        
+        for (int l = 0; l < 3; l++) {
+            pointColor[l] += (diffuseColor[l] * 1 + specularColor[l] * 1);
+        }
+    }
+    
+    for (k = 0; k < 3; k++)
+        pointColor[k] += (render->ambientlight.color[k] * render->Ka[k] * 1);
+}
