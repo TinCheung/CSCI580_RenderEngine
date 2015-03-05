@@ -74,12 +74,10 @@ int GzPutAttribute(GzRender	*render, int numAttributes, GzToken	*nameList,
                     int lightSub = render->numlights;
                     for (int j = 0; j < 3; j++) {
                         render->lights[lightSub].direction[j] = ((GzLight *)valueList[i])->direction[j];
-                        printf("add light direction %d: %f\n", lightSub, ((GzLight *)valueList[i])->direction[j]);
                     }
                     normalization(render->lights[lightSub].direction);
                     for (int j = 0; j < 3; j++) {
                         render->lights[lightSub].color[j] = ((GzLight *)valueList[i])->color[j];
-                        printf("add light color %d: %f\n", lightSub, ((GzLight *)valueList[i])->color[j]);
                     }
                     render->numlights++;
                 }
@@ -88,38 +86,31 @@ int GzPutAttribute(GzRender	*render, int numAttributes, GzToken	*nameList,
                 for (int j = 0; j < 3; j++) {
                     render->ambientlight.direction[j] = ((GzLight *)valueList[i])->direction[j];
                     normalization(render->ambientlight.direction);
-                    printf("ambient Light direction %d: %f\n", j, ((GzLight *)valueList[i])->direction[j]);
                 }
                 for (int j = 0; j < 3; j++) {
                     render->ambientlight.color[j] = ((GzLight *)valueList[i])->color[j];
-                    printf("ambient Light color %d: %f\n", j, ((GzLight *)valueList[i])->color[j]);
                 }
                 break;
             case GZ_DIFFUSE_COEFFICIENT:
                 for (int j = 0; j < 3; j++) {
                     render->Kd[j] = (*((GzCoord *)valueList[i]))[j];
-                    printf("diffuse coefficient %d: %f\n", j, render->Kd[j]);
                 }
                 break;
             case GZ_AMBIENT_COEFFICIENT:
                 for (int j = 0; j < 3; j++) {
                     render->Ka[j] = (*((GzCoord *)valueList[i]))[j];
-                    printf("ambient coefficient %d: %f\n", j, render->Ka[j]);
                 }
                 break;
             case GZ_SPECULAR_COEFFICIENT:
                 for (int j = 0; j < 3; j++) {
                     render->Ks[j] = (*((GzCoord *)valueList[i]))[j];
-                    printf("specular coefficient %d: %f\n", j, render->Ks[j]);
                 }
                 break;
             case GZ_INTERPOLATE:
                 render->interp_mode = *((int *)valueList[i]);
-                printf("interpolate mode %d: %d\n", i, render->interp_mode);
                 break;
             case GZ_DISTRIBUTION_COEFFICIENT:
                 render->spec = *((float *)valueList[i]);
-                printf("specular pow %d: %f\n", i, render->spec);
                 break;
             default:
                 printf("unexpected attribute name.\n");
@@ -153,7 +144,7 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
             minY = MAXYRES + 1;
             
             int j, k, m;
-            GzPoint vertexes[3], vertexNormal[3], normalVertexes[3];
+            GzPoint vertexes[3], vertexNormal[3];
             GzColor vertexesColor[3];
             GzVector eyeVector = {0, 0, -1};
             
@@ -167,35 +158,25 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                 // Get the normal data.
                 for (k = 0; k < 3; k++) {
                     vertexNormal[j][k] = ((float *)valueList[1])[3 * j + k];
-                    normalVertexes[j][k] = vertexes[j][k] + vertexNormal[j][k];
                 }
                 vertexNormal[j][3] = 1;
-                normalVertexes[j][k] = 1;
                 
                 // Do the viewing transformation for the vertexes and the normals.
                 matrixMultiplyVector(render->Ximage[render->matlevel - 1], vertexes[j], vertexes[j]);
-                matrixMultiplyVector(render->Ximage[render->matlevel - 1], normalVertexes[j], normalVertexes[j]);
                 matrixMultiplyVector(render->Xnorm[render->matlevel - 1], vertexNormal[j], vertexNormal[j]);
             }
             
-            float dotProductNL, dotProductNE;
             GzColor specularColor, diffuseColor, ambientColor;
             
             for (j = 0; j < 3; j++) {
-                GzPoint vertexesCameraSpacePosition[3], cs[3];
+                GzPoint vertexesCameraSpacePosition[3];
                 
                 // Turn the vertexes into camera space.
                 vertexesCameraSpacePosition[j][0] = vertexes[j][0]/(render->display->xres/2)-vertexes[j][3];
                 vertexesCameraSpacePosition[j][1] = (vertexes[j][1]/(render->display->yres/2)-vertexes[j][3]) * -1;
                 vertexesCameraSpacePosition[j][2] = vertexes[j][2]/(render->Ximage[0][2][2]);
                 
-                cs[j][0] = normalVertexes[j][0]/(render->display->xres/2)-normalVertexes[j][3];
-                cs[j][1] = (normalVertexes[j][1]/(render->display->yres/2)-normalVertexes[j][3]) * -1;
-                cs[j][2] = normalVertexes[j][2]/(render->Ximage[0][2][2]);
-                
-                vertexNormal[j][0] = (cs[j][0] - vertexesCameraSpacePosition[j][0]) * 1;
-                vertexNormal[j][1] = (cs[j][1] - vertexesCameraSpacePosition[j][1]) * 1;
-                vertexNormal[j][2] = (cs[j][2] - vertexesCameraSpacePosition[j][2]) * 1;
+                normalization(vertexNormal[j]);
             }
             
             // For Ground Model, calculate the three vertexes' color.
@@ -322,7 +303,6 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                         }
                         
                         // draw the point
-                        printVector(pointColor);
                         GzPutDisplay(render->display, k, j, pointColor[0] * 4095, pointColor[1] * 4095, pointColor[2] * 4095, 0, zValue);
                         //GzPutDisplay(render->display, k, j, render->flatcolor[0] * 4095, render->flatcolor[1] * 4095, render->flatcolor[2] * 4095, 0, zValue);
                     }
@@ -560,15 +540,11 @@ int GzPushMatrix(GzRender *render, GzMatrix matrix)
     for (i = 0; i < 4; i++)
         for (j = 0; j < 4; j++) {
             render->Ximage[render->matlevel][i][j] = matrix[i][j];
-            if (pushNormalMatrix) {
+            if (pushNormalMatrix && i < 3 && j < 3)
                 render->Xnorm[render->matlevel][i][j] = matrix[i][j];
-            }
-            else {
+            else
                 render->Xnorm[render->matlevel][i][j] = i == j ? 1 : 0;
-            }
         }
-    
-    if (toNormalized) matrixNormalization(render->Xnorm[render->matlevel]);
     
     if (render->matlevel > 0) {
         matrixMultiply(render->Ximage[render->matlevel - 1], render->Ximage[render->matlevel],
@@ -576,7 +552,6 @@ int GzPushMatrix(GzRender *render, GzMatrix matrix)
         matrixMultiply(render->Xnorm[render->matlevel - 1], render->Xnorm[render->matlevel],
                        render->Xnorm[render->matlevel]);
     }
-    //printf("result: "); printMatrix(render->Xnorm[render->matlevel]);
     render->matlevel++;
     
     return GZ_SUCCESS;
