@@ -5,6 +5,7 @@
 #include	"mathLib.h"
 #include	<memory.h>
 #include    <limits.h>
+#include    "test.h"
 
 int GzNewFrameBuffer(char** framebuffer, int width, int height)
 {
@@ -133,16 +134,25 @@ int GzFlushDisplay2File(FILE* outfile, GzDisplay *display)
     /* write pixels to ppm file based on display class -- "P6 %d %d 255\r" */
     fprintf(outfile, "P3 %hd %hd 4095\n", display->xres, display->yres);
     int sub, i, j;
-    
+    float value, x, y;
+    GzColor temp;
     for (j = 0; j < display->yres; j++) {
         for (i = 0; i < display->xres; i++) {
             //if (0 > j || j >= display->yres || 0 > i || i >= display->xres)
             //continue;
+            /*
+            x = (float) i / display->xres;
+            y = (float) j / display->yres;
+            juliaSet(x, y, temp);
+            //printVector(temp);
+            fprintf(outfile, "%d %d %d ", (int)(temp[0] * 4095), (int)(temp[1] * 4095), (int)(temp[2] * 4095));
+            */
             sub = j * display->xres + i;
             fprintf(outfile, "%d %d %d ",
                     display->fbuf[sub].red > 4095 ? 4095 : display->fbuf[sub].red,
                     display->fbuf[sub].green > 4095 ? 4095 : display->fbuf[sub].green,
                     display->fbuf[sub].blue > 4095 ? 4095 : display->fbuf[sub].blue);
+            
         }
         fprintf(outfile, "\n");
     }

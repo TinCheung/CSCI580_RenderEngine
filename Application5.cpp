@@ -1,4 +1,4 @@
-// Application4.cpp: implementation of the Application4 class.
+// Application5.cpp: implementation of the Application5 class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -6,20 +6,20 @@
  * application test code for homework assignment #4
 */
 
-#define INFILE4  "pot4.asc"
-#define OUTFILE4 "output.ppm"
+#define INFILE  "ppot.asc"
+#define OUTFILE "output.ppm"
 
-#include "Application4.h"
+#include "Application5.h"
 #include "gz.h"
 #include "disp.h"
 #include "rend.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-void shade(GzCoord norm, GzCoord color);
+extern int tex_fun(float u, float v, GzColor color); /* image texture function */
+extern int ptex_fun(float u, float v, GzColor color); /* procedural texture function */
 
-
-int Application4::runRenderer()
+int Application5::runRenderer()
 {
 	GzCamera    camera;
 	GzToken     nameListTriangle[3]; 	/* vertex attribute names */
@@ -91,19 +91,19 @@ int Application4::runRenderer()
 	status |= GzNewRender(&render, GZ_Z_BUFFER_RENDER, display); 
 
 #if 1 	/* set up app-defined camera if desired, else use camera defaults */
-	camera.position[X] = 13.2;      
-  	camera.position[Y] = -8.7;
-  	camera.position[Z] = -14.8;
+    camera.position[X] = -3;
+    camera.position[Y] = -25;
+    camera.position[Z] = -4;
 
-  	camera.lookat[X] = 0.8;
-  	camera.lookat[Y] = 0.7;
-  	camera.lookat[Z] = 4.5;
+    camera.lookat[X] = 7.8;
+    camera.lookat[Y] = 0.7;
+    camera.lookat[Z] = 6.5;
 
-  	camera.worldup[X] = -0.2;
-  	camera.worldup[Y] = 1.0;
-  	camera.worldup[Z] = 0.0;
+    camera.worldup[X] = -0.2;
+    camera.worldup[Y] = 1.0;
+    camera.worldup[Z] = 0.0;
 
-	camera.FOV = 53.7;              /* degrees */
+	camera.FOV = 63.7;              /* degrees */
 
 	status |= GzPutCamera(render, &camera); 
 #endif 
@@ -153,8 +153,14 @@ int Application4::runRenderer()
 	nameListShader[4]  = GZ_DISTRIBUTION_COEFFICIENT;
 	specpower = 32;
 	valueListShader[4] = (GzPointer)&specpower;
+	nameListShader[5] = GZ_TEXTURE_MAP;
+#if 0
+	valueListShader[5] = (GzPointer)tex_fun;  /* or use ptex_fun */
+#else
+	valueListShader[5] = (GzPointer)ptex_fun;
+#endif
 
-	status |= GzPutAttribute(render, 5, nameListShader, valueListShader);
+	status |= GzPutAttribute(render, 6, nameListShader, valueListShader);
 
 	status |= GzPushMatrix(render, translateAndScale);  
 	status |= GzPushMatrix(render, rotateY); 
@@ -167,19 +173,20 @@ int Application4::runRenderer()
 	*/ 
 	nameListTriangle[0] = GZ_POSITION;
 	nameListTriangle[1] = GZ_NORMAL;
+	nameListTriangle[2] = GZ_TEXTURE_INDEX;
 	 
 	// I/O File open
 	FILE *infile;
-	if( (infile  = fopen( INFILE4 , "r" )) == NULL )
+	if( (infile  = fopen( INFILE , "r" )) == NULL )
 	{
-		printf("Could not open input from %s \n", INFILE4);
+		printf("Could not open input from %s \n", INFILE);
 		return GZ_FAILURE;
 	}
 
 	FILE *outfile;
-	if( (outfile  = fopen( OUTFILE4 , "wb" )) == NULL )
+	if( (outfile  = fopen( OUTFILE , "wb" )) == NULL )
 	{
-		printf("Could not open output file for writing %s \n", OUTFILE4);
+		printf("Could not open output file for writing %s \n", OUTFILE);
 		return GZ_FAILURE;
 	}
 
@@ -214,7 +221,8 @@ int Application4::runRenderer()
 	    */ 
 	    valueListTriangle[0] = (GzPointer)vertexList;
 	    valueListTriangle[1] = (GzPointer)normalList;
-	    GzPutTriangle(render, 2, nameListTriangle, valueListTriangle); 
+	    valueListTriangle[2] = (GzPointer)uvList;
+	    GzPutTriangle(render, 3, nameListTriangle, valueListTriangle); 
 	} 
 
 	GzFlushDisplay2File(outfile, display); 	/* write out or update display to file*/
@@ -236,28 +244,4 @@ int Application4::runRenderer()
 		return(GZ_FAILURE); 
 	else 
 		return(GZ_SUCCESS); 
-}
-
-/* 
-This doesn't really belong in the application program, but for this 
-simplified case of a renderer that doesn't do any shading itself, this 
-is the easiest place to put it.
-*/
-
-void shade(GzCoord norm, GzCoord color)
-{
-  GzCoord	light;
-  float		coef;
-
-  light[0] = 0.707f;
-  light[1] = 0.5f;
-  light[2] = 0.5f;
-
-  coef = light[0]*norm[0] + light[1]*norm[1] + light[2]*norm[2];
-  if (coef < 0) 	coef *= -1;
-
-  if (coef > 1.0)	coef = 1.0;
-  color[0] = coef*0.95f;
-  color[1] = coef*0.65f;
-  color[2] = coef*0.88f;
 }

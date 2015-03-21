@@ -16,9 +16,12 @@
 #include "gz.h"
 
 int scale(short v, int max, int tMax);
+float absf(float x);
 
 void bilinearInterpolationInTriangle(GzPoint, GzPoint, GzPoint, GzPoint, GzVector);
+void bilinearInterpolationInSquare(GzPoint, GzPoint, GzPoint, GzPoint, GzPoint, GzPoint);
 float triangleArea(GzPoint, GzPoint, GzPoint);
+float squareArea(GzPoint, GzPoint);
 
 // Vector operations.
 float dotProduct(GzVector, GzVector);
@@ -41,5 +44,24 @@ void matrixNormalization(GzMatrix);
 // Light operations.
 void addColorInLight(GzColor, GzLight, GzColor, GzVector, GzVector, float power=1);
 void getReflectLightDirection(GzVector, GzVector, GzVector);
+
+// Noise function.
+float noiseGeneration(float x, float y);
+float smoothNoise(float x, float y);
+float interpolatedNoise(float x, float y);
+float perlinNoise(float x, float y);
+
+// Julia set
+// Complex Number
+struct Complex {
+    float re;
+    float im;
+};
+
+typedef struct Complex complex;
+complex complexMultiply(complex a, complex b);
+complex complexPlus(complex a, complex b);
+void juliaSet(float u, float v, GzColor color);
+void hsvToRGB(float h, float s, float v, GzColor rgb);
 
 #endif

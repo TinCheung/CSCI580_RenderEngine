@@ -16,6 +16,8 @@
 		27D1BF861A78546C008D3F7F /* Application2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27D1BF821A78546C008D3F7F /* Application2.cpp */; };
 		27D1BF871A78546C008D3F7F /* rend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27D1BF851A78546C008D3F7F /* rend.cpp */; };
 		27D7CEA91AA5B75F00AD9A3F /* Application4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27D7CEA71AA5B75F00AD9A3F /* Application4.cpp */; };
+		27E248261AB1641F0069766E /* Application5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27E248231AB1641F0069766E /* Application5.cpp */; };
+		27E248271AB1641F0069766E /* tex_fun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27E248251AB1641F0069766E /* tex_fun.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -50,6 +52,9 @@
 		27D1BF851A78546C008D3F7F /* rend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rend.cpp; sourceTree = SOURCE_ROOT; };
 		27D7CEA71AA5B75F00AD9A3F /* Application4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application4.cpp; sourceTree = SOURCE_ROOT; };
 		27D7CEA81AA5B75F00AD9A3F /* Application4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application4.h; sourceTree = SOURCE_ROOT; };
+		27E248231AB1641F0069766E /* Application5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application5.cpp; sourceTree = SOURCE_ROOT; };
+		27E248241AB1641F0069766E /* Application5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application5.h; sourceTree = SOURCE_ROOT; };
+		27E248251AB1641F0069766E /* tex_fun.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tex_fun.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +87,9 @@
 		272BD42E1A70CCE700983FBD /* CSCI580_RenderEngine */ = {
 			isa = PBXGroup;
 			children = (
+				27E248231AB1641F0069766E /* Application5.cpp */,
+				27E248241AB1641F0069766E /* Application5.h */,
+				27E248251AB1641F0069766E /* tex_fun.cpp */,
 				27B9C8601AA622EA00B952EA /* Application3.cpp */,
 				27B9C8611AA622EA00B952EA /* Application3.h */,
 				27D7CEA71AA5B75F00AD9A3F /* Application4.cpp */,
@@ -176,12 +184,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27E248261AB1641F0069766E /* Application5.cpp in Sources */,
 				27D1BF861A78546C008D3F7F /* Application2.cpp in Sources */,
 				275C423B1A8E8BD800D7540D /* test.cpp in Sources */,
 				2737E8271A743B140046B415 /* Application1.cpp in Sources */,
 				27D1BF871A78546C008D3F7F /* rend.cpp in Sources */,
 				272BD4451A70F14B00983FBD /* mathLib.cpp in Sources */,
 				27D7CEA91AA5B75F00AD9A3F /* Application4.cpp in Sources */,
+				27E248271AB1641F0069766E /* tex_fun.cpp in Sources */,
 				27B9C8621AA622EA00B952EA /* Application3.cpp in Sources */,
 				2737E8291A743B140046B415 /* main.cpp in Sources */,
 				2737E8281A743B140046B415 /* disp.cpp in Sources */,

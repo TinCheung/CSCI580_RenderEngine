@@ -3,7 +3,6 @@
  */
 
 #pragma once
-
 /*
  * universal constants
  */
@@ -75,6 +74,8 @@ typedef float   GzCoord[3];
 typedef float   GzTextureIndex[2];
 typedef float   GzMatrix[4][4];
 typedef int	    GzDepth;	/* z is signed for clipping */
+
+
 
 /*
  * Gz camera definition - for making Xiw with rotations, scaling, translations.

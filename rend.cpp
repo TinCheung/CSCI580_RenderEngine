@@ -24,6 +24,7 @@ int GzNewRender(GzRender **render, GzRenderClass renderClass, GzDisplay *display
     (*render)->display = display;
     (*render)->matlevel = 0;
     (*render)->numlights = 0;
+    (*render)->tex_fun = NULL;
 
 	return GZ_SUCCESS;
 }
@@ -112,6 +113,9 @@ int GzPutAttribute(GzRender	*render, int numAttributes, GzToken	*nameList,
             case GZ_DISTRIBUTION_COEFFICIENT:
                 render->spec = *((float *)valueList[i]);
                 break;
+            case GZ_TEXTURE_MAP:
+                render->tex_fun = ((int(*)(float, float, float *))(valueList[i]));
+                break;
             default:
                 printf("unexpected attribute name.\n");
                 return GZ_FAILURE;
@@ -147,6 +151,7 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
             GzPoint vertexes[3], vertexNormal[3];
             GzColor vertexesColor[3];
             GzVector eyeVector = {0, 0, -1};
+            float vertexUV[3][2];
             
             for (j = 0; j < 3; j++) {
                 // Get the vertexes data.
@@ -161,35 +166,26 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                 }
                 vertexNormal[j][3] = 1;
                 
+                // Get the texture uv data.
+                for (k = 0; k < 2; k++) {
+                    vertexUV[j][k] = ((float *)valueList[2])[2 * j + k];
+                }
+                
                 // Do the viewing transformation for the vertexes and the normals.
                 matrixMultiplyVector(render->Ximage[render->matlevel - 1], vertexes[j], vertexes[j]);
                 matrixMultiplyVector(render->Xnorm[render->matlevel - 1], vertexNormal[j], vertexNormal[j]);
             }
             
             GzColor specularColor, diffuseColor, ambientColor;
+            GzPoint vertexesCameraSpacePosition[3];
             
+            // Turn the vertexes into camera space.
             for (j = 0; j < 3; j++) {
-                GzPoint vertexesCameraSpacePosition[3];
-                
-                // Turn the vertexes into camera space.
                 vertexesCameraSpacePosition[j][0] = vertexes[j][0]/(render->display->xres/2)-vertexes[j][3];
                 vertexesCameraSpacePosition[j][1] = (vertexes[j][1]/(render->display->yres/2)-vertexes[j][3]) * -1;
                 vertexesCameraSpacePosition[j][2] = vertexes[j][2]/(render->Ximage[0][2][2]);
                 
                 normalization(vertexNormal[j]);
-            }
-            
-            // For Ground Model, calculate the three vertexes' color.
-            if (render->interp_mode == GZ_COLOR) {
-                for (j = 0; j < 3; j++) {
-                    normalization(vertexNormal[j]);
-                    
-                    for (k = 0; k < 3; k++) {
-                        specularColor[k] = diffuseColor[k] = ambientColor[k] = vertexesColor[j][k] = 0;
-                    }
-                    
-                    GzShadePoint(vertexesColor[j], vertexNormal[j], eyeVector, render);
-                }
             }
             
             // Calculate the surface normal in the camera space.
@@ -230,18 +226,31 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                 y0[j] = vertexes[sub1][1];
             }
             
-            // Derive the normal vector for the surface which the triangle locates.
-            float normal[3], vector1[3], vector2[3], zValue, Cx, Cy, Cz;
-
-            if (render->interp_mode == GZ_NORMALS) {
-                for (m = 0; m < 3; m++) {
-                    vector1[m] = vertexes[1][m] - vertexes[0][m];
-                    vector2[m] = vertexes[1][m] - vertexes[2][m];
+            float zValue;
+            
+            // Warp the uv of vertexes
+            for (int l = 0; l < 3; l++) {
+                float Vz = vertexes[l][2] / (ZMAX - vertexes[l][2]);
+                for (int m = 0; m < 2; m++) {
+                    vertexUV[l][m] = vertexUV[l][m] / (Vz + 1);
                 }
-                crossProduct(vector1, vector2, normal);
-                Cx = -1 * vertexes[0][0];
-                Cy = -1 * vertexes[0][1];
-                Cz = -1 * vertexes[0][2];
+            }
+            
+            // For Ground Model, calculate the three vertexes' color.
+            if (render->interp_mode == GZ_COLOR) {
+                for (j = 0; j < 3; j++) {
+                    GzColor textureColor;
+                    render->tex_fun(vertexUV[j][0], vertexUV[j][1], textureColor);
+                    
+                    normalization(vertexNormal[j]);
+                    
+                    for (k = 0; k < 3; k++) {
+                        render->Ka[k] = render->Kd[k] = render->Ks[k] = 1;
+                        specularColor[k] = diffuseColor[k] = ambientColor[k] = vertexesColor[j][k] = 0;
+                    }
+                    
+                    GzShadePoint(vertexesColor[j], vertexNormal[j], eyeVector, render);
+                }
             }
             
             // Check the points and draw the triangle.
@@ -271,6 +280,7 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                         GzPoint curPoint = {(float)k, (float)j, 0, 0};
                         GzPoint tempPoints[3];
                         GzVector comb;
+                        GzColor textureColor;
                         for (int l = 0; l < 3; l++) {
                             tempPoints[l][0] = vertexes[l][0];
                             tempPoints[l][1] = vertexes[l][1];
@@ -278,8 +288,25 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                         }
                         
                         bilinearInterpolationInTriangle(curPoint, tempPoints[0], tempPoints[1], tempPoints[2], comb);
+                        
                         zValue = comb[0] * vertexes[0][2] + comb[1] * vertexes[1][2] + comb[2] * vertexes[2][2];
-
+                        
+                        // Texturing
+                        float VzI = zValue/(ZMAX - zValue);
+                        float curUV[2];
+                        
+                        // Interpolate and unwarp the current point UV
+                        for (int l = 0; l < 2; l++) {
+                            curUV[l] = comb[0] * vertexUV[0][l] + comb[1] * vertexUV[1][l] + comb[2] * vertexUV[2][l];
+                            curUV[l] = curUV[l] * (VzI + 1);
+                        }
+                        // printf("u: %f v: %f Vzi: %f z: %f\n", curUV[0], curUV[1], VzI, zValue);
+                        
+                        // Get the texture color.
+                        (*(render->tex_fun))(curUV[0], curUV[1], textureColor);
+                        //printf("tex color: "); printVector(textureColor);
+                        
+                        // Shading.
                         GzColor pointColor;
                         // Ground Model shading.
                         if (render->interp_mode == GZ_COLOR) {
@@ -288,23 +315,29 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                                 pointColor[l] = comb[0] * vertexesColor[0][l]
                                               + comb[1] * vertexesColor[1][l]
                                               + comb[2] * vertexesColor[2][l];
+                                pointColor[l] = pointColor[l] * textureColor[l];
                             }
+                            
                         }
                         // Phong Model shading.
                         else if (render->interp_mode == GZ_NORMALS) {
                             GzVector pointNormal;
+                            
+                            for (int l = 0; l < 3; l++)
+                            {
+                                render->Ka[l] = render->Kd[l] = textureColor[l];
+                            }
+                            
                             for (int l = 0; l < 3; l++) {
                                 pointNormal[l] = comb[0] * vertexNormal[0][l]
                                                + comb[1] * vertexNormal[1][l]
                                                + comb[2] * vertexNormal[2][l];
                             }
-                            
                             GzShadePoint(pointColor, pointNormal, eyeVector, render);
                         }
                         
                         // draw the point
                         GzPutDisplay(render->display, k, j, pointColor[0] * 4095, pointColor[1] * 4095, pointColor[2] * 4095, 0, zValue);
-                        //GzPutDisplay(render->display, k, j, render->flatcolor[0] * 4095, render->flatcolor[1] * 4095, render->flatcolor[2] * 4095, 0, zValue);
                     }
                 }
             }
@@ -486,7 +519,7 @@ int GzPutCamera(GzRender *render, GzCamera *camera)
     GzMatrix temp2 = {
         {(float)render->display->xres/(float)2, 0, 0, (float)render->display->xres/(float)2},
         {0, -1 * (float)render->display->yres/(float)2, 0, (float)render->display->yres/(float)2},
-        {0, 0, 100000 * D, 0},
+        {0, 0, ZMAX * D, 0},
         {0, 0, 0, 1}};
     
     int j;

@@ -13,3 +13,4 @@
 CSCI580_RenderEngine.xcodeproj/xcuserdata/TAN.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
 
 *.xcbkptlist
+!.ppm

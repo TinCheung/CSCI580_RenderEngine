@@ -18,7 +18,8 @@
 #define	MATLEVELS	100		/* how many matrix pushes allowed */
 #define	MAX_LIGHTS	10		/* how many lights allowed */
 
-#define GzTexture	GzPointer
+typedef	int     (*GzTexture)(float u, float v, GzColor color);
+#define ZMAX    100000000
 
 struct GzRender {			/* define a renderer */
     GzRenderClass	renderClass;

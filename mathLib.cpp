@@ -8,6 +8,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include "mathLib.h"
+#include "test.h"
+#include <time.h>
+
+using namespace std;
 
 int scale(short v, int max, int tMax)
 {
@@ -252,6 +256,7 @@ void bilinearInterpolationInTriangle(GzPoint P, GzPoint A, GzPoint B, GzPoint C,
     float PACArea = triangleArea(P, A, C);
     float PBCArea = triangleArea(P, B, C);
     
+    //printf("t-area: %f, ab: %f, ac: %f, bc: %f\n", totalArea, PABArea, PACArea, PBCArea);
     result[0] = (PBCArea / totalArea);
     result[1] = (PACArea / totalArea);
     result[2] = (PABArea / totalArea);
@@ -273,11 +278,249 @@ float triangleArea(GzPoint P0, GzPoint P1, GzPoint P2)
     normalization(vector1);
     normalization(vector2);
     
-    float degree = acos(dotProduct(vector1, vector2));
-    return (length1 * sinf(degree) * length2 / 2);
+    //printVector(vector1);
+    //printVector(vector2);
+
+    float degree = dotProduct(vector1, vector2) < -1 || dotProduct(vector1, vector2) > 1 ? 0 : acos(dotProduct(vector1, vector2));
+    float result = (length1 * sin(degree) * length2 / 2);
+    
+    return result;
 }
 
 float vectorLenght(GzVector vector)
 {
     return sqrtf(powf(vector[0], 2) + powf(vector[1], 2) + powf(vector[2], 2));
+}
+
+float squareArea(GzPoint a, GzPoint b)
+{
+    float xDiff = a[0] - b[0];
+    float yDiff = a[1] - b[1];
+    
+    xDiff = xDiff < 0 ? xDiff * -1 : xDiff;
+    yDiff = yDiff < 0 ? yDiff * -1 : yDiff;
+
+    return xDiff * yDiff;
+}
+
+void bilinearInterpolationInSquare(GzPoint p, GzPoint a, GzPoint b, GzPoint c, GzPoint d, GzPoint result)
+{
+    float totalArea = squareArea(a, c);
+    float apArea = squareArea(a, p);
+    float bpArea = squareArea(b, p);
+    float cpArea = squareArea(c, p);
+    float dpArea = squareArea(d, p);
+    
+    result[0] = cpArea / totalArea;
+    result[1] = dpArea / totalArea;
+    result[2] = apArea / totalArea;
+    result[3] = bpArea / totalArea;
+}
+
+complex complexMultiply(complex a, complex b)
+{
+    complex result;
+    result.re = a.re * b.re - a.im * b.im;
+    result.im = a.re * b.im + a.im * b.re;
+    return result;
+}
+
+complex complexPlus(complex a, complex b)
+{
+    complex result;
+    result.re = a.re + b.re;
+    result.im = a.im + b.im;
+    return result;
+}
+
+void hsv2rgb(float hue, float sat, float val, GzColor color, float maxBrightness) {
+    unsigned int H_accent = hue/60;
+    unsigned int bottom = (int)((255 - sat) * val)>>8;
+    unsigned int top = val;
+    unsigned char rising  = ((top-bottom)  *((int)hue%60   )  )  /  60  +  bottom;
+    unsigned char falling = ((top-bottom)  *(60-(int)hue%60)  )  /  60  +  bottom;
+    
+    switch(H_accent) {
+        case 0:
+            color[RED] = top;
+            color[GREEN] = rising;
+            color[BLUE] = bottom;
+            break;
+            
+        case 1:
+            color[RED] = falling;
+            color[GREEN] = top;
+            color[BLUE] = bottom;
+            break;
+            
+        case 2:
+            color[RED] = bottom;
+            color[GREEN] = top;
+            color[BLUE] = rising;
+            break;
+            
+        case 3:
+            color[RED] = bottom;
+            color[GREEN] = falling;
+            color[BLUE] = top;
+            break;
+            
+        case 4:
+            color[RED] = rising;
+            color[GREEN] = bottom;
+            color[BLUE] = top;
+            break;
+            
+        case 5:
+            color[RED] = top;
+            color[GREEN] = bottom;
+            color[BLUE] = falling;
+            break;
+    }
+    // Scale values to maxBrightness
+    color[RED] = color[RED] * maxBrightness/255;
+    color[GREEN] = color[GREEN] * maxBrightness/255;
+    color[BLUE] = color[BLUE] * maxBrightness/255;
+}
+
+
+void juliaSet(float u, float v, GzColor color)
+{
+    static bool init = false;
+    static GzColor set[512][512];
+    
+    int i, j, k, l;
+    complex z, c;
+    c.re = -0.70176, c.im = -0.3842;
+    if (!init) {
+        for (i = 0; i < 512; i++) {
+            for (j = 0; j < 512; j++) {
+                z.re = -1.6 + 3.2 * (i / 512.0);
+                z.im = -1.2 + 2.4 * (j / 512.0);
+                for (k = 0; k < 180; k++) {
+                    if (z.re * z.re + z.im * z.im > 2.0) break;
+                    z = complexMultiply(z, z);
+                    z = complexPlus(z, c);
+                }
+                if (k >= 180) {
+                    for (l = 0; l < 3; l++) set[i][j][l] = 0;
+                }
+                else {
+                    float h, s, v;
+                    h = (k) % 360;
+                    s = 255;
+                    v = 255;
+                    
+                    hsv2rgb(h, s, v, set[i][j], 1);
+                }
+                //printVector(set[i][j]);
+            }
+        }
+        init = true;
+    }
+    
+    int x, y;
+    x = u * 511;
+    y = v * 511;
+    
+    for (l = 0; l < 3; l++)
+        color[l] = set[x][y][l];
+}
+
+float noiseGeneration(float floatX, float floatY)
+{
+    int x = (int)floatX;
+    int y = (int)floatY;
+    
+    x = x + y * 57;
+    
+    float value = ( 1.0 - ( (x * (x * x * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+    
+    static float noiseMatrix[1024][1024];
+    static bool initialized = false;
+    if (!initialized) {
+        int i, j;
+    
+        for (i = 0; i < 1024; i++) {
+            for (j = 0; j < 1024; j++) {
+                noiseMatrix[i][j] = (float)rand() / (float)RAND_MAX;
+            }
+        }
+        initialized = true;
+    }
+    
+    floatX = (int)((floatX + 1) / 2 * 1024) % 1024;
+    floatY = (int)((floatY + 1) / 2 * 1024) % 1024;
+    
+    int x0 = (int)floatX;
+    int y0 = (int)floatY;
+    int x1 = x0 + 1;
+    int y1 = y0 + 1;
+    
+    int fx = floatX - x0;
+    int fy = floatY - y0;
+    
+    float vx1, vx2;
+    vx1 = fx * noiseMatrix[x0][y0] + (1-fx) * noiseMatrix[x1][y0];
+    vx2 = fx * noiseMatrix[x0][y1] + (1-fx) * noiseMatrix[x1][y1];
+    value = vx1 * fy + (1-fy) * vx2;
+    
+    return value;
+}
+
+float smoothNoise(float x, float y)
+{
+    //printf("x: %f y: %f\n", x, y);
+    float corners = (noiseGeneration(x-1, y-1) + noiseGeneration(x+1, y-1)
+                     + noiseGeneration(x-1, y+1) + noiseGeneration(x+1, y+1) ) / 16;
+    float sides   = (noiseGeneration(x-1, y) +noiseGeneration(x+1, y) +noiseGeneration(x, y-1) +noiseGeneration(x, y+1) ) / 8;
+    float center  =  noiseGeneration(x, y) / 4;
+    
+    return corners + sides + center;
+}
+
+float interpolatedNoise(float x, float y)
+{
+    int ix = (int) x;
+    int iy = (int) y;
+    
+    float fx = x - ix;
+    float fy = y - iy;
+    
+    fx = fx > 0 ? fx : -1 * fx;
+    fy = fy > 0 ? fy : -1 * fy;
+    
+    float n[4];
+    int dx[4] = {0, 1, 0, 1};
+    int dy[4] = {0, 0, 1, 1};
+    
+    int i;
+    for (i = 0; i < 4; i++)
+        n[i] = smoothNoise(ix + dx[i], iy + dy[i]);
+    
+    float value1, value2;
+    value1 = n[0] * fx + n[1] * (1 - fx);
+    value2 = n[2] * fx + n[3] * (1 - fx);
+    
+    return (value1 * fy) + (value2 * (1 - fy));
+}
+
+
+float perlinNoise(float x, float y)
+{
+    float value = 0;
+    for (int i = 0; i < 32; i++)
+    {
+        value += pow(2, -1 * i) * absf(interpolatedNoise(x * pow(2, i), y * pow(2, i)));
+    }
+    //value *= 3;
+    value = value > 1 ? 1 : value;
+    //printf("x: %f, y:%f, value: %f\n", x, y, value);
+    
+    return value;
+}
+
+float absf(float x)
+{
+    return (x > 0 ? x : x * -1);
 }
