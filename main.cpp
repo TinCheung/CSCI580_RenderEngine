@@ -3,11 +3,11 @@
  * USC csci 580 *
 */
 
-#include "Application5.h"
+#include "Application6.h"
 
 int main(int argc, const char * argv[])
 {
-  Application5 application;
+  Application6 application;
 
   application.runRenderer();
   

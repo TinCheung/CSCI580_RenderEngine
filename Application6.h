@@ -9,5 +9,18 @@
 #ifndef CSCI580_RenderEngine_Application6_h
 #define CSCI580_RenderEngine_Application6_h
 
+#include "disp.h"
+#include "rend.h"
+#include "gz.h"
+
+class Application6
+{
+public:
+    int runRenderer();
+protected:
+    GzDisplay* display[AAKERNEL_SIZE]; // the display
+    GzRender* render[AAKERNEL_SIZE];   // the renderer
+};
+
 
 #endif

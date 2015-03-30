@@ -116,6 +116,12 @@ int GzPutAttribute(GzRender	*render, int numAttributes, GzToken	*nameList,
             case GZ_TEXTURE_MAP:
                 render->tex_fun = ((int(*)(float, float, float *))(valueList[i]));
                 break;
+            case GZ_AASHIFTX:
+                render->antiAliasingOffsetX = *((float *)valueList[i]);
+                break;
+            case GZ_AASHIFTY:
+                render->antiAliasingOffsetY = *((float *)valueList[i]);
+                break;
             default:
                 printf("unexpected attribute name.\n");
                 return GZ_FAILURE;
@@ -203,6 +209,11 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                 for (k = 0; k < 3; k++) {
                     vertexes[j][k] = vertexes[j][k] / vertexes[j][3];
                 }
+                
+                // Add anti-aliasing offset
+                vertexes[j][0] += (float)(render->antiAliasingOffsetX); // (float)2 * render->display->xres;
+                vertexes[j][1] += render->antiAliasingOffsetY; // 2 * render->display->yres;
+                
                 // Determine the rectangle we gonna to draw the triangle.
                 maxX = vertexes[j][0] > maxX ? vertexes[j][0] : maxX;
                 maxY = vertexes[j][1] > maxY ? vertexes[j][1] : maxY;
@@ -253,6 +264,16 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                 }
             }
             
+            float normal[3];
+            float vector1[3], vector2[3]; // the two vectors in the surface.
+            
+            for (m = 0; m < 3; m++) {
+                vector1[m] = vertexes[1][m] - vertexes[0][m];
+                vector2[m] = vertexes[1][m] - vertexes[2][m];
+            }
+            
+            crossProduct(vector1, vector2, normal);
+            
             // Check the points and draw the triangle.
             for (j = minY; j <= maxY; j++) {
                 for (k = minX; k <= maxX; k++) {
@@ -281,6 +302,11 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                         GzPoint tempPoints[3];
                         GzVector comb;
                         GzColor textureColor;
+                        
+                        float D;
+                        D = -1 * dotProduct(normal, vertexes[0]);
+                        zValue = (normal[0] * k + normal[1] * j + D) / (-1 * normal[2]);
+                        
                         for (int l = 0; l < 3; l++) {
                             tempPoints[l][0] = vertexes[l][0];
                             tempPoints[l][1] = vertexes[l][1];
@@ -289,7 +315,7 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                         
                         bilinearInterpolationInTriangle(curPoint, tempPoints[0], tempPoints[1], tempPoints[2], comb);
                         
-                        zValue = comb[0] * vertexes[0][2] + comb[1] * vertexes[1][2] + comb[2] * vertexes[2][2];
+                        // zValue = comb[0] * vertexes[0][2] + comb[1] * vertexes[1][2] + comb[2] * vertexes[2][2];
                         
                         // Texturing
                         float VzI = zValue/(ZMAX - zValue);
@@ -300,11 +326,9 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                             curUV[l] = comb[0] * vertexUV[0][l] + comb[1] * vertexUV[1][l] + comb[2] * vertexUV[2][l];
                             curUV[l] = curUV[l] * (VzI + 1);
                         }
-                        // printf("u: %f v: %f Vzi: %f z: %f\n", curUV[0], curUV[1], VzI, zValue);
                         
                         // Get the texture color.
                         (*(render->tex_fun))(curUV[0], curUV[1], textureColor);
-                        //printf("tex color: "); printVector(textureColor);
                         
                         // Shading.
                         GzColor pointColor;

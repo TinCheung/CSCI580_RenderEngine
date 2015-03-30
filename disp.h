@@ -3,7 +3,8 @@
 *  USC csci 580 
 */
 
-#pragma once
+#ifndef DISP_H
+#define DISP_H
 
 #include "gz.h"
 #include <stdio.h>
@@ -48,3 +49,5 @@ int GzPutDisplay(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity g,
 int GzGetDisplay(GzDisplay *display, int i, int j, GzIntensity *r, GzIntensity *g, GzIntensity *b, GzIntensity *a, GzDepth *z);
 int GzFlushDisplay2File(FILE* outfile, GzDisplay *display);
 int GzFlushDisplay2FrameBuffer(char* framebuffer, GzDisplay* display);
+
+#endif

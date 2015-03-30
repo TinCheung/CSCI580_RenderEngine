@@ -98,7 +98,7 @@ int GzPutDisplay(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity g,
     
     int sub = j * display->xres + i;
     
-    if (display->fbuf[sub].z > z && z > 0) {
+    if (display->fbuf[sub].z >= z && z > 0) {
         display->fbuf[sub].red = r;
         display->fbuf[sub].green = g;
         display->fbuf[sub].blue = b;
