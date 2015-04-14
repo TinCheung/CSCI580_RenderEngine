@@ -520,6 +520,12 @@ float perlinNoise(float x, float y)
     return value;
 }
 
+void setPoint(GzPoint point, float coordinates[])
+{
+    for (int i = 0; i < 4; i++)
+        point[i] = coordinates[i];
+}
+
 float absf(float x)
 {
     return (x > 0 ? x : x * -1);

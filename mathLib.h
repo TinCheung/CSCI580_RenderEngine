@@ -22,6 +22,7 @@ void bilinearInterpolationInTriangle(GzPoint, GzPoint, GzPoint, GzPoint, GzVecto
 void bilinearInterpolationInSquare(GzPoint, GzPoint, GzPoint, GzPoint, GzPoint, GzPoint);
 float triangleArea(GzPoint, GzPoint, GzPoint);
 float squareArea(GzPoint, GzPoint);
+void setPoint(GzPoint point, float coordinates[]);
 
 // Vector operations.
 float dotProduct(GzVector, GzVector);

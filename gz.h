@@ -139,5 +139,13 @@ struct GzInput
 typedef float   GzPoint[4];
 typedef float   GzVector[3];
 
+struct Triangle {
+    GzPoint vertexes[3];
+};
+
+typedef struct Triangle GzTriangle;
+
+
+
 #endif
 

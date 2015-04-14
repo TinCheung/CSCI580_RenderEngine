@@ -17,6 +17,7 @@
 		27D1BF861A78546C008D3F7F /* Application2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27D1BF821A78546C008D3F7F /* Application2.cpp */; };
 		27D1BF871A78546C008D3F7F /* rend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27D1BF851A78546C008D3F7F /* rend.cpp */; };
 		27D7CEA91AA5B75F00AD9A3F /* Application4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27D7CEA71AA5B75F00AD9A3F /* Application4.cpp */; };
+		27DA422B1ADD97A2006ED86A /* PenInkApplication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27DA42291ADD97A2006ED86A /* PenInkApplication.cpp */; };
 		27E248261AB1641F0069766E /* Application5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27E248231AB1641F0069766E /* Application5.cpp */; };
 		27E248271AB1641F0069766E /* tex_fun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27E248251AB1641F0069766E /* tex_fun.cpp */; };
 /* End PBXBuildFile section */
@@ -55,6 +56,8 @@
 		27D1BF851A78546C008D3F7F /* rend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rend.cpp; sourceTree = SOURCE_ROOT; };
 		27D7CEA71AA5B75F00AD9A3F /* Application4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application4.cpp; sourceTree = SOURCE_ROOT; };
 		27D7CEA81AA5B75F00AD9A3F /* Application4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application4.h; sourceTree = SOURCE_ROOT; };
+		27DA42291ADD97A2006ED86A /* PenInkApplication.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PenInkApplication.cpp; sourceTree = SOURCE_ROOT; };
+		27DA422A1ADD97A2006ED86A /* PenInkApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PenInkApplication.h; sourceTree = SOURCE_ROOT; };
 		27E248231AB1641F0069766E /* Application5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application5.cpp; sourceTree = SOURCE_ROOT; };
 		27E248241AB1641F0069766E /* Application5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application5.h; sourceTree = SOURCE_ROOT; };
 		27E248251AB1641F0069766E /* tex_fun.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tex_fun.cpp; sourceTree = SOURCE_ROOT; };
@@ -111,6 +114,8 @@
 				27CAF8E31A7731AA00B6F793 /* gz.h */,
 				273892331AC485DE00F44E89 /* Application6.h */,
 				273892341AC4861400F44E89 /* Application6.cpp */,
+				27DA42291ADD97A2006ED86A /* PenInkApplication.cpp */,
+				27DA422A1ADD97A2006ED86A /* PenInkApplication.h */,
 			);
 			path = CSCI580_RenderEngine;
 			sourceTree = "<group>";
@@ -195,6 +200,7 @@
 				273892351AC4861400F44E89 /* Application6.cpp in Sources */,
 				2737E8271A743B140046B415 /* Application1.cpp in Sources */,
 				27D1BF871A78546C008D3F7F /* rend.cpp in Sources */,
+				27DA422B1ADD97A2006ED86A /* PenInkApplication.cpp in Sources */,
 				272BD4451A70F14B00983FBD /* mathLib.cpp in Sources */,
 				27D7CEA91AA5B75F00AD9A3F /* Application4.cpp in Sources */,
 				27E248271AB1641F0069766E /* tex_fun.cpp in Sources */,

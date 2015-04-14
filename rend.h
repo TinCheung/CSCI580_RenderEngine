@@ -64,6 +64,9 @@ int GzRotZMat(float degree, GzMatrix mat);
 int GzTrxMat(GzCoord translate, GzMatrix mat);
 int GzScaleMat(GzCoord scale, GzMatrix mat);
 
+// Functions for pen ink illustration.
+int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[]);
+
 /* My function for the management of the Xn stack. */
 int GzPushNormalTransformMatrix(GzMatrix mat);
 void GzShadePoint(GzColor pointColor, GzVector normal, GzVector eyeVector, GzRender *render);

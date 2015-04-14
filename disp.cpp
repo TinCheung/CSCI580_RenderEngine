@@ -80,9 +80,15 @@ int GzInitDisplay(GzDisplay	*display)
     // memset(display->fbuf, 0, sizeof(GzPixel) * display->xres * display->yres);
     int i;
     for (i = 0; i < display->yres * display->xres; i++) {
+        /*
         display->fbuf[i].red = scale(128, 255, 4095);
         display->fbuf[i].green = scale(113, 255, 4095);
         display->fbuf[i].blue = scale(96, 255, 4095);
+        */
+        display->fbuf[i].red = scale(255, 255, 4095);
+        display->fbuf[i].green = scale(255, 255, 4095);
+        display->fbuf[i].blue = scale(255, 255, 4095);
+        
         display->fbuf[i].z = INT_MAX;
     }
     
@@ -134,19 +140,8 @@ int GzFlushDisplay2File(FILE* outfile, GzDisplay *display)
     /* write pixels to ppm file based on display class -- "P6 %d %d 255\r" */
     fprintf(outfile, "P3 %hd %hd 4095\n", display->xres, display->yres);
     int sub, i, j;
-    float value, x, y;
-    GzColor temp;
     for (j = 0; j < display->yres; j++) {
         for (i = 0; i < display->xres; i++) {
-            //if (0 > j || j >= display->yres || 0 > i || i >= display->xres)
-            //continue;
-            /*
-            x = (float) i / display->xres;
-            y = (float) j / display->yres;
-            juliaSet(x, y, temp);
-            //printVector(temp);
-            fprintf(outfile, "%d %d %d ", (int)(temp[0] * 4095), (int)(temp[1] * 4095), (int)(temp[2] * 4095));
-            */
             sub = j * display->xres + i;
             fprintf(outfile, "%d %d %d ",
                     display->fbuf[sub].red > 4095 ? 4095 : display->fbuf[sub].red,

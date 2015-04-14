@@ -678,3 +678,104 @@ void GzShadePoint(GzColor pointColor, GzVector normal, GzVector eyeVector, GzRen
     for (k = 0; k < 3; k++)
         pointColor[k] += (render->ambientlight.color[k] * render->Ka[k] * 1);
 }
+
+int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
+{
+    int t;
+    for (t = 0; t < triangleNum; t++)
+    {
+        float maxX, maxY, minX, minY;
+        maxX = maxY = -1;
+        minX = MAXXRES + 1;
+        minY = MAXYRES + 1;
+        
+        int j, k, m;
+        GzPoint vertexes[3];
+        
+        for (j = 0; j < 3; j++) {
+            // Get the vertexes data.
+            for (k = 0; k < 3; k++) {
+                vertexes[j][k] = triangles[t].vertexes[j][k];
+            }
+            vertexes[j][3] = 1;
+            
+            matrixMultiplyVector(render->Ximage[render->matlevel - 1], vertexes[j], vertexes[j]);
+            // Convert the x,y,z to the screen space.
+            for (k = 0; k < 3; k++) {
+                vertexes[j][k] = vertexes[j][k] / vertexes[j][3];
+            }
+            
+            // Determine the rectangle we gonna to draw the triangle.
+            maxX = vertexes[j][0] > maxX ? vertexes[j][0] : maxX;
+            maxY = vertexes[j][1] > maxY ? vertexes[j][1] : maxY;
+            minX = vertexes[j][0] < minX ? vertexes[j][0] : minX;
+            minY = vertexes[j][1] < minY ? vertexes[j][1] : minY;
+        }
+        
+        // We will check the points' sign in the line format
+        // dy * (x - x0) + dx * (y0 - y)
+        float dy[3], dx[3];
+        float x0[3], y0[3];
+        float result;
+        int sub1, sub2;
+        bool prevSign = true; // true for positive, false for negative
+        bool draw;
+        
+        for (j = 0; j < 3; j++) {
+            sub1 = j;
+            sub2 = j + 1 > 2 ? 0 : j + 1;
+            dx[j] = vertexes[sub1][0] - vertexes[sub2][0];
+            dy[j] = vertexes[sub1][1] - vertexes[sub2][1];
+            x0[j] = vertexes[sub1][0];
+            y0[j] = vertexes[sub1][1];
+        }
+        
+        // Derive the normal vector for the surface which the triangle locates.
+        float normal[3];
+        float vector1[3], vector2[3]; // the two vectors in the surface.
+        float zValue;
+        
+        for (m = 0; m < 3; m++) {
+            vector1[m] = vertexes[1][m] - vertexes[0][m];
+            vector2[m] = vertexes[1][m] - vertexes[2][m];
+        }
+        
+        crossProduct(vector1, vector2, normal);
+        
+        // Check the points and draw the triangle.
+        for (j = minY; j <= maxY; j++) {
+            for (k = minX; k <= maxX; k++) {
+                draw = true;
+                
+                for (m = 0; m < 3; m++) {
+                    result = dy[m] * (k - x0[m]) + dx[m] * (y0[m] - j);
+                    if (m == 0) {
+                        prevSign = result > 0 ? true : false;
+                    }
+                    else {
+                        if (prevSign && result < 0) {
+                            draw = false;
+                            break;
+                        }
+                        else if (!prevSign && result > 0) {
+                            draw = false;
+                            break;
+                        }
+                    }
+                }
+                
+                if (draw) {
+                    // Get the z value.
+                    float D;
+                    D = -1 * dotProduct(normal, vertexes[0]);
+                    zValue = (normal[0] * k + normal[1] * j + D) / (-1 * normal[2]);
+                    // printf("z value: %f\n", zValue);
+                    // draw the point
+                    GzPutDisplay(render->display, k, j, render->flatcolor[0] * 4095, render->flatcolor[1] * 4095, render->flatcolor[2] * 4095, 0, zValue);
+                }
+            }
+        }
+    }
+    
+    return GZ_SUCCESS;
+}
