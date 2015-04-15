@@ -20,8 +20,8 @@ int PenInkApplication::run()
     GzTriangle triangles[12];
     setCube(triangles);
     
-    int width = 256;    // frame buffer and display width
-    int height = 256;   // frame buffer and display height
+    int width = 1024;    // frame buffer and display width
+    int height = 1024;   // frame buffer and display height
     int	xRes, yRes, dispClass;	/* display parameters */
     int status;
     
@@ -35,7 +35,7 @@ int PenInkApplication::run()
 #if 1 	/* set up app-defined camera if desired, else use camera defaults */
     camera.position[X] = 2;
     camera.position[Y] = 2;
-    camera.position[Z] = 3;
+    camera.position[Z] = 2;
     
     camera.lookat[X] = 0;
     camera.lookat[Y] = 0;

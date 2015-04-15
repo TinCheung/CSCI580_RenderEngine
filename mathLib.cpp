@@ -530,3 +530,17 @@ float absf(float x)
 {
     return (x > 0 ? x : x * -1);
 }
+
+int round(float x)
+{
+    return (int)(x + 0.5f);
+}
+
+int max(int x, int y)
+{
+    return x > y ? x : y;
+}
+int min(int x, int y)
+{
+    return x < y ? x : y;
+}

@@ -7,6 +7,7 @@
 #include    <stdlib.h>
 #include	<math.h>
 #include    <climits>
+#include    "stroke.h"
 
 int GzNewRender(GzRender **render, GzRenderClass renderClass, GzDisplay *display)
 {
@@ -712,6 +713,12 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
             minY = vertexes[j][1] < minY ? vertexes[j][1] : minY;
         }
         
+        if (t != -1) {
+            drawLine(render->display, vertexes[0][0], vertexes[0][1], vertexes[1][0], vertexes[1][1]);
+            drawLine(render->display, vertexes[0][0], vertexes[0][1], vertexes[2][0], vertexes[2][1]);
+            drawLine(render->display, vertexes[1][0], vertexes[1][1], vertexes[2][0], vertexes[2][1]);
+        }
+        
         // We will check the points' sign in the line format
         // dy * (x - x0) + dx * (y0 - y)
         float dy[3], dx[3];
@@ -741,8 +748,10 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
         }
         
         crossProduct(vector1, vector2, normal);
+        //drawLine(render->display, 512, 0, 512, 512);
         
         // Check the points and draw the triangle.
+        /*
         for (j = minY; j <= maxY; j++) {
             for (k = minX; k <= maxX; k++) {
                 draw = true;
@@ -775,6 +784,7 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
                 }
             }
         }
+         */
     }
     
     return GZ_SUCCESS;

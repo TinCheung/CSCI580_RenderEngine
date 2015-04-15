@@ -3,40 +3,29 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "tex_fun(float, float, float*):tex_fun.cpp">
+         contextName = "GzShadePoint(float*, float*, float*, GzRender*):rend.cpp">
          <PersistentStrings>
             <PersistentString
-               value = "u">
+               value = "pointColor[l]">
             </PersistentString>
             <PersistentString
-               value = "v">
+               value = "(GzVector)pointColor">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "GzPushMatrix(GzRender*, float (*) [4]):rend.cpp">
+         contextName = "drawLine(GzDisplay*, int, int, int, int, int):stroke.cpp">
          <PersistentStrings>
             <PersistentString
-               value = "matrix[1]">
+               value = "wave[count]">
+            </PersistentString>
+            <PersistentString
+               value = "thick[i]">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "Application2::runRenderer():Application2.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "GzPutAttribute(GzRender*, int, int*, void**):rend.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "*(float *)valueList[j]">
-            </PersistentString>
-            <PersistentString
-               value = "(GzLight *)valueList[i]">
-            </PersistentString>
-            <PersistentString
-               value = "(GzColor)(valueList[0])">
-            </PersistentString>
-         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "addColorInLight(float*, GzLight, float*, float*, float*, float):mathLib.cpp">
@@ -53,6 +42,20 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "GzPutAttribute(GzRender*, int, int*, void**):rend.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "*(float *)valueList[j]">
+            </PersistentString>
+            <PersistentString
+               value = "(GzLight *)valueList[i]">
+            </PersistentString>
+            <PersistentString
+               value = "(GzColor)(valueList[0])">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "GzPutCamera(GzRender*, GzCamera*):rend.cpp">
          <PersistentStrings>
             <PersistentString
@@ -64,13 +67,26 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "GzShadePoint(float*, float*, float*, GzRender*):rend.cpp">
+         contextName = "GzPushMatrix(GzRender*, float (*) [4]):rend.cpp">
          <PersistentStrings>
             <PersistentString
-               value = "pointColor[l]">
+               value = "matrix[1]">
             </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "GzPenInkRender(GzRender*, int, Triangle*):rend.cpp">
+         <PersistentStrings>
             <PersistentString
-               value = "(GzVector)pointColor">
+               value = "vertexes">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "GzInitDisplay(GzDisplay*):disp.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "display-&gt;zBuffer[i]">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -107,10 +123,24 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "GzInitDisplay(GzDisplay*):disp.cpp">
+         contextName = "tex_fun(float, float, float*):tex_fun.cpp">
          <PersistentStrings>
             <PersistentString
-               value = "display-&gt;zBuffer[i]">
+               value = "u">
+            </PersistentString>
+            <PersistentString
+               value = "v">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "drawLine(GzDisplay*, int, int, int, int):stroke.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "toY">
+            </PersistentString>
+            <PersistentString
+               value = "toX * k + b">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

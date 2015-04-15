@@ -17,12 +17,16 @@
 
 int scale(short v, int max, int tMax);
 float absf(float x);
+int round(float x);
+int max(int x, int y);
+int min(int x, int y);
 
 void bilinearInterpolationInTriangle(GzPoint, GzPoint, GzPoint, GzPoint, GzVector);
 void bilinearInterpolationInSquare(GzPoint, GzPoint, GzPoint, GzPoint, GzPoint, GzPoint);
 float triangleArea(GzPoint, GzPoint, GzPoint);
 float squareArea(GzPoint, GzPoint);
 void setPoint(GzPoint point, float coordinates[]);
+
 
 // Vector operations.
 float dotProduct(GzVector, GzVector);

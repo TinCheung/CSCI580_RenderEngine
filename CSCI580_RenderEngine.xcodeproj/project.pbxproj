@@ -8,17 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		272BD4451A70F14B00983FBD /* mathLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 272BD4441A70F14B00983FBD /* mathLib.cpp */; };
-		2737E8271A743B140046B415 /* Application1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2737E8211A743B140046B415 /* Application1.cpp */; };
 		2737E8281A743B140046B415 /* disp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2737E8231A743B140046B415 /* disp.cpp */; };
 		2737E8291A743B140046B415 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2737E8261A743B140046B415 /* main.cpp */; };
-		273892351AC4861400F44E89 /* Application6.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 273892341AC4861400F44E89 /* Application6.cpp */; };
 		275C423B1A8E8BD800D7540D /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 275C42391A8E8BD800D7540D /* test.cpp */; };
 		27B9C8621AA622EA00B952EA /* Application3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27B9C8601AA622EA00B952EA /* Application3.cpp */; };
-		27D1BF861A78546C008D3F7F /* Application2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27D1BF821A78546C008D3F7F /* Application2.cpp */; };
 		27D1BF871A78546C008D3F7F /* rend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27D1BF851A78546C008D3F7F /* rend.cpp */; };
 		27D7CEA91AA5B75F00AD9A3F /* Application4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27D7CEA71AA5B75F00AD9A3F /* Application4.cpp */; };
 		27DA422B1ADD97A2006ED86A /* PenInkApplication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27DA42291ADD97A2006ED86A /* PenInkApplication.cpp */; };
-		27E248261AB1641F0069766E /* Application5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27E248231AB1641F0069766E /* Application5.cpp */; };
+		27DA422F1ADDAEDE006ED86A /* stroke.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27DA422D1ADDAEDE006ED86A /* stroke.cpp */; };
+		27DA42331ADDB378006ED86A /* OBJParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27DA42311ADDB378006ED86A /* OBJParser.cpp */; };
+		27DA42361ADDC1A5006ED86A /* PenInkIllustrationInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27DA42341ADDC1A5006ED86A /* PenInkIllustrationInfo.cpp */; };
 		27E248271AB1641F0069766E /* tex_fun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27E248251AB1641F0069766E /* tex_fun.cpp */; };
 /* End PBXBuildFile section */
 
@@ -38,28 +37,26 @@
 		272BD42C1A70CCE700983FBD /* CSCI580_RenderEngine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CSCI580_RenderEngine; sourceTree = BUILT_PRODUCTS_DIR; };
 		272BD4431A70F12900983FBD /* mathLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mathLib.h; sourceTree = SOURCE_ROOT; };
 		272BD4441A70F14B00983FBD /* mathLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mathLib.cpp; sourceTree = SOURCE_ROOT; };
-		2737E8211A743B140046B415 /* Application1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application1.cpp; sourceTree = SOURCE_ROOT; };
-		2737E8221A743B140046B415 /* Application1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application1.h; sourceTree = SOURCE_ROOT; };
 		2737E8231A743B140046B415 /* disp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = disp.cpp; sourceTree = SOURCE_ROOT; };
 		2737E8241A743B140046B415 /* disp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = disp.h; sourceTree = SOURCE_ROOT; };
 		2737E8261A743B140046B415 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
-		273892331AC485DE00F44E89 /* Application6.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Application6.h; sourceTree = SOURCE_ROOT; };
-		273892341AC4861400F44E89 /* Application6.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application6.cpp; sourceTree = SOURCE_ROOT; };
 		275C42391A8E8BD800D7540D /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = SOURCE_ROOT; };
 		275C423A1A8E8BD800D7540D /* test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = SOURCE_ROOT; };
 		27B9C8601AA622EA00B952EA /* Application3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application3.cpp; sourceTree = SOURCE_ROOT; };
 		27B9C8611AA622EA00B952EA /* Application3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application3.h; sourceTree = SOURCE_ROOT; };
 		27CAF8E31A7731AA00B6F793 /* gz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gz.h; sourceTree = SOURCE_ROOT; };
-		27D1BF821A78546C008D3F7F /* Application2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application2.cpp; sourceTree = SOURCE_ROOT; };
 		27D1BF831A78546C008D3F7F /* rend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rend.h; sourceTree = SOURCE_ROOT; };
-		27D1BF841A78546C008D3F7F /* Application2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application2.h; sourceTree = SOURCE_ROOT; };
 		27D1BF851A78546C008D3F7F /* rend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rend.cpp; sourceTree = SOURCE_ROOT; };
 		27D7CEA71AA5B75F00AD9A3F /* Application4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application4.cpp; sourceTree = SOURCE_ROOT; };
 		27D7CEA81AA5B75F00AD9A3F /* Application4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application4.h; sourceTree = SOURCE_ROOT; };
 		27DA42291ADD97A2006ED86A /* PenInkApplication.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PenInkApplication.cpp; sourceTree = SOURCE_ROOT; };
 		27DA422A1ADD97A2006ED86A /* PenInkApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PenInkApplication.h; sourceTree = SOURCE_ROOT; };
-		27E248231AB1641F0069766E /* Application5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application5.cpp; sourceTree = SOURCE_ROOT; };
-		27E248241AB1641F0069766E /* Application5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application5.h; sourceTree = SOURCE_ROOT; };
+		27DA422D1ADDAEDE006ED86A /* stroke.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stroke.cpp; sourceTree = SOURCE_ROOT; };
+		27DA422E1ADDAEDE006ED86A /* stroke.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stroke.h; sourceTree = SOURCE_ROOT; };
+		27DA42311ADDB378006ED86A /* OBJParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OBJParser.cpp; sourceTree = SOURCE_ROOT; };
+		27DA42321ADDB378006ED86A /* OBJParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OBJParser.h; sourceTree = SOURCE_ROOT; };
+		27DA42341ADDC1A5006ED86A /* PenInkIllustrationInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PenInkIllustrationInfo.cpp; sourceTree = SOURCE_ROOT; };
+		27DA42351ADDC1A5006ED86A /* PenInkIllustrationInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PenInkIllustrationInfo.h; sourceTree = SOURCE_ROOT; };
 		27E248251AB1641F0069766E /* tex_fun.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tex_fun.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -93,8 +90,8 @@
 		272BD42E1A70CCE700983FBD /* CSCI580_RenderEngine */ = {
 			isa = PBXGroup;
 			children = (
-				27E248231AB1641F0069766E /* Application5.cpp */,
-				27E248241AB1641F0069766E /* Application5.h */,
+				27DA42301ADDB335006ED86A /* OBJParser */,
+				27DA422C1ADDADAC006ED86A /* PenInkIllustration */,
 				27E248251AB1641F0069766E /* tex_fun.cpp */,
 				27B9C8601AA622EA00B952EA /* Application3.cpp */,
 				27B9C8611AA622EA00B952EA /* Application3.h */,
@@ -102,18 +99,12 @@
 				27D7CEA81AA5B75F00AD9A3F /* Application4.h */,
 				275C42381A8E8BB700D7540D /* test */,
 				272BD4421A70F11900983FBD /* lib */,
-				27D1BF841A78546C008D3F7F /* Application2.h */,
-				27D1BF821A78546C008D3F7F /* Application2.cpp */,
 				27D1BF831A78546C008D3F7F /* rend.h */,
 				27D1BF851A78546C008D3F7F /* rend.cpp */,
-				2737E8211A743B140046B415 /* Application1.cpp */,
-				2737E8221A743B140046B415 /* Application1.h */,
 				2737E8231A743B140046B415 /* disp.cpp */,
 				2737E8241A743B140046B415 /* disp.h */,
 				2737E8261A743B140046B415 /* main.cpp */,
 				27CAF8E31A7731AA00B6F793 /* gz.h */,
-				273892331AC485DE00F44E89 /* Application6.h */,
-				273892341AC4861400F44E89 /* Application6.cpp */,
 				27DA42291ADD97A2006ED86A /* PenInkApplication.cpp */,
 				27DA422A1ADD97A2006ED86A /* PenInkApplication.h */,
 			);
@@ -136,6 +127,26 @@
 				275C423A1A8E8BD800D7540D /* test.h */,
 			);
 			name = test;
+			sourceTree = "<group>";
+		};
+		27DA422C1ADDADAC006ED86A /* PenInkIllustration */ = {
+			isa = PBXGroup;
+			children = (
+				27DA422D1ADDAEDE006ED86A /* stroke.cpp */,
+				27DA422E1ADDAEDE006ED86A /* stroke.h */,
+				27DA42341ADDC1A5006ED86A /* PenInkIllustrationInfo.cpp */,
+				27DA42351ADDC1A5006ED86A /* PenInkIllustrationInfo.h */,
+			);
+			name = PenInkIllustration;
+			sourceTree = "<group>";
+		};
+		27DA42301ADDB335006ED86A /* OBJParser */ = {
+			isa = PBXGroup;
+			children = (
+				27DA42311ADDB378006ED86A /* OBJParser.cpp */,
+				27DA42321ADDB378006ED86A /* OBJParser.h */,
+			);
+			name = OBJParser;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -194,17 +205,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27E248261AB1641F0069766E /* Application5.cpp in Sources */,
-				27D1BF861A78546C008D3F7F /* Application2.cpp in Sources */,
 				275C423B1A8E8BD800D7540D /* test.cpp in Sources */,
-				273892351AC4861400F44E89 /* Application6.cpp in Sources */,
-				2737E8271A743B140046B415 /* Application1.cpp in Sources */,
 				27D1BF871A78546C008D3F7F /* rend.cpp in Sources */,
 				27DA422B1ADD97A2006ED86A /* PenInkApplication.cpp in Sources */,
 				272BD4451A70F14B00983FBD /* mathLib.cpp in Sources */,
 				27D7CEA91AA5B75F00AD9A3F /* Application4.cpp in Sources */,
+				27DA42331ADDB378006ED86A /* OBJParser.cpp in Sources */,
+				27DA42361ADDC1A5006ED86A /* PenInkIllustrationInfo.cpp in Sources */,
 				27E248271AB1641F0069766E /* tex_fun.cpp in Sources */,
 				27B9C8621AA622EA00B952EA /* Application3.cpp in Sources */,
+				27DA422F1ADDAEDE006ED86A /* stroke.cpp in Sources */,
 				2737E8291A743B140046B415 /* main.cpp in Sources */,
 				2737E8281A743B140046B415 /* disp.cpp in Sources */,
 			);
