@@ -14,6 +14,8 @@
 #include "planarMap.h"
 #include "gz.h"
 
+using namespace std;
+
 struct PlanarMap {
     Edge *edges;    // Inner edges.
     Edge *contour;  
@@ -21,13 +23,12 @@ struct PlanarMap {
 };
 
 typedef struct PlanarMap GzPlanarMap;
-void addEdge(GzPlanarMap planarMap, Triangle t1, Triangle t2);
 bool isTheSameEdge(GzPoint points1[], GzPoint points2[]);
 void copyPoint(GzPoint from, GzPoint to);
-void constructPlanarMap(GzPlanarMap planarMap, Triangle triangles[], int triangleNum, bool visible[]);
 bool isTheSamePoint(GzPoint p1, GzPoint p2);
 
 // Search operations.
-void findEdgeTriangleIds(Triangle triangles[], int num, GzPoint p1, GzPoint p2, int ids[]);
+void findEdgeTriangleIds(Triangle triangles[], int start, int num, GzPoint p1, GzPoint p2, int ids[], int *idCount);
+void getEdgesFromTriangles(Triangle triangles[], int num, vector<Edge> edges);
 
 #endif /* defined(__CSCI580_RenderEngine__planarMap__) */

@@ -151,10 +151,9 @@ struct Triangle {
 struct Edge {
     int edgeId;
     int triangleIds[2];
-    int fromX, fromY;   // In screen space.
-    int toX, toY;       // In screen space.
     int triangleCount;
-    float uv[2];
+    GzPoint endPoint1;
+    GzPoint endPoint2;
 };
 
 typedef struct Triangle GzTriangle;

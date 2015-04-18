@@ -7,7 +7,7 @@
 //
 #include "planarMap.h"
 
-void findEdgeTriangleIds(Triangle triangles[], int num, GzPoint p1, GzPoint p2, int ids[])
+void findEdgeTriangleIds(Triangle triangles[], int start, int num, GzPoint p1, GzPoint p2, int ids[], int *idCount)
 {
     int i, j, next;
     int count = 0;
@@ -16,7 +16,7 @@ void findEdgeTriangleIds(Triangle triangles[], int num, GzPoint p1, GzPoint p2, 
     copyPoint(p1, edge1[0]);
     copyPoint(p2, edge1[1]);
     
-    for (i = 0; i < num; i++) {
+    for (i = start; i < num; i++) {
         for (j = 0; j < 3; j++) {
             next = j + 1 == 3 ? 0 : j + 1;
             copyPoint(triangles[i].vertexes[j], edge2[0]);
@@ -27,57 +27,61 @@ void findEdgeTriangleIds(Triangle triangles[], int num, GzPoint p1, GzPoint p2, 
             }
         }
     }
+    
+    *idCount = count > 2 ? 2 : count;
 }
 
-void constructPlanarMap(GzPlanarMap planarMap, Triangle triangles[], int triangleNum, bool visible[])
+bool isAdded(vector<Edge> edges, Edge temp)
 {
-    int i, j;
+    int i;
+    GzPoint edge1[2];
+    GzPoint edge2[2];
     
-    planarMap.size = 0;
-    planarMap.edges = new Edge[triangleNum * 3];
+    copyPoint(temp.endPoint1, edge1[0]);
+    copyPoint(temp.endPoint2, edge1[1]);
     
-    for (i = 0; i < triangleNum; i++)
-    {
-        if (!visible[i]) continue;
+    for (i = 0; i < edges.size(); i++) {
+        copyPoint(edges[i].endPoint1, edge2[0]);
+        copyPoint(edges[i].endPoint2, edge2[1]);
         
-        for (j = i + 1; j < triangleNum; j++)
-        {
-            addEdge(planarMap, triangles[i], triangles[j]);
-        }
+        if (isTheSameEdge(edge1, edge2))
+            return true;
     }
     
-    
+    return false;
 }
 
-void addEdge(GzPlanarMap planarMap, Triangle t1, Triangle t2)
+void getEdgesFromTriangles(Triangle triangles[], int num, vector<Edge> edges)
 {
-    int i, j;
-    GzPoint end1[2];
-    GzPoint end2[2];
+    int i, j, k, next;
+    Edge tempEdge;
+    GzPoint p1, p2;
+    int ids[2], idCount;
     
-    for (i = 0; i < 3; i++) {
-        copyPoint(t1.vertexes[i], end1[0]);
-        copyPoint(t1.vertexes[i + 1 == 3 ? 0 : i + 1], end1[1]);
+    for (i = 0; i < num; i++) {
         for (j = 0; j < 3; j++) {
-            copyPoint(t2.vertexes[j], end2[0]);
-            copyPoint(t2.vertexes[j + 1 == 3 ? 0 : j + 1], end2[1]);
+            next = j + 1 == 3 ? 0 : j + 1;
+            copyPoint(triangles[i].vertexes[j], p1);
+            copyPoint(triangles[i].vertexes[next], p2);
             
-            if (isTheSameEdge(end1, end2)) {
-                int sub = planarMap.size;
-                
-                planarMap.edges[sub].edgeId = sub;
-                planarMap.edges[sub].fromX = end1[0][0];
-                planarMap.edges[sub].fromY = end1[0][1];
-                planarMap.edges[sub].toX = end1[1][0];
-                planarMap.edges[sub].toY = end1[1][1];
-                planarMap.edges[sub].triangleCount = 2;
-                planarMap.edges[sub].triangleIds[0] = t1.triangleId;
-                planarMap.edges[sub].triangleIds[1] = t2.triangleId;
-                
-                planarMap.size++;
+            findEdgeTriangleIds(triangles, i + 1, num, p1, p2, ids, &idCount);
+            
+            copyPoint(triangles[i].vertexesInScreen[j], tempEdge.endPoint1);
+            copyPoint(triangles[i].vertexesInScreen[next], tempEdge.endPoint2);
+            
+            for (k = 0; k < idCount; k++) {
+                tempEdge.triangleIds[k] = ids[k];
             }
+            tempEdge.triangleIds[1] = triangles[i].triangleId;
+            tempEdge.edgeId = 3 * i + j;
+            tempEdge.triangleCount = idCount;
+
+            if (!isAdded(edges, tempEdge))
+                edges.push_back(tempEdge);
         }
     }
+    
+    i = 2;
 }
 
 void copyPoint(GzPoint from, GzPoint to)
