@@ -140,12 +140,24 @@ typedef float   GzPoint[4];
 typedef float   GzVector[3];
 
 struct Triangle {
+    int triangleId;
     GzPoint vertexes[3];
+    GzPoint vertexesInScreen[3];
+    GzVector normal;
+    float D;    // For calculate the depth of the points.
+};
+
+struct Edge {
+    int edgeId;
+    int triangleIds[2];
+    int fromX, fromY;   // In screen space.
+    int toX, toY;       // In screen space.
+    int triangleCount;
+    float uv[2];
 };
 
 typedef struct Triangle GzTriangle;
-
-
+typedef struct Triangle GzEdge;
 
 #endif
 

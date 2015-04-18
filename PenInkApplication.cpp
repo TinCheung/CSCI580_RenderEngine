@@ -13,6 +13,7 @@
 
 #define OUTFILE2 "./PenInk.ppm"
 
+extern int white_tex_fun(float u, float v, GzColor color);
 void setCube(GzTriangle triangles[]);
 
 int PenInkApplication::run()
@@ -33,8 +34,8 @@ int PenInkApplication::run()
     status |= GzNewRender(&render, GZ_Z_BUFFER_RENDER, display);
     
 #if 1 	/* set up app-defined camera if desired, else use camera defaults */
-    camera.position[X] = 2;
-    camera.position[Y] = 2;
+    camera.position[X] = 3;
+    camera.position[Y] = 1;
     camera.position[Z] = 2;
     
     camera.lookat[X] = 0;
@@ -52,6 +53,8 @@ int PenInkApplication::run()
     
     for (int i = 0; i < 3; i++)
         render->flatcolor[i] = 0;
+    
+    render->tex_fun = white_tex_fun;
     
     if (status) exit(GZ_FAILURE); 
     GzPenInkRender(render, 12, triangles);
@@ -138,4 +141,7 @@ void setCube(GzTriangle triangles[])
     setPoint(triangles[11].vertexes[0], v2);
     setPoint(triangles[11].vertexes[1], v5);
     setPoint(triangles[11].vertexes[2], v6);
+    
+    for (int i = 0; i < 12; i++)
+        triangles[i].triangleId = i;
 }

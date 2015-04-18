@@ -27,6 +27,10 @@ float triangleArea(GzPoint, GzPoint, GzPoint);
 float squareArea(GzPoint, GzPoint);
 void setPoint(GzPoint point, float coordinates[]);
 
+// Line operations.
+void getPointsFromLine(int fromX, int fromY, int toX, int toY, int x[], int y[], int *length);
+bool inTheList(int x, int y, int ListX[], int ListY[], int length);
+float getZValue(GzVector normal, float D, int x, int y);
 
 // Vector operations.
 float dotProduct(GzVector, GzVector);

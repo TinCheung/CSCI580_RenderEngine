@@ -79,6 +79,14 @@ int tex_fun(float u, float v, GzColor color)
     return GZ_SUCCESS;
 }
 
+/* White */
+int white_tex_fun(float u, float v, GzColor color)
+{
+    for (int i = 0; i < 3; i++)
+        color[i] = 1;
+    return GZ_SUCCESS;
+}
+
 /* Procedural texture function */
 int ptex_fun(float u, float v, GzColor color)
 {

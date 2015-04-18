@@ -683,6 +683,8 @@ void GzShadePoint(GzColor pointColor, GzVector normal, GzVector eyeVector, GzRen
 int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
 {
     int t;
+    
+    // Record the front triangle for each pixel.
     for (t = 0; t < triangleNum; t++)
     {
         float maxX, maxY, minX, minY;
@@ -690,7 +692,7 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
         minX = MAXXRES + 1;
         minY = MAXYRES + 1;
         
-        int j, k, m;
+        int j, k, m, next;
         GzPoint vertexes[3];
         
         for (j = 0; j < 3; j++) {
@@ -704,26 +706,27 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
             // Convert the x,y,z to the screen space.
             for (k = 0; k < 3; k++) {
                 vertexes[j][k] = vertexes[j][k] / vertexes[j][3];
+                triangles[t].vertexesInScreen[j][k] = vertexes[j][k];
             }
             
-            // Determine the rectangle we gonna to draw the triangle.
+            // Determine the triangle region.
             maxX = vertexes[j][0] > maxX ? vertexes[j][0] : maxX;
             maxY = vertexes[j][1] > maxY ? vertexes[j][1] : maxY;
             minX = vertexes[j][0] < minX ? vertexes[j][0] : minX;
             minY = vertexes[j][1] < minY ? vertexes[j][1] : minY;
         }
+        float vector1[3], vector2[3]; // the two vectors in the surface.
         
-        if (t != -1) {
-            drawLine(render->display, vertexes[0][0], vertexes[0][1], vertexes[1][0], vertexes[1][1]);
-            drawLine(render->display, vertexes[0][0], vertexes[0][1], vertexes[2][0], vertexes[2][1]);
-            drawLine(render->display, vertexes[1][0], vertexes[1][1], vertexes[2][0], vertexes[2][1]);
+        for (m = 0; m < 3; m++) {
+            vector1[m] = vertexes[1][m] - vertexes[0][m];
+            vector2[m] = vertexes[1][m] - vertexes[2][m];
         }
         
-        // We will check the points' sign in the line format
-        // dy * (x - x0) + dx * (y0 - y)
-        float dy[3], dx[3];
-        float x0[3], y0[3];
-        float result;
+        crossProduct(vector1, vector2, triangles[t].normal);
+        triangles[t].D = -1 * dotProduct(triangles[t].normal, vertexes[0]);
+        
+        // Draw the textures.
+        float dy[3], dx[3], x0[3], y0[3], result, vertexUV[3][2];
         int sub1, sub2;
         bool prevSign = true; // true for positive, false for negative
         bool draw;
@@ -737,21 +740,16 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
             y0[j] = vertexes[sub1][1];
         }
         
-        // Derive the normal vector for the surface which the triangle locates.
-        float normal[3];
-        float vector1[3], vector2[3]; // the two vectors in the surface.
         float zValue;
         
-        for (m = 0; m < 3; m++) {
-            vector1[m] = vertexes[1][m] - vertexes[0][m];
-            vector2[m] = vertexes[1][m] - vertexes[2][m];
+        // Warp the uv of vertexes
+        for (int l = 0; l < 3; l++) {
+            float Vz = vertexes[l][2] / (ZMAX - vertexes[l][2]);
+            for (int m = 0; m < 2; m++) {
+                vertexUV[l][m] = vertexUV[l][m] / (Vz + 1);
+            }
         }
         
-        crossProduct(vector1, vector2, normal);
-        //drawLine(render->display, 512, 0, 512, 512);
-        
-        // Check the points and draw the triangle.
-        /*
         for (j = minY; j <= maxY; j++) {
             for (k = minX; k <= maxX; k++) {
                 draw = true;
@@ -775,16 +773,45 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
                 
                 if (draw) {
                     // Get the z value.
-                    float D;
-                    D = -1 * dotProduct(normal, vertexes[0]);
-                    zValue = (normal[0] * k + normal[1] * j + D) / (-1 * normal[2]);
-                    // printf("z value: %f\n", zValue);
+                    GzPoint curPoint = {(float)k, (float)j, 0, 0};
+                    GzPoint tempPoints[3];
+                    GzVector comb;
+                    GzColor textureColor;
+        
+                    zValue = getZValue(triangles[t].normal, triangles[t].D, k, j);
+                    
+                    for (int l = 0; l < 3; l++) {
+                        tempPoints[l][0] = vertexes[l][0];
+                        tempPoints[l][1] = vertexes[l][1];
+                        tempPoints[l][2] = tempPoints[l][3] = 0;
+                    }
+                    
+                    bilinearInterpolationInTriangle(curPoint, tempPoints[0], tempPoints[1], tempPoints[2], comb);
+                    
+                    // Texturing
+                    float VzI = zValue/(ZMAX - zValue);
+                    float curUV[2];
+                    
+                    // Interpolate and unwarp the current point UV
+                    for (int l = 0; l < 2; l++) {
+                        curUV[l] = comb[0] * vertexUV[0][l] + comb[1] * vertexUV[1][l] + comb[2] * vertexUV[2][l];
+                        curUV[l] = curUV[l] * (VzI + 1);
+                    }
+                    
+                    // Get the texture color.
+                    (*(render->tex_fun))(curUV[0], curUV[1], textureColor);
+                    
                     // draw the point
-                    GzPutDisplay(render->display, k, j, render->flatcolor[0] * 4095, render->flatcolor[1] * 4095, render->flatcolor[2] * 4095, 0, zValue);
+                    GzPutDisplay(render->display, k, j, textureColor[0] * 4095, textureColor[1] * 4095, textureColor[2] * 4095, 0, zValue);
                 }
             }
         }
-         */
+        // Draw the outline.
+        for (j = 0; j < 3; j++) {
+            next = j + 1 == 3 ? 0 : j + 1;
+            drawLineWith3DPoint(render->display, triangles[t].vertexesInScreen[j],
+                                triangles[t].vertexesInScreen[next], triangles[t].normal, triangles[t].D);
+        }
     }
     
     return GZ_SUCCESS;

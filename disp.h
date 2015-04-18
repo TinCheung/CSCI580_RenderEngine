@@ -30,6 +30,7 @@ typedef struct {
   GzDisplayClass	dispClass;
   short			open;
   GzPixel		*fbuf;		/* frame buffer array */
+  int    *frontTriangleId;
 } GzDisplay;
 #define GZ_DISPLAY
 #endif
@@ -49,5 +50,9 @@ int GzPutDisplay(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity g,
 int GzGetDisplay(GzDisplay *display, int i, int j, GzIntensity *r, GzIntensity *g, GzIntensity *b, GzIntensity *a, GzDepth *z);
 int GzFlushDisplay2File(FILE* outfile, GzDisplay *display);
 int GzFlushDisplay2FrameBuffer(char* framebuffer, GzDisplay* display);
+
+int GzRecordTrianglesDepth(GzDisplay *display, int i, int j, int z, int triangleId);
+int GzGetFrontTriangleId(GzDisplay *display, int i, int j);
+void GzGetVisibleTriangleIds(GzDisplay *display, bool visible[]);
 
 #endif

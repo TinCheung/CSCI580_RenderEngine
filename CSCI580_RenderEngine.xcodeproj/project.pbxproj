@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		271C05301ADF3B2C008F4D05 /* planarMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 271C052E1ADF3B2C008F4D05 /* planarMap.cpp */; };
 		272BD4451A70F14B00983FBD /* mathLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 272BD4441A70F14B00983FBD /* mathLib.cpp */; };
 		2737E8281A743B140046B415 /* disp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2737E8231A743B140046B415 /* disp.cpp */; };
 		2737E8291A743B140046B415 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2737E8261A743B140046B415 /* main.cpp */; };
@@ -34,6 +35,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		271C052E1ADF3B2C008F4D05 /* planarMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = planarMap.cpp; sourceTree = SOURCE_ROOT; };
+		271C052F1ADF3B2C008F4D05 /* planarMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = planarMap.h; sourceTree = SOURCE_ROOT; };
 		272BD42C1A70CCE700983FBD /* CSCI580_RenderEngine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CSCI580_RenderEngine; sourceTree = BUILT_PRODUCTS_DIR; };
 		272BD4431A70F12900983FBD /* mathLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mathLib.h; sourceTree = SOURCE_ROOT; };
 		272BD4441A70F14B00983FBD /* mathLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mathLib.cpp; sourceTree = SOURCE_ROOT; };
@@ -136,6 +139,8 @@
 				27DA422E1ADDAEDE006ED86A /* stroke.h */,
 				27DA42341ADDC1A5006ED86A /* PenInkIllustrationInfo.cpp */,
 				27DA42351ADDC1A5006ED86A /* PenInkIllustrationInfo.h */,
+				271C052E1ADF3B2C008F4D05 /* planarMap.cpp */,
+				271C052F1ADF3B2C008F4D05 /* planarMap.h */,
 			);
 			name = PenInkIllustration;
 			sourceTree = "<group>";
@@ -207,6 +212,7 @@
 			files = (
 				275C423B1A8E8BD800D7540D /* test.cpp in Sources */,
 				27D1BF871A78546C008D3F7F /* rend.cpp in Sources */,
+				271C05301ADF3B2C008F4D05 /* planarMap.cpp in Sources */,
 				27DA422B1ADD97A2006ED86A /* PenInkApplication.cpp in Sources */,
 				272BD4451A70F14B00983FBD /* mathLib.cpp in Sources */,
 				27D7CEA91AA5B75F00AD9A3F /* Application4.cpp in Sources */,

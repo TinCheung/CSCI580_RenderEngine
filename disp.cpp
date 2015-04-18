@@ -76,6 +76,10 @@ int GzInitDisplay(GzDisplay	*display)
     if (display->fbuf == NULL)
         return GZ_FAILURE;
     
+    display->frontTriangleId = new int[display->xres * display->yres];
+    if (display->frontTriangleId == NULL)
+        return GZ_FAILURE;
+    
     // Initialize the background color.
     // memset(display->fbuf, 0, sizeof(GzPixel) * display->xres * display->yres);
     int i;
@@ -90,6 +94,7 @@ int GzInitDisplay(GzDisplay	*display)
         display->fbuf[i].blue = scale(255, 255, 4095);
         
         display->fbuf[i].z = INT_MAX;
+        display->frontTriangleId[i] = -1; // -1 inidicates the background.
     }
     
     return GZ_SUCCESS;
@@ -115,6 +120,17 @@ int GzPutDisplay(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity g,
     return GZ_SUCCESS;
 }
 
+int GzRecordTrianglesDepth(GzDisplay *display, int i, int j, int z, int triangleId)
+{
+    int sub = j * display->xres + i;
+    if (display->fbuf[sub].z > z && z > 0) {
+        display->fbuf[sub].z = z;
+        display->frontTriangleId[sub] = triangleId;
+    }
+    
+    return GZ_SUCCESS;
+}
+
 
 int GzGetDisplay(GzDisplay *display, int i, int j, GzIntensity *r, GzIntensity *g, GzIntensity *b, GzIntensity *a, GzDepth *z)
 {
@@ -133,6 +149,23 @@ int GzGetDisplay(GzDisplay *display, int i, int j, GzIntensity *r, GzIntensity *
     return GZ_SUCCESS;
 }
 
+int GzGetFrontTriangleId(GzDisplay *display, int i, int j)
+{
+    int sub = j * display->xres + i;
+    return display->frontTriangleId[sub];
+}
+
+void GzGetVisibleTriangleIds(GzDisplay *display, bool visible[])
+{
+    int i, j;
+    
+    for (j = 0; j < display->yres; j++) {
+        for (i = 0; i < display->xres; i++) {
+            int id = GzGetFrontTriangleId(display, i, j);
+            visible[id] = true;
+        }
+    }
+}
 
 int GzFlushDisplay2File(FILE* outfile, GzDisplay *display)
 {

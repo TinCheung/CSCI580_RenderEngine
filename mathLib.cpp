@@ -33,6 +33,69 @@ void normalization(GzVector v)
     }
 }
 
+float getZValue(GzVector normal, float D, int x, int y)
+{
+    return (normal[0] * x + normal[1] * y + D) / (-1 * normal[2]);
+}
+
+bool inTheList(int x, int y, int ListX[], int ListY[], int length)
+{
+    int i;
+    
+    for (i = 0; i < length; i++) {
+        if (x == ListX[i] && y == ListY[i])
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+void getPointsFromLine(int fromX, int fromY, int toX, int toY, int x[], int y[], int *length)
+{
+    int i, count;
+    float dx, dy, k, b;
+    dx = absf(fromX - toX);
+    dy = absf(fromY - toY);
+    
+    if (dx != 0)
+    {
+        k = (float)(fromY - toY) / (float)(fromX - toX);
+        b = fromY - k * fromX;
+        if (dx > dy) {
+            *length = abs(fromX - toX) + 1;
+            count = 0;
+            
+            for (i = min(fromX, toX); i <= max(fromX, toX); i++) {
+                x[count] = i;
+                y[count] = k * i + b;
+                count++;
+            }
+        }
+        else {
+            *length = abs(fromY - toY) + 1;
+            count = 0;
+            
+            for (i = min(fromY, toY); i <= max(fromY, toY); i++) {
+                x[count] = (i - b) / k;
+                y[count] = i;
+                count++;
+            }
+        }
+    }
+    else {
+        *length = abs(fromY - toY) + 1;
+        count = 0;
+        
+        for (i = min(fromY, toY); i <= max(fromY, toY); i++) {
+            x[count] = fromX;
+            y[count] = i;
+            count++;
+        }
+    }
+}
+
 // Matrix A, B. Return the result AB to C
 void matrixMultiply(GzMatrix A, GzMatrix B, GzMatrix C)
 {
