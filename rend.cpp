@@ -802,14 +802,14 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
                     (*(render->tex_fun))(curUV[0], curUV[1], textureColor);
                     
                     // draw the point
-                    GzPutDisplay(render->display, k, j, textureColor[0] * 4095, textureColor[1] * 4095, textureColor[2] * 4095, 0, zValue);
+                    GzPutDisplayExt(render->display, k, j, textureColor[0] * 4095, textureColor[1] * 4095, textureColor[2] * 4095, 0, zValue, triangles[t].triangleId, ZBUFFER_TEX);
                 }
             }
         }
         // Draw the outline.
         for (j = 0; j < 3; j++) {
             next = j + 1 == 3 ? 0 : j + 1;
-            drawLineWith3DPoint(render->display, triangles[t].vertexesInScreen[j],
+            drawLineWith3DPoint(render->display, triangles[t].triangleId, triangles[t].vertexesInScreen[j],
                                 triangles[t].vertexesInScreen[next], triangles[t].normal, triangles[t].D);
         }
     }

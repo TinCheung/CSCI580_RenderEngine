@@ -27,4 +27,7 @@ void copyPoint(GzPoint from, GzPoint to);
 void constructPlanarMap(GzPlanarMap planarMap, Triangle triangles[], int triangleNum, bool visible[]);
 bool isTheSamePoint(GzPoint p1, GzPoint p2);
 
+// Search operations.
+void findEdgeTriangleIds(Triangle triangles[], int num, GzPoint p1, GzPoint p2, int ids[]);
+
 #endif /* defined(__CSCI580_RenderEngine__planarMap__) */

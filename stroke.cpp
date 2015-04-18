@@ -11,7 +11,7 @@
 #include "stroke.h"
 #include "mathLib.h"
 
-void drawLineWith3DPoint(GzDisplay *display, GzPoint from, GzPoint to, GzVector normal, float D, int thickness)
+void drawLineWith3DPoint(GzDisplay *display, int triangleId, GzPoint from, GzPoint to, GzVector normal, float D, int thickness)
 {
     int i, length, count;
     float dx, dy, k, b, depth;
@@ -35,7 +35,7 @@ void drawLineWith3DPoint(GzDisplay *display, GzPoint from, GzPoint to, GzVector 
             
             for (i = min(from[0], to[0]); i <= max(from[0], to[0]); i++) {
                 depth = getZValue(normal, D, i, k * i + b);
-                drawPoint(display, i, k * i + b, wave[count], thick[count], STOKE_DIRECTION_X, depth);
+                drawPoint(display, triangleId, i, k * i + b, wave[count], thick[count], STOKE_DIRECTION_X, depth);
                 count++;
             }
         }
@@ -49,7 +49,7 @@ void drawLineWith3DPoint(GzDisplay *display, GzPoint from, GzPoint to, GzVector 
             
             for (i = min(from[1], to[1]); i <= max(from[1], to[1]); i++) {
                 depth = getZValue(normal, D, (i - b) / k, i);
-                drawPoint(display, (i - b) / k, i, wave[count], thick[count], STOKE_DIRECTION_Y, depth);
+                drawPoint(display, triangleId, (i - b) / k, i, wave[count], thick[count], STOKE_DIRECTION_Y, depth);
                 count++;
             }
         }
@@ -64,70 +64,13 @@ void drawLineWith3DPoint(GzDisplay *display, GzPoint from, GzPoint to, GzVector 
         
         for (i = min(from[1], to[1]); i <= max(from[1], to[1]); i++) {
             depth = getZValue(normal, D, from[0], i);
-            drawPoint(display, from[0], i, wave[count], thick[count], STOKE_DIRECTION_Y, depth);
+            drawPoint(display, triangleId, from[0], i, wave[count], thick[count], STOKE_DIRECTION_Y, depth);
             count++;
         }
     }
 }
 
-void drawLine(GzDisplay *display, int fromX, int fromY, int toX, int toY, int thickness, int depth)
-{
-    int i, length, count;
-    float dx, dy, k, b;
-    dx = absf(fromX - toX);
-    dy = absf(fromY - toY);
-    
-    int *wave, *thick;
-    if (dx == 0 && dy == 0) return;
-    
-    if (dx != 0)
-    {
-        k = (float)(fromY - toY) / (float)(fromX - toX);
-        b = fromY - k * fromX;
-        if (dx > dy) {
-            length = abs(fromX - toX) + 1;
-            wave = new int[length];
-            thick = new int[length];
-            
-            getWaveAndThickness(length, thickness, thick, wave);
-            count = 0;
-            
-            for (i = min(fromX, toX); i <= max(fromX, toX); i++) {
-                drawPoint(display, i, k * i + b, wave[count], thick[count], STOKE_DIRECTION_X, depth);
-                count++;
-            }
-        }
-        else {
-            length = abs(fromY - toY) + 1;
-            wave = new int[length];
-            thick = new int[length];
-            
-            getWaveAndThickness(length, thickness, thick, wave);
-            count = 0;
-            
-            for (i = min(fromY, toY); i <= max(fromY, toY); i++) {
-                drawPoint(display, (i - b) / k, i, wave[count], thick[count], STOKE_DIRECTION_Y, depth);
-                count++;
-            }
-        }
-    }
-    else {
-        length = abs(fromY - toY) + 1;
-        wave = new int[length];
-        thick = new int[length];
-        
-        getWaveAndThickness(length, thickness, thick, wave);
-        count = 0;
-        
-        for (i = min(fromY, toY); i <= max(fromY, toY); i++) {
-            drawPoint(display, fromX, i, wave[count], thick[count], STOKE_DIRECTION_Y, depth);
-            count++;
-        }
-    }
-    printf("length: %d\n", length);
-}
-
-void drawEndPoint(GzDisplay *display, int x, int y, int thickness)
+void drawEndPoint(GzDisplay *display, int triangleId, int x, int y, int thickness)
 {
     int i, j;
     
@@ -141,24 +84,16 @@ void drawEndPoint(GzDisplay *display, int x, int y, int thickness)
         }
 }
 
-void drawPoint(GzDisplay *display, int x, int y, int wave, int thickness, int direction, int depth)
+void drawPoint(GzDisplay *display, int triangleId, int x, int y, int wave, int thickness, int direction, int depth)
 {
     int i;
     
-    if (direction == STOKE_DIRECTION_X) {
-        
+    if (direction == STOKE_DIRECTION_X)
         for (i = 0; i <= thickness; i++)
-        {
-            GzPutDisplay(display, x, y + wave + i, 0, 0, 0, 0, depth);
-        }
-    }
-    else {
-        //
+            GzPutDisplayExt(display, x, y + wave + i, 0, 0, 0, 0, depth, triangleId, ZBUFFER_EDGE);
+    else
         for (i = 0; i <= thickness; i++)
-        {
-            GzPutDisplay(display, x + wave + i, y, 0, 0, 0, 0, depth);
-        }
-    }
+            GzPutDisplayExt(display, x + wave + i, y, 0, 0, 0, 0, depth, triangleId, ZBUFFER_EDGE);
 }
 
 void getStrokeWave(int length, int wave[])

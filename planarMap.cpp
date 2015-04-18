@@ -7,6 +7,28 @@
 //
 #include "planarMap.h"
 
+void findEdgeTriangleIds(Triangle triangles[], int num, GzPoint p1, GzPoint p2, int ids[])
+{
+    int i, j, next;
+    int count = 0;
+    GzPoint edge1[2], edge2[2];
+    
+    copyPoint(p1, edge1[0]);
+    copyPoint(p2, edge1[1]);
+    
+    for (i = 0; i < num; i++) {
+        for (j = 0; j < 3; j++) {
+            next = j + 1 == 3 ? 0 : j + 1;
+            copyPoint(triangles[i].vertexes[j], edge2[0]);
+            copyPoint(triangles[i].vertexes[next], edge2[1]);
+            if (isTheSameEdge(edge1, edge2)) {
+                ids[count] = triangles[i].triangleId;
+                count++;
+            }
+        }
+    }
+}
+
 void constructPlanarMap(GzPlanarMap planarMap, Triangle triangles[], int triangleNum, bool visible[])
 {
     int i, j;
@@ -66,11 +88,11 @@ void copyPoint(GzPoint from, GzPoint to)
 }
 
 
-bool isTheSameEdge(GzPoint points1[], GzPoint points2[])
+bool isTheSameEdge(GzPoint edge1[], GzPoint edge2[])
 {
-    if (isTheSamePoint(points1[0], points2[0]) && isTheSamePoint(points1[1], points2[1]))
+    if (isTheSamePoint(edge1[0], edge2[0]) && isTheSamePoint(edge1[1], edge2[1]))
         return true;
-    if (isTheSamePoint(points1[1], points2[0]) && isTheSamePoint(points1[0], points2[1]))
+    if (isTheSamePoint(edge1[1], edge2[0]) && isTheSamePoint(edge1[0], edge2[1]))
         return true;
     
     return false;
