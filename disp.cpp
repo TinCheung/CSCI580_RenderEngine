@@ -123,8 +123,9 @@ int GzPutDisplayExt(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity
         return GZ_FAILURE;
     
     int sub = j * display->xres + i;
+    int ftId = display->fbuf[sub].frontTriangleId == -1 ? triangleId : display->fbuf[sub].frontTriangleId;
     
-    if (display->fbuf[sub].z >= z && z > 0) {
+    if ((display->fbuf[sub].z >= z && z > 0) || ftId == triangleId) {
         display->fbuf[sub].red = r;
         display->fbuf[sub].green = g;
         display->fbuf[sub].blue = b;
@@ -132,6 +133,33 @@ int GzPutDisplayExt(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity
         display->fbuf[sub].z = z;
         display->fbuf[sub].type = type;
         display->fbuf[sub].frontTriangleId = triangleId;
+    }
+    
+    return GZ_SUCCESS;
+}
+
+int GzPutDisplayExtForEdge(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity g, GzIntensity b, GzIntensity a, GzDepth z, int triangleIds[], int idCount, int type)
+{
+    if (0 > j || j >= display->yres || 0 > i || i >= display->xres)
+        return GZ_FAILURE;
+    
+    int sub = j * display->xres + i;
+    
+    bool draw;
+    
+    draw = display->fbuf[sub].z >= z && z > 0;
+    int pixelTriId = display->fbuf[sub].frontTriangleId;
+    
+    for (int i = 0; i < idCount; i++)
+        draw = draw | (pixelTriId == triangleIds[i]);
+    
+    if (draw) {
+        display->fbuf[sub].red = r;
+        display->fbuf[sub].green = g;
+        display->fbuf[sub].blue = b;
+        display->fbuf[sub].alpha = a;
+        display->fbuf[sub].z = z;
+        display->fbuf[sub].type = type;
     }
     
     return GZ_SUCCESS;

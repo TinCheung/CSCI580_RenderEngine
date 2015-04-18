@@ -16,7 +16,8 @@ void findEdgeTriangleIds(Triangle triangles[], int start, int num, GzPoint p1, G
     copyPoint(p1, edge1[0]);
     copyPoint(p2, edge1[1]);
     
-    for (i = start; i < num; i++) {
+    for (i = 0; i < num; i++) {
+        if (i == start - 1) continue;
         for (j = 0; j < 3; j++) {
             next = j + 1 == 3 ? 0 : j + 1;
             copyPoint(triangles[i].vertexes[j], edge2[0]);
@@ -51,7 +52,7 @@ bool isAdded(vector<Edge> edges, Edge temp)
     return false;
 }
 
-void getEdgesFromTriangles(Triangle triangles[], int num, vector<Edge> edges)
+void getEdgesFromTriangles(Triangle triangles[], int num, vector<Edge> *edges)
 {
     int i, j, k, next;
     Edge tempEdge;
@@ -73,11 +74,19 @@ void getEdgesFromTriangles(Triangle triangles[], int num, vector<Edge> edges)
                 tempEdge.triangleIds[k] = ids[k];
             }
             tempEdge.triangleIds[1] = triangles[i].triangleId;
+            
             tempEdge.edgeId = 3 * i + j;
-            tempEdge.triangleCount = idCount;
+            tempEdge.triangleCount = idCount + 1;
+            tempEdge.D = triangles[i].D;
+            
+            if (idCount == 0)
+                tempEdge.triangleIds[0] = triangles[i].triangleId;
+            
+            for (k = 0; k < 3; k++)
+                tempEdge.normal[k] = triangles[i].normal[k];
 
-            if (!isAdded(edges, tempEdge))
-                edges.push_back(tempEdge);
+            if (!isAdded((*edges), tempEdge))
+                (*edges).push_back(tempEdge);
         }
     }
     

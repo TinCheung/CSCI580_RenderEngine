@@ -154,6 +154,8 @@ struct Edge {
     int triangleCount;
     GzPoint endPoint1;
     GzPoint endPoint2;
+    float D;            // Parameters for drawing.
+    GzVector normal;    // Parameters for drawing.
 };
 
 typedef struct Triangle GzTriangle;

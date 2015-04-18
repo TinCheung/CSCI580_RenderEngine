@@ -806,15 +806,18 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
                     (*(render->tex_fun))(curUV[0], curUV[1], textureColor);
                     
                     // draw the point
-                    //GzPutDisplayExt(render->display, k, j, textureColor[0] * 4095, textureColor[1] * 4095, textureColor[2] * 4095, 0, zValue, triangles[t].triangleId, ZBUFFER_TEX);
+                    GzPutDisplayExt(render->display, k, j, textureColor[0] * 4095, textureColor[1] * 4095, textureColor[2] * 4095, 0, zValue, triangles[t].triangleId, ZBUFFER_TEX);
                 }
             }
         }
     }
     
     vector<Edge> edges;
-    getEdgesFromTriangles(triangles, triangleNum, edges);
+    getEdgesFromTriangles(triangles, triangleNum, &edges);
     
+    for (int i = 0; i < edges.size(); i++) {
+        drawEdge(render->display, edges[i]);
+    }
     
     return GZ_SUCCESS;
 }
