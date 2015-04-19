@@ -817,11 +817,16 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
                         tempPoints[l][2] = tempPoints[l][3] = 0;
                     }
                     
+                    if (k == 512 && j == 512)
+                        k = 512;
+                    
                     bilinearInterpolationInTriangle(curPoint, tempPoints[0], tempPoints[1], tempPoints[2], comb);
                     
                     // Texturing
                     float VzI = zValue/(ZMAX - zValue);
                     float curUV[2];
+                    
+                    
                     
                     // Interpolate and unwarp the current point UV
                     for (int l = 0; l < 2; l++) {
@@ -831,6 +836,11 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
                     
                     // Get the texture color.
                     textureColor[0] = triangles[t].tone;
+                    if (isnan(curUV[0]) || isnan(curUV[1]))
+                    {
+                        continue;
+                    }
+                    //printf ("x: %d, y: %d, u: %f, v: %f, Vzi: %f\n", k, j, curUV[0], curUV[1], VzI);
                     (*(render->tex_fun))(curUV[0], curUV[1], textureColor);
                     /*
                     for (int q = 0; q < 3; q++)

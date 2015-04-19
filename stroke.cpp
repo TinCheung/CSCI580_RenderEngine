@@ -6,7 +6,7 @@
 //  Copyright (c) 2015年 tantianx. All rights reserved.
 //
 
-#include <stdlib.h>
+#include "myRand.h"
 #include <time.h>
 #include "stroke.h"
 #include "mathLib.h"
@@ -170,7 +170,7 @@ void drawEndPoint(GzDisplay *display, int triangleId, int x, int y, int thicknes
     for (i = x - thickness / 2; i <= x + thickness / 2; i++)
         for (j = y - thickness / 2; j <= y + thickness / 2; j++)
         {
-            if (abs(i + j - x - y) <= thickness)
+            if (absf(i + j - x - y) <= thickness)
             {
                 GzPutDisplay(display, i, j, 0, 0, 0, 0, depth);
             }
@@ -193,11 +193,10 @@ void getStrokeWave(int length, int wave[])
 {
     int i;
     wave[0] = 0;
-    srand((unsigned int)time(0));
     
     for (i = 1; i < length; i++)
     {
-        int randomNum = rand() % 20;
+        int randomNum = rand2() % 20;
         if (randomNum < 17) wave[i] = wave[i - 1];
         else if (randomNum == 18) {
             wave[i] = wave[i - 1] - 1;
@@ -214,14 +213,13 @@ void getStrokeThickness(int length, int thick, int thickness[])
 {
     int i, initThick, upperBound;
     thickness[0] = 0;
-    srand((unsigned int)time(0));
     
     initThick = thick;
     upperBound = thick + THICKNESS_VARY_LIMIT;
     
     for (i = 1; i < length; i++)
     {
-        int randomNum = rand() % 20;
+        int randomNum = rand2() % 20;
         if (randomNum < 18) {
             thickness[i] = thick;
         }
@@ -240,7 +238,6 @@ void getStrokeThickness(int length, int thick, int thickness[])
 void getWaveAndThickness(int length, int thick, int thickness[], int wave[])
 {
     int i, initThick, upperBound;
-    srand((unsigned int)time(0));
     
     initThick = thick;
     upperBound = thick + THICKNESS_VARY_LIMIT;
@@ -249,10 +246,10 @@ void getWaveAndThickness(int length, int thick, int thickness[], int wave[])
     thickness[0] = thick;
     
     for (i = 1; i < length; i++) {
-        int randomNum = rand() % 4;
+        int randomNum = rand2() % 4;
         if (randomNum == 1)
         {
-            randomNum = rand() % 20;
+            randomNum = rand2() % 20;
             if (randomNum < 17) wave[i] = wave[i - 1];
             else if (randomNum == 18) {
                 wave[i] = wave[i - 1] - 1;
@@ -265,7 +262,7 @@ void getWaveAndThickness(int length, int thick, int thickness[], int wave[])
             thickness[i] = thickness[i - 1];
         }
         else if (randomNum == 0){
-            randomNum = rand() % 20;
+            randomNum = rand2() % 20;
             if (randomNum < 18) {
                 thickness[i] = thick;
             }
@@ -289,7 +286,6 @@ void getWaveAndThickness(int length, int thick, int thickness[], int wave[])
 void getWaveAndThickness(int length, int thick, int thickness[], int wave[], int waveLimit)
 {
     int i, initThick, upperBound;
-    srand((unsigned int)time(0));
     
     initThick = thick;
     upperBound = thick + THICKNESS_VARY_LIMIT;
@@ -298,10 +294,10 @@ void getWaveAndThickness(int length, int thick, int thickness[], int wave[], int
     thickness[0] = thick;
     
     for (i = 1; i < length; i++) {
-        int randomNum = rand() % 2;
+        int randomNum = rand2() % 2;
         if (randomNum < 2)
         {
-            randomNum = rand() % 20;
+            randomNum = rand2() % 20;
             if (randomNum < 10) wave[i] = wave[i - 1];
             else if (randomNum < 15) {
                 wave[i] = wave[i - 1] - 1;
@@ -314,7 +310,7 @@ void getWaveAndThickness(int length, int thick, int thickness[], int wave[], int
             thickness[i] = thickness[i - 1];
         }
         else if (randomNum == 0){
-            randomNum = rand() % 20;
+            randomNum = rand2() % 20;
             if (randomNum < 18) {
                 thickness[i] = thick;
             }

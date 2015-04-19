@@ -36,9 +36,9 @@ int PenInkApplication::run()
     status |= GzNewRender(&render, GZ_Z_BUFFER_RENDER, display);
     
 #if 1 	/* set up app-defined camera if desired, else use camera defaults */
-    camera.position[X] = 3;
-    camera.position[Y] = 2;
-    camera.position[Z] = 2;
+    camera.position[X] = 1;
+    camera.position[Y] = 1;
+    camera.position[Z] = 1;
     
     camera.lookat[X] = 0;
     camera.lookat[Y] = 0;
