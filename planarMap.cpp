@@ -119,3 +119,40 @@ bool isTheSamePoint(GzPoint p1, GzPoint p2)
             return false;
     return true;
 }
+
+bool checkEdgeTonesDiff(Triangle triangles[], int num, Edge edge)
+{
+    if (edge.triangleCount == 1) return true;
+    else {
+        int tri1 = getTriangleIndexById(triangles, num, edge.triangleIds[0]);
+        int tri2 = getTriangleIndexById(triangles, num, edge.triangleIds[1]);
+        
+        return isToneDiff(triangles[tri1], triangles[tri2]);
+    }
+}
+
+bool isAllVisible(Triangle triangles[], int num, bool visibility[], Edge edge)
+{
+    if (edge.triangleCount == 1) return false;
+    else {
+        return visibility[edge.triangleIds[0]] && visibility[edge.triangleIds[1]];
+    }
+}
+
+int getTriangleIndexById(Triangle triangles[], int num, int triId)
+{
+    int i;
+    for (i = 0; i < num; i++) {
+        if (triangles[i].triangleId == triId)
+            return i;
+    }
+    return -1;
+}
+
+bool isToneDiff(Triangle triangle1, Triangle triangle2)
+{
+    float threshold = 1.1;
+    float ratio = triangle1.tone / triangle2.tone;
+    ratio = ratio < 1 ? 1 / ratio : ratio;
+    return ratio > threshold;
+}

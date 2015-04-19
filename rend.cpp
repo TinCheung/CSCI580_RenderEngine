@@ -702,12 +702,12 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
     // Record the front triangle for each pixel.
     for (t = 0; t < triangleNum; t++)
     {
-        float maxX, maxY, minX, minY;
+        float maxX, maxY, minX, minY, vertexUV[3][2];
         maxX = maxY = -1;
         minX = MAXXRES + 1;
         minY = MAXYRES + 1;
         
-        int j, k, m, next;
+        int j, k, m;
         GzPoint vertexes[3];
         
         for (j = 0; j < 3; j++) {
@@ -722,6 +722,11 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
             for (k = 0; k < 3; k++) {
                 vertexes[j][k] = vertexes[j][k] / vertexes[j][3];
                 triangles[t].vertexesInScreen[j][k] = vertexes[j][k];
+            }
+            
+            // Get the texture uv data.
+            for (k = 0; k < 2; k++) {
+                vertexUV[j][k] = triangles[t].uv[j][k];
             }
             
             // Determine the triangle region.
@@ -752,7 +757,7 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
         printf("tone: %f\n", triangles[t].tone);
         
         // Draw the textures.
-        float dy[3], dx[3], x0[3], y0[3], result, vertexUV[3][2];
+        float dy[3], dx[3], x0[3], y0[3], result;
         int sub1, sub2;
         bool prevSign = true; // true for positive, false for negative
         bool draw;
@@ -825,10 +830,12 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
                     }
                     
                     // Get the texture color.
+                    textureColor[0] = triangles[t].tone;
                     (*(render->tex_fun))(curUV[0], curUV[1], textureColor);
+                    /*
                     for (int q = 0; q < 3; q++)
                         textureColor[q] = triangles[t].tone;
-                    
+                    */
                     // draw the point
                     GzPutDisplayExt(render->display, k, j, textureColor[0] * 4095, textureColor[1] * 4095, textureColor[2] * 4095, 0, zValue, triangles[t].triangleId, ZBUFFER_TEX);
                 }
@@ -836,11 +843,19 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
         }
     }
     
+    // Get the triangles visibility.
+    bool *visibity = new bool[triangleNum];
+    
+    GzGetTrianglesVisibility(render->display, triangleNum, visibity);
+    
     vector<Edge> edges;
     getEdgesFromTriangles(triangles, triangleNum, &edges);
     
     for (int i = 0; i < edges.size(); i++) {
-        drawEdge(render->display, edges[i], 3);
+        if (checkEdgeTonesDiff(triangles, triangleNum, edges[i]))
+            drawEdge(render->display, edges[i], 3);
+        if (!isAllVisible(triangles, triangleNum, visibity, edges[i]))
+            drawEdge(render->display, edges[i], 3);
     }
     
     return GZ_SUCCESS;

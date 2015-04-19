@@ -25,5 +25,6 @@ void drawEndPoint(GzDisplay *display, int triangleId, int x, int y, int thicknes
 void getStrokeWave(int length, int wave[]);           // Generate the random wave for a stroke.
 void getStrokeThickness(int length, int thick, int thickness[]); // Generate the random thickness of a stroke.
 void getWaveAndThickness(int length, int thick, int thickness[], int wave[]);
+void getWaveAndThickness(int length, int thick, int thickness[], int wave[], int waveLimit);
 
 #endif /* defined(__CSCI580_RenderEngine__stroke__) */

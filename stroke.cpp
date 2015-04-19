@@ -285,3 +285,52 @@ void getWaveAndThickness(int length, int thick, int thickness[], int wave[])
         }
     }
 }
+
+void getWaveAndThickness(int length, int thick, int thickness[], int wave[], int waveLimit)
+{
+    int i, initThick, upperBound;
+    srand((unsigned int)time(0));
+    
+    initThick = thick;
+    upperBound = thick + THICKNESS_VARY_LIMIT;
+    
+    wave[0] = 0;
+    thickness[0] = thick;
+    
+    for (i = 1; i < length; i++) {
+        int randomNum = rand() % 2;
+        if (randomNum == 1)
+        {
+            randomNum = rand() % 20;
+            if (randomNum < 10) wave[i] = wave[i - 1];
+            else if (randomNum < 15) {
+                wave[i] = wave[i - 1] - 1;
+                wave[i] = wave[i] < -1 * waveLimit ? -1 * waveLimit : wave[i];
+            }
+            else {
+                wave[i] = wave[i - 1] + 1;
+                wave[i] = wave[i] > waveLimit ? waveLimit : wave[i];
+            }
+            thickness[i] = thickness[i - 1];
+        }
+        else if (randomNum == 0){
+            randomNum = rand() % 20;
+            if (randomNum < 18) {
+                thickness[i] = thick;
+            }
+            else if (randomNum == 18) {
+                thick = thick - 1 < initThick ? initThick : thick - 1;
+                thickness[i] = thick;
+            }
+            else {
+                thick = thick + 1 > upperBound ? upperBound : thick + 1;
+                thickness[i] = thick;
+            }
+            wave[i] = wave[i - 1];
+        }
+        else {
+            wave[i] = wave[i - 1];
+            thickness[i] = thickness[i - 1];
+        }
+    }
+}

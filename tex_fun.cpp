@@ -2,12 +2,146 @@
 #include	<stdlib.h>
 #include	<stdio.h>
 #include	<math.h>
+#include    <stdlib.h>
 #include	"gz.h"
 #include    "mathLib.h"
+#include    "stroke.h"
+#include    "time.h"
 
 GzColor	*image;
+float *shadow1, *shadow2, *shadow3;
 int xs, ys;
 int reset = 1;
+
+int getSub(int x, int y)
+{
+    return y * xs + x;
+}
+
+void generateShadow(int density, float img[], bool horizonShadow = true)
+{
+    int x, length, sub;
+    int *wave, *thick;
+    
+    length = ys;
+    x = density;
+    do {
+        wave = new int[length];
+        thick = new int[length];
+        srand(time(0));
+        getWaveAndThickness(length, 4, thick, wave, 10);
+        for (int i = 0; i < ys; i++) {
+            for (int j = 0; j <= thick[i]; j++) {
+                sub = getSub(x + wave[i] + j, i);
+                img[sub] = 0;
+            }
+        }
+        
+        delete [] wave;
+        delete [] thick;
+        
+        x += density + rand() % 5 - 2;
+    } while (x < xs);
+    
+    if (horizonShadow) {
+        length = xs;
+        int y = density;
+        do {
+            wave = new int[length];
+            thick = new int[length];
+            srand(time(0));
+            getWaveAndThickness(length, 4, thick, wave, 10);
+            for (int i = 0; i < xs; i++) {
+                printf("wave: %d\n", wave[i]);
+                for (int j = 0; j < thick[i]; j++) {
+                    sub = getSub(i, y + wave[i] + j);
+                    img[sub] = 0;
+                }
+            }
+            
+            delete [] wave;
+            delete [] thick;
+            
+            y += density + rand() % 5 - 2;
+        } while(y < ys);
+    }
+}
+
+/* Shadow texture function */
+int shadow_fun(float u, float v, GzColor color)
+{
+    if (reset) {
+        xs = 500;
+        ys = 500;
+        
+        int i;
+        // Generate the shadows.
+        shadow1 = new float[xs * ys];
+        shadow2 = new float[xs * ys];
+        shadow3 = new float[xs * ys];
+        
+        for (i = 0; i < xs * ys; i++) {
+            shadow1[i] = 1;
+            shadow2[i] = 1;
+            shadow3[i] = 1;
+        }
+        
+        generateShadow(30, shadow1, true);
+        generateShadow(20, shadow2, true);
+        generateShadow(10, shadow3, true);
+        
+        reset = 0;
+    }
+    
+    float tone = color[0];
+    float *shadow;
+    if (tone < 0.3) shadow = shadow3;
+    else if (tone < 0.5) shadow = shadow2;
+    else {
+        color[0] = color[1] = color[2] = 1;
+        return GZ_SUCCESS;
+    }
+    
+    /* bounds-test u,v to make sure nothing will overflow image array bounds */
+    if (u < 0 || u > 1 || v < 0 || v > 1) {
+        return GZ_FAILURE;
+    }
+    
+    int x = u * (xs - 1);
+    int y = v * (ys - 1);
+    /*
+    for (int i = 0; i < 3; i++)
+        color[i] = shadow1[y * xs + x];
+    */
+    GzPoint P, A, B, C, D, combination;
+    P[0] = u * (xs - 1);
+    P[1] = v * (ys - 1);
+    
+    A[0] = D[0] = int(P[0]);
+    B[0] = C[0] = int(P[0]) + 1;
+    C[1] = D[1] = int(P[1]);
+    A[1] = B[1] = int(P[1]) + 1;
+    
+    bilinearInterpolationInSquare(P, A, B, C, D, combination);
+    
+    int subscriptsX[4] = {(int)A[0], (int)B[0], (int)C[0], (int)D[0]};
+    int subscriptsY[4] = {(int)A[1], (int)B[1], (int)C[1], (int)D[1]};
+    int subscript;
+    
+    for (int i = 0; i < 3; i++) {
+        color[i] = 0;
+    }
+    
+    for (int i = 0; i < 4; i++) {
+        subscript = subscriptsX[i] + subscriptsY[i] * xs;
+        
+        color[RED] += shadow[subscript] * combination[i];
+        color[GREEN] += shadow[subscript] * combination[i];
+        color[BLUE] += shadow[subscript] * combination[i];
+    }
+    
+    return GZ_SUCCESS;
+}
 
 /* Image texture function */
 int tex_fun(float u, float v, GzColor color)
@@ -47,7 +181,9 @@ int tex_fun(float u, float v, GzColor color)
         return GZ_FAILURE;
     }
     
-	/* determine texture cell corner values and perform bilinear interpolation */
+    
+    
+	/*
     GzPoint P, A, B, C, D, combination;
     P[0] = u * (xs - 1);
     P[1] = v * (ys - 1);
@@ -59,7 +195,6 @@ int tex_fun(float u, float v, GzColor color)
     
     bilinearInterpolationInSquare(P, A, B, C, D, combination);
     
-	/* set color to interpolated GzColor value and return */
     int subscriptsX[4] = {(int)A[0], (int)B[0], (int)C[0], (int)D[0]};
     int subscriptsY[4] = {(int)A[1], (int)B[1], (int)C[1], (int)D[1]};
     int subscript;
@@ -74,7 +209,7 @@ int tex_fun(float u, float v, GzColor color)
         color[RED] += image[subscript][RED] * combination[i];
         color[GREEN] += image[subscript][GREEN] * combination[i];
         color[BLUE] += image[subscript][BLUE] * combination[i];
-    }
+    }*/
     
     return GZ_SUCCESS;
 }
@@ -82,8 +217,12 @@ int tex_fun(float u, float v, GzColor color)
 /* White */
 int white_tex_fun(float u, float v, GzColor color)
 {
+    float value = 1;
+    
+    if (u < 0.5 && v < 0.5) value = 0;
+    if (u > 0.5 && v > 0.5) value = 0;
     for (int i = 0; i < 3; i++)
-        color[i] = 1;
+        color[i] = value;
     return GZ_SUCCESS;
 }
 

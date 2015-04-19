@@ -241,3 +241,18 @@ int GzFlushDisplay2FrameBuffer(char* framebuffer, GzDisplay *display)
     
     return GZ_SUCCESS;
 }
+
+void GzGetTrianglesVisibility(GzDisplay *display, int num, bool visibility[])
+{
+    int i, j, sub, fid;
+    
+    for (i = 0; i < num; i++) visibility[i] = false;
+    for (i = 0; i < display->xres; i++) {
+        for (j = 0; j < display->yres; j++) {
+            sub = j * display->xres + i;
+            fid = display->fbuf[sub].frontTriangleId;
+            if (fid == -1) continue;
+            visibility[fid] = true;
+        }
+    }
+}

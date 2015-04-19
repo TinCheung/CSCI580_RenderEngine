@@ -30,5 +30,9 @@ bool isTheSamePoint(GzPoint p1, GzPoint p2);
 // Search operations.
 void findEdgeTriangleIds(Triangle triangles[], int start, int num, GzPoint p1, GzPoint p2, int ids[], int *idCount);
 void getEdgesFromTriangles(Triangle triangles[], int num, vector<Edge> *edges);
+bool checkEdgeTonesDiff(Triangle triangles[], int num, Edge edge);
+int getTriangleIndexById(Triangle triangles[], int num, int triId);
+bool isToneDiff(Triangle triangle1, Triangle triangle2);
+bool isAllVisible(Triangle triangles[], int num, bool visibility[], Edge edge);
 
 #endif /* defined(__CSCI580_RenderEngine__planarMap__) */

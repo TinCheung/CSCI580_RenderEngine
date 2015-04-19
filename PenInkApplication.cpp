@@ -14,6 +14,7 @@
 #define OUTFILE2 "./PenInk.ppm"
 
 extern int white_tex_fun(float u, float v, GzColor color);
+extern int shadow_fun(float u, float v, GzColor color);
 void setCube(GzTriangle triangles[]);
 
 int PenInkApplication::run()
@@ -35,7 +36,7 @@ int PenInkApplication::run()
     
 #if 1 	/* set up app-defined camera if desired, else use camera defaults */
     camera.position[X] = 3;
-    camera.position[Y] = 1;
+    camera.position[Y] = 2;
     camera.position[Z] = 2;
     
     camera.lookat[X] = 0;
@@ -54,7 +55,7 @@ int PenInkApplication::run()
     for (int i = 0; i < 3; i++)
         render->flatcolor[i] = 0;
     
-    render->tex_fun = white_tex_fun;
+    render->tex_fun = shadow_fun;
     
     // set up the lights.
     GzLight	light1 = { {-1, -1, -1}, {0.9, 0.9, 0.9} };
@@ -116,49 +117,97 @@ void setCube(GzTriangle triangles[])
     setPoint(triangles[0].vertexes[1], v2);
     setPoint(triangles[0].vertexes[2], v3);
     
+    triangles[0].uv[0][0] = 0; triangles[0].uv[0][1] = 0;
+    triangles[0].uv[1][0] = 0; triangles[0].uv[1][1] = 1;
+    triangles[0].uv[2][0] = 1; triangles[0].uv[2][1] = 0;
+    
     setPoint(triangles[1].vertexes[0], v2);
     setPoint(triangles[1].vertexes[1], v3);
     setPoint(triangles[1].vertexes[2], v4);
+    
+    triangles[1].uv[0][0] = 0; triangles[1].uv[0][1] = 1;
+    triangles[1].uv[1][0] = 1; triangles[1].uv[1][1] = 0;
+    triangles[1].uv[2][0] = 1; triangles[1].uv[2][1] = 1;
     
     setPoint(triangles[2].vertexes[0], v1);
     setPoint(triangles[2].vertexes[1], v3);
     setPoint(triangles[2].vertexes[2], v5);
     
+    triangles[2].uv[0][0] = 0; triangles[2].uv[0][1] = 0;
+    triangles[2].uv[1][0] = 1; triangles[2].uv[1][1] = 0;
+    triangles[2].uv[2][0] = 0; triangles[2].uv[2][1] = 1;
+    
     setPoint(triangles[3].vertexes[0], v3);
     setPoint(triangles[3].vertexes[1], v5);
     setPoint(triangles[3].vertexes[2], v7);
+    
+    triangles[3].uv[0][0] = 1; triangles[3].uv[0][1] = 0;
+    triangles[3].uv[1][0] = 0; triangles[3].uv[1][1] = 1;
+    triangles[3].uv[2][0] = 1; triangles[3].uv[2][1] = 1;
     
     setPoint(triangles[4].vertexes[0], v3);
     setPoint(triangles[4].vertexes[1], v4);
     setPoint(triangles[4].vertexes[2], v7);
     
+    triangles[4].uv[0][0] = 0; triangles[4].uv[0][1] = 0;
+    triangles[4].uv[1][0] = 1; triangles[4].uv[1][1] = 0;
+    triangles[4].uv[2][0] = 0; triangles[4].uv[2][1] = 1;
+    
     setPoint(triangles[5].vertexes[0], v4);
     setPoint(triangles[5].vertexes[1], v7);
     setPoint(triangles[5].vertexes[2], v8);
+    
+    triangles[5].uv[0][0] = 1; triangles[5].uv[0][1] = 0;
+    triangles[5].uv[1][0] = 0; triangles[5].uv[1][1] = 1;
+    triangles[5].uv[2][0] = 1; triangles[5].uv[2][1] = 1;
     
     setPoint(triangles[6].vertexes[0], v4);
     setPoint(triangles[6].vertexes[1], v2);
     setPoint(triangles[6].vertexes[2], v8);
     
+    triangles[6].uv[0][0] = 0; triangles[6].uv[0][1] = 0;
+    triangles[6].uv[1][0] = 1; triangles[6].uv[1][1] = 0;
+    triangles[6].uv[2][0] = 0; triangles[6].uv[2][1] = 1;
+    
     setPoint(triangles[7].vertexes[0], v2);
     setPoint(triangles[7].vertexes[1], v8);
     setPoint(triangles[7].vertexes[2], v6);
+    
+    triangles[7].uv[0][0] = 1; triangles[7].uv[0][1] = 0;
+    triangles[7].uv[1][0] = 0; triangles[7].uv[1][1] = 1;
+    triangles[7].uv[2][0] = 1; triangles[7].uv[2][1] = 1;
     
     setPoint(triangles[8].vertexes[0], v5);
     setPoint(triangles[8].vertexes[1], v7);
     setPoint(triangles[8].vertexes[2], v6);
     
+    triangles[8].uv[0][0] = 0; triangles[8].uv[0][1] = 0;
+    triangles[8].uv[1][0] = 0; triangles[8].uv[1][1] = 1;
+    triangles[8].uv[2][0] = 1; triangles[8].uv[2][1] = 0;
+    
     setPoint(triangles[9].vertexes[0], v7);
     setPoint(triangles[9].vertexes[1], v6);
     setPoint(triangles[9].vertexes[2], v8);
+    
+    triangles[9].uv[0][0] = 0; triangles[9].uv[0][1] = 1;
+    triangles[9].uv[1][0] = 1; triangles[9].uv[1][1] = 0;
+    triangles[9].uv[2][0] = 1; triangles[9].uv[2][1] = 1;
     
     setPoint(triangles[10].vertexes[0], v1);
     setPoint(triangles[10].vertexes[1], v2);
     setPoint(triangles[10].vertexes[2], v5);
     
+    triangles[10].uv[0][0] = 0; triangles[10].uv[0][1] = 0;
+    triangles[10].uv[1][0] = 0; triangles[10].uv[1][1] = 1;
+    triangles[10].uv[2][0] = 1; triangles[10].uv[2][1] = 0;
+    
     setPoint(triangles[11].vertexes[0], v2);
     setPoint(triangles[11].vertexes[1], v5);
     setPoint(triangles[11].vertexes[2], v6);
+    
+    triangles[11].uv[0][0] = 0; triangles[11].uv[0][1] = 1;
+    triangles[11].uv[1][0] = 1; triangles[11].uv[1][1] = 0;
+    triangles[11].uv[2][0] = 1; triangles[11].uv[2][1] = 1;
     
     for (int i = 0; i < 12; i++)
         triangles[i].triangleId = i;
