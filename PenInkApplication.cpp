@@ -56,6 +56,22 @@ int PenInkApplication::run()
     
     render->tex_fun = white_tex_fun;
     
+    // set up the lights.
+    GzLight	light1 = { {-1, -1, -1}, {0.9, 0.9, 0.9} };
+    render->lights[0] = light1;
+    render->numlights = 1;
+    
+    /* Material property */
+    GzColor specularCoefficient = { 0.3, 0.3, 0.3 };
+    GzColor ambientCoefficient = { 0.1, 0.1, 0.1 };
+    GzColor diffuseCoefficient = {0.7, 0.7, 0.7};
+    
+    for (int i = 0; i < 3; i++) {
+        render->Kd[i] = diffuseCoefficient[i];
+        render->Ka[i] = ambientCoefficient[i];
+        render->Ks[i] = specularCoefficient[i];
+    }
+    
     if (status) exit(GZ_FAILURE); 
     GzPenInkRender(render, 12, triangles);
     
@@ -73,6 +89,8 @@ int PenInkApplication::run()
     
     status |= GzFreeRender(render);
     status |= GzFreeDisplay(display);
+    
+    printf("Complete.\n");
     
     if (status)
         return(GZ_FAILURE);

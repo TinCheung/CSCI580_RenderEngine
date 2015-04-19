@@ -657,7 +657,18 @@ void GzShadePoint(GzColor pointColor, GzVector normal, GzVector eyeVector, GzRen
         GzLight reflectLight;
         
         dotProductNL = dotProduct(light.direction, normal);
+        
+        if (dotProductNL < 0) {
+            for (int m = 0; m < 3; m++) normal[m] *= -1;
+            dotProductNL = dotProduct(light.direction, normal);
+        }
+        
         dotProductNE = dotProduct(normal, eyeVector);
+        
+        if (dotProductNE < 0) {
+            for (int m = 0; m < 3; m++) normal[m] *= -1;
+            dotProductNE = dotProduct(normal, eyeVector);
+        }
         
         if (dotProductNL * dotProductNE < 0) {
             continue;
@@ -727,7 +738,18 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
         }
         
         crossProduct(vector1, vector2, triangles[t].normal);
+        normalization(triangles[t].normal);
         triangles[t].D = -1 * dotProduct(triangles[t].normal, vertexes[0]);
+        
+        // Calculate the tone of the triangle.
+        GzVector normal;
+        GzVector eyeVector = {0, 0, -1};
+        GzColor tone = {1, 1, 1};
+        
+        for (j = 0; j < 3; j++) normal[j] = triangles[t].normal[j];
+        GzShadePoint(tone, normal, eyeVector, render);
+        triangles[t].tone = tone[0];
+        printf("tone: %f\n", triangles[t].tone);
         
         // Draw the textures.
         float dy[3], dx[3], x0[3], y0[3], result, vertexUV[3][2];
@@ -804,6 +826,8 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
                     
                     // Get the texture color.
                     (*(render->tex_fun))(curUV[0], curUV[1], textureColor);
+                    for (int q = 0; q < 3; q++)
+                        textureColor[q] = triangles[t].tone;
                     
                     // draw the point
                     GzPutDisplayExt(render->display, k, j, textureColor[0] * 4095, textureColor[1] * 4095, textureColor[2] * 4095, 0, zValue, triangles[t].triangleId, ZBUFFER_TEX);
@@ -816,7 +840,7 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
     getEdgesFromTriangles(triangles, triangleNum, &edges);
     
     for (int i = 0; i < edges.size(); i++) {
-        drawEdge(render->display, edges[i]);
+        drawEdge(render->display, edges[i], 3);
     }
     
     return GZ_SUCCESS;

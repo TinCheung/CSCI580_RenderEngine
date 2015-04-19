@@ -98,7 +98,7 @@ void drawEdge(GzDisplay *display, Edge edge, int thickness)
         k = (float)(from[1] - to[1]) / (float)(from[0] - to[0]);
         b = from[1] - k * from[0];
         if (dx > dy) {
-            length = (int)absf(from[0] - to[0]) + 1;
+            length = (int)absf(from[0] - to[0]) + 10;
             wave = new int[length];
             thick = new int[length];
             
@@ -108,14 +108,13 @@ void drawEdge(GzDisplay *display, Edge edge, int thickness)
             for (i = min(from[0], to[0]); i <= max(from[0], to[0]); i++) {
                 depth = getZValue(normal, D, i, k * i + b);
                 for (j = 0; j < edge.triangleCount; j++) {
-                    printf("t: %d\n", thick[count]);
                     drawPoint(display, edge.triangleIds[j], i, k * i + b, wave[count], thick[count], STOKE_DIRECTION_X, depth);
                 }
                 count++;
             }
         }
         else {
-            length = (int)absf(from[1] - to[1]) + 1;
+            length = (int)absf(from[1] - to[1]) + 10;
             wave = new int[length];
             thick = new int[length];
             
@@ -125,7 +124,6 @@ void drawEdge(GzDisplay *display, Edge edge, int thickness)
             for (i = min(from[1], to[1]); i <= max(from[1], to[1]); i++) {
                 depth = getZValue(normal, D, (i - b) / k, i);
                 for (j = 0; j < edge.triangleCount; j++) {
-                    printf("t: %d\n", thick[count]);
                     drawPoint(display, edge.triangleIds[j], (i - b) / k, i, wave[count], thick[count], STOKE_DIRECTION_Y, depth);
                 }
                 count++;
@@ -133,7 +131,7 @@ void drawEdge(GzDisplay *display, Edge edge, int thickness)
         }
     }
     else {
-        length = (int)absf(from[1] - to[1]) + 1;
+        length = (int)absf(from[1] - to[1]) + 10;
         wave = new int[length];
         thick = new int[length];
         
@@ -143,26 +141,38 @@ void drawEdge(GzDisplay *display, Edge edge, int thickness)
         for (i = min(from[1], to[1]); i <= max(from[1], to[1]); i++) {
             depth = getZValue(normal, D, from[0], i);
             for (j = 0; j < edge.triangleCount; j++) {
-                printf("t: %d\n", thick[count]);
                 drawPoint(display, edge.triangleIds[j], from[0], i, wave[count], thick[count], STOKE_DIRECTION_Y, depth);
             }
             count++;
         }
     }
+    
+    depth = getZValue(normal, D, from[0], from[1]);
+    drawEndPoint(display, edge.triangleIds[0], (int)from[0], (int)from[1], thickness, depth);
+    depth = getZValue(normal, D, to[0], to[1]);
+    drawEndPoint(display, edge.triangleIds[0], (int)to[0], (int)to[1], thickness, depth);
+    
+    if (edge.triangleCount > 1) {
+        depth = getZValue(normal, D, from[0], from[1]);
+        drawEndPoint(display, edge.triangleIds[1], (int)from[0], (int)from[1], thickness / 2, depth);
+        depth = getZValue(normal, D, to[0], to[1]);
+        drawEndPoint(display, edge.triangleIds[1], (int)to[0], (int)to[1], thickness, depth);
+    }
+    
     delete [] wave;
     delete [] thick;
 }
 
-void drawEndPoint(GzDisplay *display, int triangleId, int x, int y, int thickness)
+void drawEndPoint(GzDisplay *display, int triangleId, int x, int y, int thickness, int depth)
 {
     int i, j;
     
     for (i = x - thickness; i <= x + thickness; i++)
         for (j = y - thickness; j <= y + thickness; j++)
         {
-            if (i + j <= thickness)
+            if (abs(i + j - x - y) <= thickness)
             {
-                GzPutDisplay(display, i, j, 0, 0, 0, 0, 10);
+                GzPutDisplay(display, i, j, 0, 0, 0, 0, depth);
             }
         }
 }

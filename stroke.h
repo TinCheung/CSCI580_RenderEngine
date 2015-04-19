@@ -21,7 +21,7 @@
 void drawEdge(GzDisplay *display, Edge edge, int thickness = 1);
 void drawLineWith3DPoint(GzDisplay *display, int triangleId, GzPoint from, GzPoint to, GzVector normal, float D, int thickness = 1);
 void drawPoint(GzDisplay *display, int triangleId, int x, int y, int wave, int thickness, int direction, int depth);
-void drawEndPoint(GzDisplay *display, int x, int y, int thickness);
+void drawEndPoint(GzDisplay *display, int triangleId, int x, int y, int thickness, int depth);
 void getStrokeWave(int length, int wave[]);           // Generate the random wave for a stroke.
 void getStrokeThickness(int length, int thick, int thickness[]); // Generate the random thickness of a stroke.
 void getWaveAndThickness(int length, int thick, int thickness[], int wave[]);
