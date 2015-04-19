@@ -15,6 +15,7 @@
 
 extern int white_tex_fun(float u, float v, GzColor color);
 extern int shadow_fun(float u, float v, GzColor color);
+extern int brick_fun(float u, float v, GzColor color);
 void setCube(GzTriangle triangles[]);
 
 int PenInkApplication::run()
@@ -55,7 +56,9 @@ int PenInkApplication::run()
     for (int i = 0; i < 3; i++)
         render->flatcolor[i] = 0;
     
-    render->tex_fun = shadow_fun;
+    // render->tex_fun = white_tex_fun;
+    // render->tex_fun = shadow_fun;
+    render->tex_fun = brick_fun;
     
     // set up the lights.
     GzLight	light1 = { {-1, -1, -1}, {0.9, 0.9, 0.9} };

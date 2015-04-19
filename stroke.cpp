@@ -167,8 +167,8 @@ void drawEndPoint(GzDisplay *display, int triangleId, int x, int y, int thicknes
 {
     int i, j;
     
-    for (i = x - thickness; i <= x + thickness; i++)
-        for (j = y - thickness; j <= y + thickness; j++)
+    for (i = x - thickness / 2; i <= x + thickness / 2; i++)
+        for (j = y - thickness / 2; j <= y + thickness / 2; j++)
         {
             if (abs(i + j - x - y) <= thickness)
             {
@@ -183,10 +183,10 @@ void drawPoint(GzDisplay *display, int triangleId, int x, int y, int wave, int t
     
     if (direction == STOKE_DIRECTION_X)
         for (i = 0; i <= thickness; i++)
-            GzPutDisplayExt(display, x, y + wave + i, 0, 0, 0, 0, depth, triangleId, ZBUFFER_EDGE);
+            GzPutDisplayExt(display, x, y + wave + i - STROKE_WAVE_LIMIT / 2, 0, 0, 0, 0, depth, triangleId, ZBUFFER_EDGE);
     else
         for (i = 0; i <= thickness; i++)
-            GzPutDisplayExt(display, x + wave + i, y, 0, 0, 0, 0, depth, triangleId, ZBUFFER_EDGE);
+            GzPutDisplayExt(display, x + wave + i - STROKE_WAVE_LIMIT / 2, y, 0, 0, 0, 0, depth, triangleId, ZBUFFER_EDGE);
 }
 
 void getStrokeWave(int length, int wave[])
@@ -299,7 +299,7 @@ void getWaveAndThickness(int length, int thick, int thickness[], int wave[], int
     
     for (i = 1; i < length; i++) {
         int randomNum = rand() % 2;
-        if (randomNum == 1)
+        if (randomNum < 2)
         {
             randomNum = rand() % 20;
             if (randomNum < 10) wave[i] = wave[i - 1];

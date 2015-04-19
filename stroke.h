@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include "disp.h"
 
-#define STROKE_WAVE_LIMIT 1
+#define STROKE_WAVE_LIMIT 4
 #define THICKNESS_VARY_LIMIT 1
 
 #define STOKE_DIRECTION_X 99
