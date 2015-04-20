@@ -4,12 +4,15 @@
 */
 
 #include "PenInkApplication.h"
+#include "Application3.h"
 #include <time.h>
 
 int main(int argc, const char * argv[])
 {
-    PenInkApplication app;
-    app.run();
+    //Application3 app;
+    //app.runRenderer();
+    PenInkApplication app2;
+    app2.run();
   
   return 0;
 }

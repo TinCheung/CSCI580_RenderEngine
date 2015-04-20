@@ -171,6 +171,9 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                 }
                 vertexes[j][3] = 1;
                 
+                matrixMultiplyVector(render->Ximage[render->matlevel - 1], vertexes[j], vertexes[j]);
+                //printVector(vertexes[j]);
+                
                 // Get the normal data.
                 for (k = 0; k < 3; k++) {
                     vertexNormal[j][k] = ((float *)valueList[1])[3 * j + k];
@@ -183,21 +186,10 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                 }
                 
                 // Do the viewing transformation for the vertexes and the normals.
-                matrixMultiplyVector(render->Ximage[render->matlevel - 1], vertexes[j], vertexes[j]);
                 matrixMultiplyVector(render->Xnorm[render->matlevel - 1], vertexNormal[j], vertexNormal[j]);
             }
             
             GzColor specularColor, diffuseColor, ambientColor;
-            GzPoint vertexesCameraSpacePosition[3];
-            
-            // Turn the vertexes into camera space.
-            for (j = 0; j < 3; j++) {
-                vertexesCameraSpacePosition[j][0] = vertexes[j][0]/(render->display->xres/2)-vertexes[j][3];
-                vertexesCameraSpacePosition[j][1] = (vertexes[j][1]/(render->display->yres/2)-vertexes[j][3]) * -1;
-                vertexesCameraSpacePosition[j][2] = vertexes[j][2]/(render->Ximage[0][2][2]);
-                
-                normalization(vertexNormal[j]);
-            }
             
             // Calculate the surface normal in the camera space.
             GzVector surfaceNormal;
@@ -214,10 +206,11 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                 for (k = 0; k < 3; k++) {
                     vertexes[j][k] = vertexes[j][k] / vertexes[j][3];
                 }
+                //printVector(vertexes[0]);
                 
                 // Add anti-aliasing offset
-                vertexes[j][0] += (float)(render->antiAliasingOffsetX); // (float)2 * render->display->xres;
-                vertexes[j][1] += render->antiAliasingOffsetY; // 2 * render->display->yres;
+                //vertexes[j][0] += (float)(render->antiAliasingOffsetX); // (float)2 * render->display->xres;
+                //vertexes[j][1] += render->antiAliasingOffsetY; // 2 * render->display->yres;
                 
                 // Determine the rectangle we gonna to draw the triangle.
                 maxX = vertexes[j][0] > maxX ? vertexes[j][0] : maxX;
@@ -279,6 +272,14 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
             
             crossProduct(vector1, vector2, normal);
             
+            float D;
+            D = -1 * dotProduct(normal, vertexes[0]);
+            
+            //normalization(normal);
+            
+            printf("D: %f\n", D);
+            printVector(normal);
+            
             // Check the points and draw the triangle.
             for (j = minY; j <= maxY; j++) {
                 for (k = minX; k <= maxX; k++) {
@@ -308,8 +309,6 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                         GzVector comb;
                         GzColor textureColor;
                         
-                        float D;
-                        D = -1 * dotProduct(normal, vertexes[0]);
                         zValue = (normal[0] * k + normal[1] * j + D) / (-1 * normal[2]);
                         
                         for (int l = 0; l < 3; l++) {
@@ -333,7 +332,7 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                         }
                         
                         // Get the texture color.
-                        (*(render->tex_fun))(curUV[0], curUV[1], textureColor);
+                        //(*(render->tex_fun))(curUV[0], curUV[1], textureColor);
                         
                         // Shading.
                         GzColor pointColor;
@@ -365,8 +364,9 @@ int GzPutTriangle(GzRender *render, int	numParts, GzToken *nameList,
                             GzShadePoint(pointColor, pointNormal, eyeVector, render);
                         }
                         
+                        printf("x: %d, y: %d, z: %f\n", k, j, zValue);
                         // draw the point
-                        GzPutDisplay(render->display, k, j, pointColor[0] * 4095, pointColor[1] * 4095, pointColor[2] * 4095, 0, zValue);
+                        GzPutDisplay(render->display, k, j, render->flatcolor[0] * 4095, render->flatcolor[1] * 4095, render->flatcolor[2] * 4095, 0, zValue);
                     }
                 }
             }
@@ -564,6 +564,8 @@ int GzPutCamera(GzRender *render, GzCamera *camera)
     GzPushMatrix(render, render->camera.Xpi);
     GzPushMatrix(render, render->camera.Xiw);
     
+    printMatrix(render->Ximage[render->matlevel - 1]);
+    
     return GZ_SUCCESS;
 }
 
@@ -702,6 +704,7 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
     // Record the front triangle for each pixel.
     for (t = 0; t < triangleNum; t++)
     {
+        printf("tri: %d\n", t);
         float maxX, maxY, minX, minY, vertexUV[3][2];
         maxX = maxY = -1;
         minX = MAXXRES + 1;
@@ -718,15 +721,19 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
             vertexes[j][3] = 1;
             
             matrixMultiplyVector(render->Ximage[render->matlevel - 1], vertexes[j], vertexes[j]);
-            // Convert the x,y,z to the screen space.
-            for (k = 0; k < 3; k++) {
-                vertexes[j][k] = vertexes[j][k] / vertexes[j][3];
-                triangles[t].vertexesInScreen[j][k] = vertexes[j][k];
-            }
+            //printVector(vertexes[j]);
             
             // Get the texture uv data.
             for (k = 0; k < 2; k++) {
                 vertexUV[j][k] = triangles[t].uv[j][k];
+            }
+            
+        }
+        
+        for(j = 0; j < 3; j++) {
+            for (k = 0; k < 3; k++) {
+                vertexes[j][k] = vertexes[j][k] / vertexes[j][3];
+                triangles[t].vertexesInScreen[j][k] = vertexes[j][k];
             }
             
             // Determine the triangle region.
@@ -734,7 +741,9 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
             maxY = vertexes[j][1] > maxY ? vertexes[j][1] : maxY;
             minX = vertexes[j][0] < minX ? vertexes[j][0] : minX;
             minY = vertexes[j][1] < minY ? vertexes[j][1] : minY;
+            //printVector(vertexes[j]);
         }
+        
         float vector1[3], vector2[3]; // the two vectors in the surface.
         
         for (m = 0; m < 3; m++) {
@@ -743,7 +752,7 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
         }
         
         crossProduct(vector1, vector2, triangles[t].normal);
-        normalization(triangles[t].normal);
+        // normalization(triangles[t].normal);
         triangles[t].D = -1 * dotProduct(triangles[t].normal, vertexes[0]);
         
         // Calculate the tone of the triangle.
@@ -751,10 +760,12 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
         GzVector eyeVector = {0, 0, -1};
         GzColor tone = {1, 1, 1};
         
-        for (j = 0; j < 3; j++) normal[j] = triangles[t].normal[j];
+        for (j = 0; j < 3; j++)
+            normal[j] = triangles[t].normal[j];
+        
         GzShadePoint(tone, normal, eyeVector, render);
         triangles[t].tone = tone[0];
-        printf("tone: %f\n", triangles[t].tone);
+        // printf("tone: %f\n", triangles[t].tone);
         
         // Draw the textures.
         float dy[3], dx[3], x0[3], y0[3], result;
@@ -817,16 +828,11 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
                         tempPoints[l][2] = tempPoints[l][3] = 0;
                     }
                     
-                    if (k == 512 && j == 512)
-                        k = 512;
-                    
                     bilinearInterpolationInTriangle(curPoint, tempPoints[0], tempPoints[1], tempPoints[2], comb);
                     
                     // Texturing
                     float VzI = zValue/(ZMAX - zValue);
                     float curUV[2];
-                    
-                    
                     
                     // Interpolate and unwarp the current point UV
                     for (int l = 0; l < 2; l++) {
@@ -838,16 +844,19 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
                     textureColor[0] = triangles[t].tone;
                     if (isnan(curUV[0]) || isnan(curUV[1]))
                     {
-                        continue;
+                        textureColor[0] = textureColor[1] = textureColor[2] = 1;
                     }
                     //printf ("x: %d, y: %d, u: %f, v: %f, Vzi: %f\n", k, j, curUV[0], curUV[1], VzI);
-                    (*(render->tex_fun))(curUV[0], curUV[1], textureColor);
-                    /*
-                    for (int q = 0; q < 3; q++)
-                        textureColor[q] = triangles[t].tone;
-                    */
+                    else {
+                        (*(render->tex_fun))(curUV[0], curUV[1], textureColor);
+                    }
+                    
+                    // for (int q = 0; q < 3; q++) textureColor[q] = triangles[t].tone;
+                    
+                    //printf("x: %d, y: %d, z: %f\n", k, j, zValue);
                     // draw the point
-                    GzPutDisplayExt(render->display, k, j, textureColor[0] * 4095, textureColor[1] * 4095, textureColor[2] * 4095, 0, zValue, triangles[t].triangleId, ZBUFFER_TEX);
+                    GzPutDisplayExt(render->display, k, j, textureColor[0] * 4095, textureColor[0] * 4095, textureColor[0] * 4095, 0, zValue, triangles[t].triangleId, ZBUFFER_TEX);
+                    //GzPutDisplay(render->display, k, j, textureColor[0] * 4095, textureColor[0] * 4095, textureColor[0] * 4095, 0, zValue);
                 }
             }
         }
@@ -862,11 +871,12 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
     getEdgesFromTriangles(triangles, triangleNum, &edges);
     
     for (int i = 0; i < edges.size(); i++) {
-        if (checkEdgeTonesDiff(triangles, triangleNum, edges[i]))
-            drawEdge(render->display, edges[i], 2);
+        //if (checkEdgeTonesDiff(triangles, triangleNum, edges[i])) drawEdge(render->display, edges[i], 2);
         if (!isAllVisible(triangles, triangleNum, visibity, edges[i]))
             drawEdge(render->display, edges[i], 2);
     }
+    
+    // GzIndication(render->display);
     
     return GZ_SUCCESS;
 }

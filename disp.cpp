@@ -6,6 +6,9 @@
 #include	<memory.h>
 #include    <limits.h>
 #include    "test.h"
+#include    <math.h>
+#include    "myRand.h"
+
 
 int GzNewFrameBuffer(char** framebuffer, int width, int height)
 {
@@ -123,9 +126,9 @@ int GzPutDisplayExt(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity
         return GZ_FAILURE;
     
     int sub = j * display->xres + i;
-    int ftId = display->fbuf[sub].frontTriangleId == -1 ? triangleId : display->fbuf[sub].frontTriangleId;
+    int ftId = display->fbuf[sub].frontTriangleId; // == -1 ? triangleId : display->fbuf[sub].frontTriangleId;
     
-    if ((display->fbuf[sub].z >= z && z > 0) || ftId == triangleId) {
+    if ((display->fbuf[sub].z >= z && z > 0)) {
         display->fbuf[sub].red = r;
         display->fbuf[sub].green = g;
         display->fbuf[sub].blue = b;
@@ -134,7 +137,16 @@ int GzPutDisplayExt(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity
         display->fbuf[sub].type = type;
         display->fbuf[sub].frontTriangleId = triangleId;
     }
-    
+    else if (ftId == triangleId) {
+        printf("same %d, %d \n", ftId, triangleId);
+        display->fbuf[sub].red = r;
+        display->fbuf[sub].green = g;
+        display->fbuf[sub].blue = b;
+        display->fbuf[sub].alpha = a;
+        display->fbuf[sub].z = z;
+        display->fbuf[sub].type = type;
+        display->fbuf[sub].frontTriangleId = triangleId;
+    }
     return GZ_SUCCESS;
 }
 
@@ -146,6 +158,9 @@ int GzPutDisplayExtForEdge(GzDisplay *display, int i, int j, GzIntensity r, GzIn
     int sub = j * display->xres + i;
     
     bool draw;
+    
+    if (i == 463 && j == 561)
+        i = 463;
     
     draw = display->fbuf[sub].z >= z && z > 0;
     int pixelTriId = display->fbuf[sub].frontTriangleId;
@@ -253,6 +268,60 @@ void GzGetTrianglesVisibility(GzDisplay *display, int num, bool visibility[])
             fid = display->fbuf[sub].frontTriangleId;
             if (fid == -1) continue;
             visibility[fid] = true;
+        }
+    }
+}
+
+float findDistanceToNearestEdge(GzDisplay *display, int x, int y)
+{
+    float distance = 10000000;
+    float tempDistance;
+    
+    int i, j, sub, pixelType;
+    for (i = 0; i < display->xres; i++) {
+        sub = y * display->xres + i;
+        pixelType = display->fbuf[sub].type;
+        if (pixelType == ZBUFFER_EDGE) {
+            tempDistance = sqrtf(powf(i - x, 2));
+            distance = tempDistance > distance ? distance : tempDistance;
+        }
+    }
+    
+    for (j = 0; j < display->yres; j++) {
+        sub = j * display->xres + x;
+        pixelType = display->fbuf[sub].type;
+        if (pixelType == ZBUFFER_EDGE) {
+            tempDistance = sqrtf(powf(j - y, 2));
+            distance = tempDistance > distance ? distance : tempDistance;
+        }
+    }
+    
+    return distance;
+}
+
+void GzIndication(GzDisplay *display)
+{
+    int i, j, sub, pixelType;
+    float distance, b, c;
+    
+    b = 0.21;
+    c = 0.431;
+    for (i = 0; i < display->xres; i++) {
+        printf("i: %d\n", i);
+        for (j = 0; j < display->yres; j++) {
+            sub = j * display->xres + i;
+            pixelType = display->fbuf[sub].type;
+            if (pixelType == ZBUFFER_TEX) {
+                distance = findDistanceToNearestEdge(display, i, j);
+                float random = sin(rand2() % 100 * PI / 180);
+                random  = random > 0 ? random : 0;
+                distance = pow(b * distance, -1 * c) * random;
+                //printf("distance: %f\n", distance);
+                if (distance < 0.6) {
+                    display->fbuf[sub].red = display->fbuf[sub].green =
+                    display->fbuf[sub].blue = 4095;
+                }
+            }
         }
     }
 }

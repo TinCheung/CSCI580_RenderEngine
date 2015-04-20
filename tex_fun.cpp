@@ -7,7 +7,7 @@
 #include    "stroke.h"
 
 GzColor	*image;
-float *shadow1, *shadow2, *shadow3, *brick;
+float *shadow1, *shadow2, *shadow3, *brick, *grass;
 int xs, ys;
 int reset = 1;
 int prevR = -1;
@@ -153,7 +153,7 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
     int i, j, k, sub;
     int thickness = 2;
     
-    /*
+    
     for (i = minx; i < maxx; i++) {
         length = maxx - minx + 10;
         wave = new int[length];
@@ -171,7 +171,7 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
         delete [] wave;
         delete [] thick;
     }
-    */
+    
     for (i = minx; i < maxx; i++) {
         length = maxx - minx + 10;
         wave = new int[length];
@@ -189,7 +189,7 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
         delete [] wave;
         delete [] thick;
     }
-    /*
+    
     for (i = miny; i < maxy; i++) {
         length = maxy - miny + 10;
         wave = new int[length];
@@ -207,7 +207,7 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
         delete [] wave;
         delete [] thick;
     }
-    */
+    
     for (i = miny; i < maxy; i++) {
         length = maxy - miny + 10;
         wave = new int[length];
@@ -243,22 +243,53 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
     }
 }
 
+void grass_fun(float grass[], int density, int grassLength) {
+    int *wave, *len;
+    int i, j, fromx, fromy;
+    int baseline = 0;
+    int grassThickness = 3;
+    int bound;
+    
+    while (baseline < ys) {
+        baseline += grassLength / 2;
+        for (i = rand2() % density; i < xs; i+= density + rand2() % 10 - 5) {
+            fromx = i;
+            fromy = baseline + rand2() % 10;
+            bound = grassLength + rand2() % 6;
+            for (j = 0; j < bound; j++) {
+                if (fromx > 0 && fromx < xs && fromy > 0 && fromy < ys) {
+                    int sub = (fromy - 1)* xs + fromx;
+                    grass[sub] = 0;
+                }
+                int r = rand2() % 4;
+                if (r < 1) {
+                    fromx += 1;
+                }
+                fromy++;
+            }
+        }
+    }
+    
+}
+
 /* Brick tex*/
 int brick_fun(float u, float v, GzColor color)
 {
     if (reset) {
         xs = ys = 1000;
         brick = new float[xs * ys];
+        grass = new float[xs * ys];
         reservedForWhite = new bool[xs * ys];
         
         for (int i = 0; i < xs * ys; i++) {
             brick[i] = 1;
+            grass[i] = 1;
             reservedForWhite[i] = false;
         }
         
         int brickHeight = 50;
         int brickWidth = 100;
-        int brickBlank = 2;
+        int brickBlank = 15;
         
         int start[2] = {50, 0};
         int count = 0;
@@ -267,7 +298,7 @@ int brick_fun(float u, float v, GzColor color)
         y = 10;
         
         while (y < ys) {
-            drawBrick(x, y, x + brickWidth, y + brickHeight);
+            //drawBrick(x, y, x + brickWidth, y + brickHeight);
             if (x + brickWidth + brickBlank <= xs) {
                 x += brickBlank + brickWidth;
             }
@@ -284,24 +315,28 @@ int brick_fun(float u, float v, GzColor color)
         shadow3 = new float[xs * ys];
         
         for (int i = 0; i < xs * ys; i++) {
+            /*
             shadow1[i] = brick[i];
             shadow2[i] = brick[i];
             shadow3[i] = brick[i];
-            /*
+            */
             shadow1[i] = 1;
             shadow2[i] = 1;
-            shadow3[i] = 1;*/
-        }
+            shadow3[i] = 1;
+        }        
         
-        //generateShadow(45, shadow1, false);
-        generateShadow(20, shadow2, false);
-        generateShadow(10, shadow3, false);
+        generateShadow(45, shadow1, true);
+        generateShadow(20, shadow2, true);
+        generateShadow(10, shadow3, true);
+        
+        grass_fun(grass, 20, 25);
         
         reset = 0;
     }
     
     /* bounds-test u,v to make sure nothing will overflow image array bounds */
     if (u < 0 || u > 1 || v < 0 || v > 1) {
+        color[0] = color[1] = color[2] = 0;
         return GZ_FAILURE;
     }
     
@@ -348,6 +383,11 @@ int brick_fun(float u, float v, GzColor color)
         color[RED] += shadow[subscript] * combination[i];
         color[GREEN] += shadow[subscript] * combination[i];
         color[BLUE] += shadow[subscript] * combination[i];
+        /*
+        color[RED] += grass[subscript] * combination[i];
+        color[GREEN] += grass[subscript] * combination[i];
+        color[BLUE] += grass[subscript] * combination[i];
+         */
     }
     
     return GZ_SUCCESS;

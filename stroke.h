@@ -19,7 +19,6 @@
 #define STOKE_DIRECTION_Y 100
 
 void drawEdge(GzDisplay *display, Edge edge, int thickness = 1);
-void drawLineWith3DPoint(GzDisplay *display, int triangleId, GzPoint from, GzPoint to, GzVector normal, float D, int thickness = 1);
 void drawPoint(GzDisplay *display, int triangleId, int x, int y, int wave, int thickness, int direction, int depth);
 void drawEndPoint(GzDisplay *display, int triangleId, int x, int y, int thickness, int depth);
 void getStrokeWave(int length, int wave[]);           // Generate the random wave for a stroke.

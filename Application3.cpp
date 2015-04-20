@@ -6,7 +6,7 @@
  * application test code for homework assignment #3
 */
 
-#define INFILE3  "pot3.asc"
+#define INFILE3  "pot4.asc"
 #define OUTFILE3 "output3.ppm"
 
 #include "Application3.h"
@@ -70,8 +70,8 @@ int Application3::runRenderer()
 	 * initialize the display and the renderer 
 	 */ 
 
-	int width = 256;    // frame buffer and display width
-	int height = 256;   // frame buffer and display height
+	int width = 1024;    // frame buffer and display width
+	int height = 1024;   // frame buffer and display height
 
 	status = 0;
 
@@ -150,7 +150,7 @@ int Application3::runRenderer()
 		&(normalList[2][0]), &(normalList[2][1]), 	
 		&(normalList[2][2]), 
 		&(uvList[2][0]), &(uvList[2][1]) ); 
-
+        
 	    /* 
 	    * Set up shading attributes for each triangle 
 	    */ 
@@ -166,6 +166,7 @@ int Application3::runRenderer()
 	     valueListTriangle[0] = (GzPointer)vertexList;
  
 	     GzPutTriangle(render, 1, nameListTriangle, valueListTriangle);
+        break;
 	} 
 
 	GzFlushDisplay2File(outfile, display); 	/* write out or update display to file*/

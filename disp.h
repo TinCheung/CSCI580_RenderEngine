@@ -63,5 +63,6 @@ int GzGetFrontTriangleId(GzDisplay *display, int i, int j);
 int GzPutDisplayExt(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity g, GzIntensity b, GzIntensity a, GzDepth z, int triangleId, int type);
 int GzPutDisplayExtForEdge(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity g, GzIntensity b, GzIntensity a, GzDepth z, int triangleIds[], int idCount, int type);
 void GzGetTrianglesVisibility(GzDisplay *display, int num, bool visibility[]);
+void GzIndication(GzDisplay *display);
 
 #endif

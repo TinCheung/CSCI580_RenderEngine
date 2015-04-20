@@ -12,65 +12,6 @@
 #include "mathLib.h"
 #include "planarMap.h"
 
-void drawLineWith3DPoint(GzDisplay *display, int triangleId, GzPoint from, GzPoint to, GzVector normal, float D, int thickness)
-{
-    int i, length, count;
-    float dx, dy, k, b, depth;
-    dx = absf(from[0] - to[0]);
-    dy = absf(from[1] - to[1]);
-    
-    int *wave, *thick;
-    if (dx == 0 && dy == 0) return;
-    
-    if (dx != 0)
-    {
-        k = (float)(from[1] - to[1]) / (float)(from[0] - to[0]);
-        b = from[1] - k * from[0];
-        if (dx > dy) {
-            length = (int)absf(from[0] - to[0]) + 1;
-            wave = new int[length];
-            thick = new int[length];
-            
-            getWaveAndThickness(length, thickness, thick, wave);
-            count = 0;
-            
-            for (i = min(from[0], to[0]); i <= max(from[0], to[0]); i++) {
-                depth = getZValue(normal, D, i, k * i + b);
-                drawPoint(display, triangleId, i, k * i + b, wave[count], thick[count], STOKE_DIRECTION_X, depth);
-                count++;
-            }
-        }
-        else {
-            length = (int)absf(from[1] - to[1]) + 1;
-            wave = new int[length];
-            thick = new int[length];
-            
-            getWaveAndThickness(length, thickness, thick, wave);
-            count = 0;
-            
-            for (i = min(from[1], to[1]); i <= max(from[1], to[1]); i++) {
-                depth = getZValue(normal, D, (i - b) / k, i);
-                drawPoint(display, triangleId, (i - b) / k, i, wave[count], thick[count], STOKE_DIRECTION_Y, depth);
-                count++;
-            }
-        }
-    }
-    else {
-        length = (int)absf(from[1] - to[1]) + 1;
-        wave = new int[length];
-        thick = new int[length];
-        
-        getWaveAndThickness(length, thickness, thick, wave);
-        count = 0;
-        
-        for (i = min(from[1], to[1]); i <= max(from[1], to[1]); i++) {
-            depth = getZValue(normal, D, from[0], i);
-            drawPoint(display, triangleId, from[0], i, wave[count], thick[count], STOKE_DIRECTION_Y, depth);
-            count++;
-        }
-    }
-}
-
 void drawEdge(GzDisplay *display, Edge edge, int thickness)
 {
     int i, j, length, count;
