@@ -166,6 +166,7 @@ int PenInkApplication::run()
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 t.vertexes[i][j] = vertexList[i][j];
+                t.vertexesNormals[i][j] = normalList[i][j];
                 if (j < 2)
                     t.uv[i][j] = uvList[i][j];
             }
@@ -179,6 +180,7 @@ int PenInkApplication::run()
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 triangles[p].vertexes[i][j] = tempTriangles[p].vertexes[i][j];
+                triangles[p].vertexesNormals[i][j] = tempTriangles[p].vertexesNormals[i][j];
                 if (j < 2)
                     triangles[p].uv[i][j] = tempTriangles[p].uv[i][j];
             }

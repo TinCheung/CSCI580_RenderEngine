@@ -144,6 +144,7 @@ struct Triangle {
     GzPoint vertexes[3];
     GzPoint vertexesInScreen[3];
     GzVector normal;
+    GzVector vertexesNormals[3];
     float D;    // For calculate the depth of the points.
     float tone;
     float uv[3][2];

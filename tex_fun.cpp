@@ -18,7 +18,7 @@ int getSub(int x, int y)
     return y * xs + x < xs * ys ? y * xs + x : xs + ys - 1;
 }
 
-void generateShadow(int density, float img[], bool horizonShadow = false)
+void generateShadow(int density, float img[], bool verticalShadow = false, bool horizonShadow = false)
 {
     int x, length, sub;
     int *wave, *thick;
@@ -28,24 +28,31 @@ void generateShadow(int density, float img[], bool horizonShadow = false)
     
     int thickness = 2;
     
-    do {
-        wave = new int[length];
-        thick = new int[length];
+    if (verticalShadow) {
+        do {
+            wave = new int[length];
+            thick = new int[length];
         
-        getWaveAndThickness(length, thickness, thick, wave, 5);
-        for (int i = 0; i < ys; i++) {
-            for (int j = 0; j <= thick[i]; j++) {
-                sub = getSub(x + wave[i] + j, i);
-                if (reservedForWhite[sub]) continue;
-                img[sub] = 0;
+            getWaveAndThickness(length, thickness, thick, wave, 5);
+            for (int i = 0; i < ys; i++) {
+                for (int j = 0; j <= thick[i]; j++) {
+                    sub = getSub(x + wave[i] + j, i);
+                    if (reservedForWhite[sub]) continue;
+                    img[sub] = 0;
+                }
             }
-        }
         
-        delete [] wave;
-        delete [] thick;
+            delete [] wave;
+            delete [] thick;
         
-        x += density + rand2() % 5 - 2;
-    } while (x < xs);
+            x += density + rand2() % 5 - 2;
+            int random = rand2() % 100;
+            if (random < 20) {
+                x += rand2() % 30;
+            }
+            
+        } while (x < xs);
+    }
     
     if (horizonShadow) {
         length = xs;
@@ -66,6 +73,11 @@ void generateShadow(int density, float img[], bool horizonShadow = false)
             delete [] thick;
             
             y += density + rand2() % 5 - 2;
+            
+            int random = rand2() % 100;
+            if (random < 20) {
+                y += rand2() % 30;
+            }
         } while(y < ys);
     }
 }
@@ -325,9 +337,9 @@ int brick_fun(float u, float v, GzColor color)
             shadow3[i] = 1;
         }        
         
-        generateShadow(45, shadow1, true);
-        generateShadow(20, shadow2, true);
-        generateShadow(10, shadow3, true);
+        generateShadow(30, shadow1, false, true);
+        generateShadow(20, shadow2, true, true);
+        generateShadow(10, shadow3, true, true);
         
         grass_fun(grass, 20, 25);
         
@@ -345,12 +357,16 @@ int brick_fun(float u, float v, GzColor color)
     
     float tone = color[0];
     float *shadow;
-    if (tone < 0.3) shadow = shadow3;
-    else if (tone < 0.5) shadow = shadow2;
-    else {
+    if (tone < 0.2) shadow = shadow3;
+    else if (tone < 0.4) shadow = shadow2;
+    else if (tone < 0.7) {
         shadow = shadow1;
         // color[0] = color[1] = color[2] = 1;
         // return GZ_SUCCESS;
+    }
+    else {
+        color[0] = color[1] = color[2] = 1;
+        return GZ_SUCCESS;
     }
     /*
     for (int i = 0; i < 3; i++)

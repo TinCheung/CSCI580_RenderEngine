@@ -711,7 +711,7 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
         minY = MAXYRES + 1;
         
         int j, k, m;
-        GzPoint vertexes[3];
+        GzPoint vertexes[3], vertexNormal[3];;
         
         for (j = 0; j < 3; j++) {
             // Get the vertexes data.
@@ -723,11 +723,17 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
             matrixMultiplyVector(render->Ximage[render->matlevel - 1], vertexes[j], vertexes[j]);
             //printVector(vertexes[j]);
             
+            // Get the normal data.
+            for (k = 0; k < 3; k++) {
+                vertexNormal[j][k] = triangles[t].vertexesNormals[j][k];
+            }
+            vertexNormal[j][3] = 1;
+            
             // Get the texture uv data.
             for (k = 0; k < 2; k++) {
                 vertexUV[j][k] = triangles[t].uv[j][k];
             }
-            
+            matrixMultiplyVector(render->Xnorm[render->matlevel - 1], vertexNormal[j], vertexNormal[j]);
         }
         
         for(j = 0; j < 3; j++) {
@@ -841,7 +847,16 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
                     }
                     
                     // Get the texture color.
-                    textureColor[0] = triangles[t].tone;
+                    GzVector pointNormal;
+                    
+                    for (int l = 0; l < 3; l++) {
+                        pointNormal[l] = comb[0] * vertexNormal[0][l]
+                        + comb[1] * vertexNormal[1][l]
+                        + comb[2] * vertexNormal[2][l];
+                    }
+                    GzShadePoint(tone, pointNormal, eyeVector, render);
+                    
+                    textureColor[0] = tone[0];
                     if (isnan(curUV[0]) || isnan(curUV[1]))
                     {
                         textureColor[0] = textureColor[1] = textureColor[2] = 1;
