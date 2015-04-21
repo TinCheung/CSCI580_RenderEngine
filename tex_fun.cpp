@@ -7,7 +7,7 @@
 #include    "stroke.h"
 
 GzColor	*image;
-float *shadow1, *shadow2, *shadow3, *brick, *grass;
+float *shadow1, *shadow2, *shadow3, *brick, *grass, *shadows[8];
 int xs, ys;
 int reset = 1;
 int prevR = -1;
@@ -326,6 +326,13 @@ int brick_fun(float u, float v, GzColor color)
         shadow2 = new float[xs * ys];
         shadow3 = new float[xs * ys];
         
+        for (int i =0; i < 8; i++) {
+            shadows[i] = new float[xs * ys];
+            if (shadows[i] == NULL) {
+                printf("unable to create shadow tex.\n");
+            }
+        }
+        
         for (int i = 0; i < xs * ys; i++) {
             /*
             shadow1[i] = brick[i];
@@ -335,11 +342,21 @@ int brick_fun(float u, float v, GzColor color)
             shadow1[i] = 1;
             shadow2[i] = 1;
             shadow3[i] = 1;
+            for (int j = 0; j < 8; j++) {
+                shadows[j][i] = 1;
+            }
         }        
         
         generateShadow(30, shadow1, false, true);
         generateShadow(20, shadow2, true, true);
         generateShadow(10, shadow3, true, true);
+        
+        for (int i = 0; i < 8; i++) {
+            if (i < 4)
+                generateShadow(i * 5, shadows[i], true, true);
+            else
+                generateShadow(i * 5, shadows[i], false, true);
+        }
         
         grass_fun(grass, 20, 25);
         
@@ -357,6 +374,17 @@ int brick_fun(float u, float v, GzColor color)
     
     float tone = color[0];
     float *shadow;
+    tone *= 10;
+    if (tone >= 8) {
+        color[0] = color[1] = color[2] = 1;
+        return GZ_SUCCESS;
+    }
+    else {
+        tone  = tone > 7 ? 7 : tone;
+        shadow = shadows[(int)tone];
+    }
+    
+    /*
     if (tone < 0.2) shadow = shadow3;
     else if (tone < 0.4) shadow = shadow2;
     else if (tone < 0.7) {
@@ -367,7 +395,7 @@ int brick_fun(float u, float v, GzColor color)
     else {
         color[0] = color[1] = color[2] = 1;
         return GZ_SUCCESS;
-    }
+    }*/
     /*
     for (int i = 0; i < 3; i++)
         color[i] = brick[y * xs + x];
