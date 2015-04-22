@@ -8,6 +8,7 @@
 
 GzColor	*image;
 float *shadow1, *shadow2, *shadow3, *brick, *grass, *shadows[8];
+int *brickId, brickCount;
 int xs, ys;
 int reset = 1;
 int prevR = -1;
@@ -166,6 +167,13 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
     int thickness = 2;
     
     
+    for (i = minx; i <= maxx; i++)
+        for (j = miny; j <= maxy; j++){
+            sub = getSub(i, j);
+            brickId[sub] = brickCount;
+            //printf("%d\n", brickCount);
+        }
+    
     for (i = minx; i < maxx; i++) {
         length = maxx - minx + 10;
         wave = new int[length];
@@ -177,6 +185,7 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
             for (k = 0; k <= thickness; k++) {
                 sub = getSub(j, miny + wave[j - minx] + k);
                 brick[sub] = 0;
+                brickId[sub] = brickCount;
             }
         }
         
@@ -195,6 +204,7 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
             for (k = 0; k <= thickness; k++) {
                 sub = getSub(j, maxy + wave[j - minx] + k);
                 brick[sub] = 0;
+                brickId[sub] = brickCount;
             }
         }
         
@@ -213,6 +223,7 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
             for (k = 0; k <= thickness; k++) {
                 sub = getSub(minx + wave[j - miny] + k, j);
                 brick[sub] = 0;
+                brickId[sub] = brickCount;
             }
         }
         
@@ -231,6 +242,7 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
             for (k = 0; k <= thickness; k++) {
                 sub = getSub(maxx + wave[j - miny] + k, j);
                 brick[sub] = 0;
+                brickId[sub] = brickCount;
             }
         }
         
@@ -244,9 +256,8 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
     }
     prevR = white;
     
-    printf("w: %d\n", white);
+    //printf("w: %d\n", white);
     if (white > 40) {
-        
         for (int i = minx; i < maxx; i++)
             for (int j = miny; j < maxy; j++) {
                 sub = getSub(i, j);
@@ -290,6 +301,7 @@ int brick_fun(float u, float v, GzColor color)
     if (reset) {
         xs = ys = 1000;
         brick = new float[xs * ys];
+        brickId = new int[xs * ys];
         grass = new float[xs * ys];
         reservedForWhite = new bool[xs * ys];
         
@@ -297,11 +309,13 @@ int brick_fun(float u, float v, GzColor color)
             brick[i] = 1;
             grass[i] = 1;
             reservedForWhite[i] = false;
+            brickId[i] = 0;
         }
         
         int brickHeight = 50;
         int brickWidth = 100;
         int brickBlank = 15;
+        brickCount = 101;
         
         int start[2] = {50, 0};
         int count = 0;
@@ -310,7 +324,8 @@ int brick_fun(float u, float v, GzColor color)
         y = 10;
         
         while (y < ys) {
-            //drawBrick(x, y, x + brickWidth, y + brickHeight);
+            drawBrick(x, y, x + brickWidth, y + brickHeight);
+            brickCount++;
             if (x + brickWidth + brickBlank <= xs) {
                 x += brickBlank + brickWidth;
             }
@@ -343,7 +358,7 @@ int brick_fun(float u, float v, GzColor color)
             shadow2[i] = 1;
             shadow3[i] = 1;
             for (int j = 0; j < 8; j++) {
-                shadows[j][i] = 1;
+                shadows[j][i] = brick[i];//1;
             }
         }        
         
@@ -361,10 +376,18 @@ int brick_fun(float u, float v, GzColor color)
         grass_fun(grass, 20, 25);
         
         reset = 0;
+        
+        for (int i = 0; i < xs; i++) {
+            for (int j = 0; j < ys; j++) {
+                if (brickId[getSub(i, j)] == 0)
+                    printf("at %d, %d: %d\n", i, j, brickId[getSub(i, j)]);
+            }
+        }
     }
     
     /* bounds-test u,v to make sure nothing will overflow image array bounds */
     if (u < 0 || u > 1 || v < 0 || v > 1) {
+        printf("Invalid uv\n");
         color[0] = color[1] = color[2] = 0;
         return GZ_FAILURE;
     }
@@ -434,7 +457,8 @@ int brick_fun(float u, float v, GzColor color)
          */
     }
     
-    return GZ_SUCCESS;
+    //printf("return: %d, %d\n", x, y);
+    return brickId[(int)y * xs + (int)x];
 }
 
 /* White */
