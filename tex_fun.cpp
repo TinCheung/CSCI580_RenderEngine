@@ -257,7 +257,7 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
     prevR = white;
     
     //printf("w: %d\n", white);
-    if (white > 40) {
+    if (white > 101) {
         for (int i = minx; i < maxx; i++)
             for (int j = miny; j < maxy; j++) {
                 sub = getSub(i, j);
@@ -314,7 +314,7 @@ int brick_fun(float u, float v, GzColor color)
         
         int brickHeight = 50;
         int brickWidth = 100;
-        int brickBlank = 15;
+        int brickBlank = 0;
         brickCount = 101;
         
         int start[2] = {50, 0};
@@ -372,7 +372,7 @@ int brick_fun(float u, float v, GzColor color)
             else
                 generateShadow(i * 5, shadows[i], false, true);
         }
-
+        
         
         grass_fun(grass, 20, 25);
         

@@ -65,7 +65,7 @@ int PenInkApplication::run()
     status |= GzNewRender(&render, GZ_Z_BUFFER_RENDER, display);
     
 #if 1 	/* set up app-defined camera if desired, else use camera defaults */
-    
+    /*
     camera.position[X] = 2;
     camera.position[Y] = 2;
     camera.position[Z] = 2;
@@ -77,7 +77,7 @@ int PenInkApplication::run()
     camera.worldup[X] = 1;
     camera.worldup[Y] = 0;
     camera.worldup[Z] = 0;
-    /*
+    */
     camera.position[X] = 13.2;
     camera.position[Y] = -8.7;
     camera.position[Z] = -14.8;
@@ -89,15 +89,15 @@ int PenInkApplication::run()
     camera.worldup[X] = -0.2;
     camera.worldup[Y] = 1.0;
     camera.worldup[Z] = 0.0;
-    */
+    
     camera.FOV = 53.7;              /* degrees */
     
     status |= GzPutCamera(render, &camera);
 #endif
     
-    //status |= GzPushMatrix(render, translateAndScale);
-    //status |= GzPushMatrix(render, rotateY);
-    //status |= GzPushMatrix(render, rotateX);
+    status |= GzPushMatrix(render, translateAndScale);
+    status |= GzPushMatrix(render, rotateY);
+    status |= GzPushMatrix(render, rotateX);
     
     for (int i = 0; i < 3; i++)
         render->flatcolor[i] = 0;
@@ -192,10 +192,10 @@ int PenInkApplication::run()
     render->flatcolor[0] = render->flatcolor[1] = render->flatcolor[2] = 0.5;
     
     if (status) exit(GZ_FAILURE);
-    //GzPenInkRender(render, tempTriangles.size(), triangles);
+    GzPenInkRender(render, (int)tempTriangles.size(), triangles);
     
-    setCube(triangles);
-    GzPenInkRender(render, 12, triangles);
+    //setCube(triangles);
+    //GzPenInkRender(render, 12, triangles);
     
     GzFlushDisplay2File(outfile, display);
     

@@ -151,7 +151,7 @@ int getTriangleIndexById(Triangle triangles[], int num, int triId)
 
 bool isToneDiff(Triangle triangle1, Triangle triangle2)
 {
-    float threshold = 1.1;
+    float threshold = 2.0;
     float ratio = triangle1.tone / triangle2.tone;
     ratio = ratio < 1 ? 1 / ratio : ratio;
     return ratio > threshold;

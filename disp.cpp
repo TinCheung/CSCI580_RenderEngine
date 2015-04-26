@@ -317,16 +317,18 @@ float findDistanceToNearestEdge(GzDisplay *display, int x, int y, int *minX, int
     int i, j, sub, pixelType;
     
     for (i = 0; i < display->xres; i++) {
-        sub = y * display->xres + i;
-        pixelType = display->fbuf[sub].type;
-        if (pixelType == ZBUFFER_EDGE) {
-            tempDistance = absf(i-x);
-            distance = tempDistance > distance ? distance : tempDistance;
-            *minY = y;
-            *minX = i;
+        for (j = 0; j < display->yres; j++) {
+            sub = j * display->xres + i;
+            pixelType = display->fbuf[sub].type;
+            if (pixelType == ZBUFFER_EDGE) {
+                tempDistance = absf(i-x);
+                distance = tempDistance > distance ? distance : tempDistance;
+                *minY = y;
+                *minX = i;
+            }
         }
     }
-    
+    /*
     for (j = 0; j < display->yres; j++) {
         sub = j * display->xres + x;
         pixelType = display->fbuf[sub].type;
@@ -335,7 +337,7 @@ float findDistanceToNearestEdge(GzDisplay *display, int x, int y, int *minX, int
             distance = tempDistance > distance ? distance : tempDistance;
         }
     }
-    
+    */
     return distance;
 }
 
@@ -445,7 +447,7 @@ void GzIndication(GzDisplay *display)
                 //printf("%f\n", distance);
                 //display->texId[sub] != 200
                 //distance > display->indicationFactor[minY * display->xres + minX]
-                if (distance > display->indicationFactor[minY * display->xres + minX]) {
+                if (distance > 4*display->indicationFactor[minY * display->xres + minX]) {
                     display->fbuf[sub].red = display->fbuf[sub].green =
                     display->fbuf[sub].blue = 4090;
                     //display->deletedTexId.push_back(display->texId[sub]);
@@ -472,8 +474,7 @@ void GzIndication(GzDisplay *display)
 void GzPrintTexId(GzDisplay *display)
 {
     
-    int i, j, sub, pixelType, minX, minY;
-    float distance, b, c;
+    int i, j, sub, pixelType;
     
     for (i = 0; i < display->xres; i++) {
         for (j = 0; j < display->yres; j++) {
@@ -481,6 +482,38 @@ void GzPrintTexId(GzDisplay *display)
             pixelType = display->fbuf[sub].type;
             if (pixelType == ZBUFFER_TEX) {
                 printf("at %d, %d. tex: %d\n", i, j, display->texId[sub]);
+            }
+        }
+    }
+}
+
+void GzContourCompletion(GzDisplay *display)
+{
+    int i, j, k, sub, pixelType, pixelType2, sub2;
+    bool draw;
+    
+    int dx[4] = {0, 0, 1, -1};
+    int dy[4] = {1, -1, 0, 0};
+    
+    for (i = 1; i < display->xres - 1; i++) {
+        for (j = 1; j < display->yres - 1; j++) {
+            sub = j * display->xres + i;
+            pixelType = display->fbuf[sub].type;
+            if (pixelType == ZBUFFER_TEX) {
+                draw = false;
+                for (k = 0; k < 4; k++) {
+                    sub2 = (j + dy[k]) * display->xres + i + dx[k];
+                    pixelType2 = display->fbuf[sub2].type;
+                    if (pixelType2 == ZBUFFER_BACKGROUND) {
+                        draw = true;
+                        break;
+                    }
+                }
+                if (draw) {
+                    display->fbuf[sub].red = display->fbuf[sub].green =
+                    display->fbuf[sub].blue = 0;
+                    display->fbuf[sub].type = ZBUFFER_EDGE;
+                }
             }
         }
     }
