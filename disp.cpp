@@ -8,7 +8,9 @@
 #include    "test.h"
 #include    <math.h>
 #include    "myRand.h"
+#include    <stack>
 
+#define DISTANCE_THRESHOLD 40
 
 int GzNewFrameBuffer(char** framebuffer, int width, int height)
 {
@@ -40,6 +42,8 @@ int GzNewDisplay(GzDisplay	**display, GzDisplayClass dispClass, int xRes, int yR
         (*display)->yres = yRes;
         (*display)->dispClass = dispClass;
         (*display)->fbuf = new GzPixel[yRes * xRes];
+        (*display)->indicationFactor = new float[yRes * xRes];
+        (*display)->texId = new int[yRes * xRes];
         
         if ((*display)->fbuf == NULL)
             return GZ_FAILURE;
@@ -96,6 +100,7 @@ int GzInitDisplay(GzDisplay	*display)
         display->fbuf[i].z = INT_MAX;
         display->fbuf[i].frontTriangleId = -1; // -1 inidicates the background.
         display->fbuf[i].type = ZBUFFER_BACKGROUND;
+        display->texId[i] = 0;
     }
     
     return GZ_SUCCESS;
@@ -138,7 +143,7 @@ int GzPutDisplayExt(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity
         display->fbuf[sub].frontTriangleId = triangleId;
     }
     else if (ftId == triangleId) {
-        printf("same %d, %d \n", ftId, triangleId);
+        //printf("same %d, %d \n", ftId, triangleId);
         display->fbuf[sub].red = r;
         display->fbuf[sub].green = g;
         display->fbuf[sub].blue = b;
@@ -146,6 +151,38 @@ int GzPutDisplayExt(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity
         display->fbuf[sub].z = z;
         display->fbuf[sub].type = type;
         display->fbuf[sub].frontTriangleId = triangleId;
+    }
+    return GZ_SUCCESS;
+}
+
+int GzPutDisplayExtForTex(GzDisplay *display, int i, int j, GzIntensity r, GzIntensity g, GzIntensity b, GzIntensity a, GzDepth z, int triangleId, int type, int texID)
+{
+    if (0 > j || j >= display->yres || 0 > i || i >= display->xres)
+        return GZ_FAILURE;
+    
+    int sub = j * display->xres + i;
+    int ftId = display->fbuf[sub].frontTriangleId; // == -1 ? triangleId : display->fbuf[sub].frontTriangleId;
+    
+    if ((display->fbuf[sub].z >= z && z > 0)) {
+        display->fbuf[sub].red = r;
+        display->fbuf[sub].green = g;
+        display->fbuf[sub].blue = b;
+        display->fbuf[sub].alpha = a;
+        display->fbuf[sub].z = z;
+        display->fbuf[sub].type = type;
+        display->fbuf[sub].frontTriangleId = triangleId;
+        display->texId[sub] = texID;
+    }
+    else if (ftId == triangleId) {
+        //printf("same %d, %d \n", ftId, triangleId);
+        display->fbuf[sub].red = r;
+        display->fbuf[sub].green = g;
+        display->fbuf[sub].blue = b;
+        display->fbuf[sub].alpha = a;
+        display->fbuf[sub].z = z;
+        display->fbuf[sub].type = type;
+        display->fbuf[sub].frontTriangleId = triangleId;
+        display->texId[sub] = texID;
     }
     return GZ_SUCCESS;
 }
@@ -272,18 +309,21 @@ void GzGetTrianglesVisibility(GzDisplay *display, int num, bool visibility[])
     }
 }
 
-float findDistanceToNearestEdge(GzDisplay *display, int x, int y)
+float findDistanceToNearestEdge(GzDisplay *display, int x, int y, int *minX, int *minY)
 {
     float distance = 10000000;
     float tempDistance;
     
     int i, j, sub, pixelType;
+    
     for (i = 0; i < display->xres; i++) {
         sub = y * display->xres + i;
         pixelType = display->fbuf[sub].type;
         if (pixelType == ZBUFFER_EDGE) {
-            tempDistance = sqrtf(powf(i - x, 2));
+            tempDistance = absf(i-x);
             distance = tempDistance > distance ? distance : tempDistance;
+            *minY = y;
+            *minX = i;
         }
     }
     
@@ -299,28 +339,148 @@ float findDistanceToNearestEdge(GzDisplay *display, int x, int y)
     return distance;
 }
 
+void GzInitIndicationFactor(GzDisplay *display)
+{
+    int i, j, sub, temp;
+    
+    temp = 5;
+    int sign = 1;
+    for (i = 0; i < display->xres; i++) {
+        for (j = 0; j < display->yres; j++) {
+            float random = rand2() % 2;
+            sub = j * display->xres + i;
+            if (temp > 15 || temp < 5) {
+                sign *= -1;
+                temp = temp > 15 ? 15 : 5;
+            }
+            else {
+                temp += random * sign;
+            }
+            
+            float noise = temp / 10.0;
+            //printf("noise: %f\n", noise);
+            display->indicationFactor[sub] = absf(noise) * DISTANCE_THRESHOLD;
+        }
+    }
+}
+/*
+bool deletedTextureInNeighbourhood(GzDisplay *display, int x, int y)
+{
+    stack<int> nX;
+    stack<int> nY;
+    
+    nX.push(x);
+    nY.push(y);
+    
+    int i, j;
+    int texId = display->texId[y * display->yres + x];
+    
+    bool visited[display->xres * display->yres];
+    
+    for (i = 0; i < display->xres * display->yres; i++)visited[i] = false;
+    
+    while (!nX.empty()) {
+        int tempx = nX.top();
+        int tempy = nY.top();
+        
+        nX.pop();
+        nY.pop();
+        
+        if (display->fbuf[tempy * display->xres + tempx].red == 4905)
+            return true;
+        
+        for (i = tempx - 1; i <= tempx + 1; i++) {
+            for (j = tempy - 1; j <= tempy + 1; j++) {
+                if (i == tempx && j == tempy) continue;
+                int sub = j * display->xres + i;
+                if (display->fbuf[sub].type == ZBUFFER_TEX && display->texId[sub] == texId && !visited[j * display->xres + i])
+                {
+                    nX.push(i);
+                    nY.push(j);
+                    visited[j * display->xres + i] = true;
+                }
+            }
+        }
+    }
+    
+    return false;
+}*/
+
+bool deletedTextureInNeighbourhood(GzDisplay *display, int x, int y)
+{
+    int i, j;
+    
+    for (i = x - 100; i <= x + 100; i++) {
+        for (j = y - 100; j <= y + 100; j++) {
+            int sub = j * display->xres + i;
+            if (display->fbuf[sub].type == ZBUFFER_TEX && display->texId[sub] == display->texId[y * display->xres + x]&& display->fbuf[sub].red == 4090)
+            {
+                return true;
+            }
+        }
+    }
+    
+    return false;
+}
+
 void GzIndication(GzDisplay *display)
 {
-    int i, j, sub, pixelType;
+    int i, j, sub, pixelType, minX, minY;
     float distance, b, c;
     
-    b = 0.21;
-    c = 0.431;
+    b = 0.4;
+    c = 0.8;
+    GzInitIndicationFactor(display);
     for (i = 0; i < display->xres; i++) {
         printf("i: %d\n", i);
         for (j = 0; j < display->yres; j++) {
             sub = j * display->xres + i;
             pixelType = display->fbuf[sub].type;
             if (pixelType == ZBUFFER_TEX) {
-                distance = findDistanceToNearestEdge(display, i, j);
-                float random = sin(rand2() % 100 * PI / 180);
-                random  = random > 0 ? random : 0;
-                distance = pow(b * distance, -1 * c) * random;
-                //printf("distance: %f\n", distance);
-                if (distance < 0.6) {
+                distance = findDistanceToNearestEdge(display, i, j, &minX, &minY);
+                //distance = pow(b * distance, -1 * c);
+                //int random = rand2() % 100 + 50;
+                //printf("at: %d, %d, near: %d, %d, d: %f, f: %f, texId: %d\n", i, j, minX, minY, distance, display->indicationFactor[minY * display->xres + minX], display->texId[minY * display->xres + minX]);
+                //distance = distance * display->indicationFactor[minY * display->xres + minX];
+                //printf("%f\n", distance);
+                //display->texId[sub] != 200
+                //distance > display->indicationFactor[minY * display->xres + minX]
+                if (distance > display->indicationFactor[minY * display->xres + minX]) {
                     display->fbuf[sub].red = display->fbuf[sub].green =
-                    display->fbuf[sub].blue = 4095;
+                    display->fbuf[sub].blue = 4090;
+                    //display->deletedTexId.push_back(display->texId[sub]);
                 }
+            }
+        }
+    }
+    
+    for (i = 0; i < display->xres; i++) {
+        printf("i2: %d\n", i);
+        for (j = 0; j < display->yres; j++) {
+            sub = j * display->xres + i;
+            pixelType = display->fbuf[sub].type;
+            if (pixelType == ZBUFFER_TEX && display->fbuf[sub].red != 4090) {
+                if (deletedTextureInNeighbourhood(display, i, j)) {
+                    display->fbuf[sub].red = display->fbuf[sub].green =
+                    display->fbuf[sub].blue = 4090;
+                }
+            }
+        }
+    }
+}
+
+void GzPrintTexId(GzDisplay *display)
+{
+    
+    int i, j, sub, pixelType, minX, minY;
+    float distance, b, c;
+    
+    for (i = 0; i < display->xres; i++) {
+        for (j = 0; j < display->yres; j++) {
+            sub = j * display->xres + i;
+            pixelType = display->fbuf[sub].type;
+            if (pixelType == ZBUFFER_TEX) {
+                printf("at %d, %d. tex: %d\n", i, j, display->texId[sub]);
             }
         }
     }

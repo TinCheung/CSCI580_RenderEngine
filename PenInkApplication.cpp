@@ -26,7 +26,7 @@ int PenInkApplication::run()
 {
     vector<GzTriangle> tempTriangles;
     GzTriangle *triangles;
-    // setCube(triangles);
+    
     
     int width = 1024;    // frame buffer and display width
     int height = 1024;   // frame buffer and display height
@@ -65,10 +65,10 @@ int PenInkApplication::run()
     status |= GzNewRender(&render, GZ_Z_BUFFER_RENDER, display);
     
 #if 1 	/* set up app-defined camera if desired, else use camera defaults */
-    /*
-    camera.position[X] = 1;
-    camera.position[Y] = 1;
-    camera.position[Z] = 1;
+    
+    camera.position[X] = 2;
+    camera.position[Y] = 2;
+    camera.position[Z] = 2;
     
     camera.lookat[X] = 0;
     camera.lookat[Y] = 0;
@@ -77,7 +77,7 @@ int PenInkApplication::run()
     camera.worldup[X] = 1;
     camera.worldup[Y] = 0;
     camera.worldup[Z] = 0;
-    */
+    /*
     camera.position[X] = 13.2;
     camera.position[Y] = -8.7;
     camera.position[Z] = -14.8;
@@ -89,15 +89,15 @@ int PenInkApplication::run()
     camera.worldup[X] = -0.2;
     camera.worldup[Y] = 1.0;
     camera.worldup[Z] = 0.0;
-    
+    */
     camera.FOV = 53.7;              /* degrees */
     
     status |= GzPutCamera(render, &camera);
 #endif
     
-    status |= GzPushMatrix(render, translateAndScale);
-    status |= GzPushMatrix(render, rotateY);
-    status |= GzPushMatrix(render, rotateX);
+    //status |= GzPushMatrix(render, translateAndScale);
+    //status |= GzPushMatrix(render, rotateY);
+    //status |= GzPushMatrix(render, rotateX);
     
     for (int i = 0; i < 3; i++)
         render->flatcolor[i] = 0;
@@ -166,6 +166,7 @@ int PenInkApplication::run()
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 t.vertexes[i][j] = vertexList[i][j];
+                t.vertexesNormals[i][j] = normalList[i][j];
                 if (j < 2)
                     t.uv[i][j] = uvList[i][j];
             }
@@ -179,6 +180,7 @@ int PenInkApplication::run()
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 triangles[p].vertexes[i][j] = tempTriangles[p].vertexes[i][j];
+                triangles[p].vertexesNormals[i][j] = tempTriangles[p].vertexesNormals[i][j];
                 if (j < 2)
                     triangles[p].uv[i][j] = tempTriangles[p].uv[i][j];
             }
@@ -190,7 +192,10 @@ int PenInkApplication::run()
     render->flatcolor[0] = render->flatcolor[1] = render->flatcolor[2] = 0.5;
     
     if (status) exit(GZ_FAILURE);
-    GzPenInkRender(render, tempTriangles.size(), triangles);
+    //GzPenInkRender(render, tempTriangles.size(), triangles);
+    
+    setCube(triangles);
+    GzPenInkRender(render, 12, triangles);
     
     GzFlushDisplay2File(outfile, display);
     
@@ -235,6 +240,18 @@ void setCube(GzTriangle triangles[])
     triangles[0].uv[1][0] = 0; triangles[0].uv[1][1] = 1;
     triangles[0].uv[2][0] = 1; triangles[0].uv[2][1] = 0;
     
+    triangles[0].vertexesNormals[0][0] = 0.5;
+    triangles[0].vertexesNormals[0][1] = -0.5;
+    triangles[0].vertexesNormals[0][2] = -0.5;
+    
+    triangles[0].vertexesNormals[1][0] = -0.5;
+    triangles[0].vertexesNormals[1][1] = -0.5;
+    triangles[0].vertexesNormals[1][2] = -0.5;
+    
+    triangles[0].vertexesNormals[2][0] = 0.5;
+    triangles[0].vertexesNormals[2][1] = 0.5;
+    triangles[0].vertexesNormals[2][2] = -0.5;
+    
     setPoint(triangles[1].vertexes[0], v2);
     setPoint(triangles[1].vertexes[1], v3);
     setPoint(triangles[1].vertexes[2], v4);
@@ -243,9 +260,33 @@ void setCube(GzTriangle triangles[])
     triangles[1].uv[1][0] = 1; triangles[1].uv[1][1] = 0;
     triangles[1].uv[2][0] = 1; triangles[1].uv[2][1] = 1;
     
+    triangles[1].vertexesNormals[0][0] = -0.5;
+    triangles[1].vertexesNormals[0][1] = -0.5;
+    triangles[1].vertexesNormals[0][2] = -0.5;
+    
+    triangles[1].vertexesNormals[1][0] = 0.5;
+    triangles[1].vertexesNormals[1][1] = 0.5;
+    triangles[1].vertexesNormals[1][2] = -0.5;
+    
+    triangles[1].vertexesNormals[2][0] = -0.5;
+    triangles[1].vertexesNormals[2][1] = 0.5;
+    triangles[1].vertexesNormals[2][2] = -0.5;
+    
     setPoint(triangles[2].vertexes[0], v1);
     setPoint(triangles[2].vertexes[1], v3);
     setPoint(triangles[2].vertexes[2], v5);
+    
+    triangles[2].vertexesNormals[0][0] = 0.5;
+    triangles[2].vertexesNormals[0][1] = -0.5;
+    triangles[2].vertexesNormals[0][2] = -0.5;
+    
+    triangles[2].vertexesNormals[1][0] = 0.5;
+    triangles[2].vertexesNormals[1][1] = 0.5;
+    triangles[2].vertexesNormals[1][2] = -0.5;
+    
+    triangles[2].vertexesNormals[2][0] = 0.5;
+    triangles[2].vertexesNormals[2][1] = -0.5;
+    triangles[2].vertexesNormals[2][2] = 0.5;
     
     triangles[2].uv[0][0] = 0; triangles[2].uv[0][1] = 0;
     triangles[2].uv[1][0] = 1; triangles[2].uv[1][1] = 0;
@@ -259,9 +300,33 @@ void setCube(GzTriangle triangles[])
     triangles[3].uv[1][0] = 0; triangles[3].uv[1][1] = 1;
     triangles[3].uv[2][0] = 1; triangles[3].uv[2][1] = 1;
     
+    triangles[3].vertexesNormals[0][0] = 0.5;
+    triangles[3].vertexesNormals[0][1] = 0.5;
+    triangles[3].vertexesNormals[0][2] = -0.5;
+    
+    triangles[3].vertexesNormals[1][0] = 0.5;
+    triangles[3].vertexesNormals[1][1] = -0.5;
+    triangles[3].vertexesNormals[1][2] = 0.5;
+    
+    triangles[3].vertexesNormals[2][0] = 0.5;
+    triangles[3].vertexesNormals[2][1] = 0.5;
+    triangles[3].vertexesNormals[2][2] = 0.5;
+    
     setPoint(triangles[4].vertexes[0], v3);
     setPoint(triangles[4].vertexes[1], v4);
     setPoint(triangles[4].vertexes[2], v7);
+
+    triangles[4].vertexesNormals[0][0] = 0.5;
+    triangles[4].vertexesNormals[0][1] = 0.5;
+    triangles[4].vertexesNormals[0][2] = -0.5;
+    
+    triangles[4].vertexesNormals[1][0] = -0.5;
+    triangles[4].vertexesNormals[1][1] = 0.5;
+    triangles[4].vertexesNormals[1][2] = -0.5;
+    
+    triangles[4].vertexesNormals[2][0] = 0.5;
+    triangles[4].vertexesNormals[2][1] = 0.5;
+    triangles[4].vertexesNormals[2][2] = 0.5;
     
     triangles[4].uv[0][0] = 0; triangles[4].uv[0][1] = 0;
     triangles[4].uv[1][0] = 1; triangles[4].uv[1][1] = 0;
@@ -270,6 +335,18 @@ void setCube(GzTriangle triangles[])
     setPoint(triangles[5].vertexes[0], v4);
     setPoint(triangles[5].vertexes[1], v7);
     setPoint(triangles[5].vertexes[2], v8);
+
+    triangles[5].vertexesNormals[0][0] = -0.5;
+    triangles[5].vertexesNormals[0][1] = 0.5;
+    triangles[5].vertexesNormals[0][2] = -0.5;
+    
+    triangles[5].vertexesNormals[1][0] = 0.5;
+    triangles[5].vertexesNormals[1][1] = 0.5;
+    triangles[5].vertexesNormals[1][2] = 0.5;
+    
+    triangles[5].vertexesNormals[2][0] = -0.5;
+    triangles[5].vertexesNormals[2][1] = 0.5;
+    triangles[5].vertexesNormals[2][2] = 0.5;
     
     triangles[5].uv[0][0] = 1; triangles[5].uv[0][1] = 0;
     triangles[5].uv[1][0] = 0; triangles[5].uv[1][1] = 1;
@@ -278,6 +355,18 @@ void setCube(GzTriangle triangles[])
     setPoint(triangles[6].vertexes[0], v4);
     setPoint(triangles[6].vertexes[1], v2);
     setPoint(triangles[6].vertexes[2], v8);
+
+    triangles[6].vertexesNormals[0][0] = -0.5;
+    triangles[6].vertexesNormals[0][1] = 0.5;
+    triangles[6].vertexesNormals[0][2] = -0.5;
+    
+    triangles[6].vertexesNormals[1][0] = -0.5;
+    triangles[6].vertexesNormals[1][1] = -0.5;
+    triangles[6].vertexesNormals[1][2] = -0.5;
+    
+    triangles[6].vertexesNormals[2][0] = -0.5;
+    triangles[6].vertexesNormals[2][1] = 0.5;
+    triangles[6].vertexesNormals[2][2] = 0.5;
     
     triangles[6].uv[0][0] = 0; triangles[6].uv[0][1] = 0;
     triangles[6].uv[1][0] = 1; triangles[6].uv[1][1] = 0;
@@ -287,6 +376,18 @@ void setCube(GzTriangle triangles[])
     setPoint(triangles[7].vertexes[1], v8);
     setPoint(triangles[7].vertexes[2], v6);
     
+    triangles[7].vertexesNormals[0][0] = -0.5;
+    triangles[7].vertexesNormals[0][1] = -0.5;
+    triangles[7].vertexesNormals[0][2] = -0.5;
+    
+    triangles[7].vertexesNormals[1][0] = -0.5;
+    triangles[7].vertexesNormals[1][1] = 0.5;
+    triangles[7].vertexesNormals[1][2] = 0.5;
+    
+    triangles[7].vertexesNormals[2][0] = -0.5;
+    triangles[7].vertexesNormals[2][1] = -0.5;
+    triangles[7].vertexesNormals[2][2] = 0.5;
+
     triangles[7].uv[0][0] = 1; triangles[7].uv[0][1] = 0;
     triangles[7].uv[1][0] = 0; triangles[7].uv[1][1] = 1;
     triangles[7].uv[2][0] = 1; triangles[7].uv[2][1] = 1;
@@ -294,6 +395,18 @@ void setCube(GzTriangle triangles[])
     setPoint(triangles[8].vertexes[0], v5);
     setPoint(triangles[8].vertexes[1], v7);
     setPoint(triangles[8].vertexes[2], v6);
+
+    triangles[8].vertexesNormals[0][0] = 0.5;
+    triangles[8].vertexesNormals[0][1] = -0.5;
+    triangles[8].vertexesNormals[0][2] = 0.5;
+    
+    triangles[8].vertexesNormals[1][0] = 0.5;
+    triangles[8].vertexesNormals[1][1] = 0.5;
+    triangles[8].vertexesNormals[1][2] = 0.5;
+    
+    triangles[8].vertexesNormals[2][0] = -0.5;
+    triangles[8].vertexesNormals[2][1] = -0.5;
+    triangles[8].vertexesNormals[2][2] = 0.5;
     
     triangles[8].uv[0][0] = 0; triangles[8].uv[0][1] = 0;
     triangles[8].uv[1][0] = 0; triangles[8].uv[1][1] = 1;
@@ -302,6 +415,18 @@ void setCube(GzTriangle triangles[])
     setPoint(triangles[9].vertexes[0], v7);
     setPoint(triangles[9].vertexes[1], v6);
     setPoint(triangles[9].vertexes[2], v8);
+
+    triangles[9].vertexesNormals[0][0] = 0.5;
+    triangles[9].vertexesNormals[0][1] = 0.5;
+    triangles[9].vertexesNormals[0][2] = 0.5;
+    
+    triangles[9].vertexesNormals[1][0] = -0.5;
+    triangles[9].vertexesNormals[1][1] = -0.5;
+    triangles[9].vertexesNormals[1][2] = 0.5;
+    
+    triangles[9].vertexesNormals[2][0] = -0.5;
+    triangles[9].vertexesNormals[2][1] = 0.5;
+    triangles[9].vertexesNormals[2][2] = 0.5;
     
     triangles[9].uv[0][0] = 0; triangles[9].uv[0][1] = 1;
     triangles[9].uv[1][0] = 1; triangles[9].uv[1][1] = 0;
@@ -310,6 +435,18 @@ void setCube(GzTriangle triangles[])
     setPoint(triangles[10].vertexes[0], v1);
     setPoint(triangles[10].vertexes[1], v2);
     setPoint(triangles[10].vertexes[2], v5);
+
+    triangles[10].vertexesNormals[0][0] = 0.5;
+    triangles[10].vertexesNormals[0][1] = -0.5;
+    triangles[10].vertexesNormals[0][2] = -0.5;
+    
+    triangles[10].vertexesNormals[1][0] = -0.5;
+    triangles[10].vertexesNormals[1][1] = -0.5;
+    triangles[10].vertexesNormals[1][2] = -0.5;
+    
+    triangles[10].vertexesNormals[2][0] = 0.5;
+    triangles[10].vertexesNormals[2][1] = -0.5;
+    triangles[10].vertexesNormals[2][2] = 0.5;
     
     triangles[10].uv[0][0] = 0; triangles[10].uv[0][1] = 0;
     triangles[10].uv[1][0] = 0; triangles[10].uv[1][1] = 1;
@@ -318,6 +455,18 @@ void setCube(GzTriangle triangles[])
     setPoint(triangles[11].vertexes[0], v2);
     setPoint(triangles[11].vertexes[1], v5);
     setPoint(triangles[11].vertexes[2], v6);
+
+    triangles[11].vertexesNormals[0][0] = -0.5;
+    triangles[11].vertexesNormals[0][1] = -0.5;
+    triangles[11].vertexesNormals[0][2] = -0.5;
+    
+    triangles[11].vertexesNormals[1][0] = 0.5;
+    triangles[11].vertexesNormals[1][1] = -0.5;
+    triangles[11].vertexesNormals[1][2] = 0.5;
+    
+    triangles[11].vertexesNormals[2][0] = -0.5;
+    triangles[11].vertexesNormals[2][1] = -0.5;
+    triangles[11].vertexesNormals[2][2] = 0.5;
     
     triangles[11].uv[0][0] = 0; triangles[11].uv[0][1] = 1;
     triangles[11].uv[1][0] = 1; triangles[11].uv[1][1] = 0;
@@ -339,6 +488,8 @@ void setCube(GzTriangle triangles[])
     triangles[13].uv[1][0] = 1; triangles[11].uv[1][1] = 0;
     triangles[13].uv[2][0] = 1; triangles[11].uv[2][1] = 1;
     
-    for (int i = 0; i < 14; i++)
+    for (int i = 0; i < 12; i++) {
+        for (int j = 0; j < 3; j++)normalization(triangles[i].vertexesNormals[j]);
         triangles[i].triangleId = i;
+    }
 }

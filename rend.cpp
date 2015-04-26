@@ -711,7 +711,7 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
         minY = MAXYRES + 1;
         
         int j, k, m;
-        GzPoint vertexes[3];
+        GzPoint vertexes[3], vertexNormal[3];;
         
         for (j = 0; j < 3; j++) {
             // Get the vertexes data.
@@ -723,11 +723,17 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
             matrixMultiplyVector(render->Ximage[render->matlevel - 1], vertexes[j], vertexes[j]);
             //printVector(vertexes[j]);
             
+            // Get the normal data.
+            for (k = 0; k < 3; k++) {
+                vertexNormal[j][k] = triangles[t].vertexesNormals[j][k];
+            }
+            vertexNormal[j][3] = 1;
+            
             // Get the texture uv data.
             for (k = 0; k < 2; k++) {
                 vertexUV[j][k] = triangles[t].uv[j][k];
             }
-            
+            matrixMultiplyVector(render->Xnorm[render->matlevel - 1], vertexNormal[j], vertexNormal[j]);
         }
         
         for(j = 0; j < 3; j++) {
@@ -841,26 +847,44 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
                     }
                     
                     // Get the texture color.
-                    textureColor[0] = triangles[t].tone;
+                    GzVector pointNormal;
+                    
+                    for (int l = 0; l < 3; l++) {
+                        pointNormal[l] = comb[0] * vertexNormal[0][l]
+                        + comb[1] * vertexNormal[1][l]
+                        + comb[2] * vertexNormal[2][l];
+                    }
+                    //GzShadePoint(tone, pointNormal, eyeVector, render);
+                    GzShadePoint(tone, normal, eyeVector, render);
+                    
+                    textureColor[0] = tone[0];
+                    int texID;
                     if (isnan(curUV[0]) || isnan(curUV[1]))
                     {
                         textureColor[0] = textureColor[1] = textureColor[2] = 1;
                     }
                     //printf ("x: %d, y: %d, u: %f, v: %f, Vzi: %f\n", k, j, curUV[0], curUV[1], VzI);
                     else {
-                        (*(render->tex_fun))(curUV[0], curUV[1], textureColor);
+                        texID = (*(render->tex_fun))(curUV[0], curUV[1], textureColor);
+                        //printf("%d\n", texID);
+                        //render->display->texId[j * render->display->xres + k] = texID;
                     }
                     
                     // for (int q = 0; q < 3; q++) textureColor[q] = triangles[t].tone;
                     
                     //printf("x: %d, y: %d, z: %f\n", k, j, zValue);
                     // draw the point
-                    GzPutDisplayExt(render->display, k, j, textureColor[0] * 4095, textureColor[0] * 4095, textureColor[0] * 4095, 0, zValue, triangles[t].triangleId, ZBUFFER_TEX);
+                    if (k == 567 && j == 550)
+                        k = 567;
+                    GzPutDisplayExtForTex(render->display, k, j, textureColor[0] * 4095, textureColor[0] * 4095, textureColor[0] * 4095, 0, zValue, triangles[t].triangleId, ZBUFFER_TEX, texID);
+                    
                     //GzPutDisplay(render->display, k, j, textureColor[0] * 4095, textureColor[0] * 4095, textureColor[0] * 4095, 0, zValue);
                 }
             }
         }
     }
+    
+    //GzPrintTexId(render->display);
     
     // Get the triangles visibility.
     bool *visibity = new bool[triangleNum];
@@ -871,12 +895,12 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
     getEdgesFromTriangles(triangles, triangleNum, &edges);
     
     for (int i = 0; i < edges.size(); i++) {
-        //if (checkEdgeTonesDiff(triangles, triangleNum, edges[i])) drawEdge(render->display, edges[i], 2);
+        if (checkEdgeTonesDiff(triangles, triangleNum, edges[i])) drawEdge(render->display, edges[i], 2);
         if (!isAllVisible(triangles, triangleNum, visibity, edges[i]))
             drawEdge(render->display, edges[i], 2);
     }
     
-    // GzIndication(render->display);
+    GzIndication(render->display);
     
     return GZ_SUCCESS;
 }

@@ -7,7 +7,8 @@
 #include    "stroke.h"
 
 GzColor	*image;
-float *shadow1, *shadow2, *shadow3, *brick, *grass;
+float *shadow1, *shadow2, *shadow3, *brick, *grass, *shadows[8];
+int *brickId, brickCount;
 int xs, ys;
 int reset = 1;
 int prevR = -1;
@@ -18,7 +19,7 @@ int getSub(int x, int y)
     return y * xs + x < xs * ys ? y * xs + x : xs + ys - 1;
 }
 
-void generateShadow(int density, float img[], bool horizonShadow = false)
+void generateShadow(int density, float img[], bool verticalShadow = false, bool horizonShadow = false)
 {
     int x, length, sub;
     int *wave, *thick;
@@ -28,24 +29,31 @@ void generateShadow(int density, float img[], bool horizonShadow = false)
     
     int thickness = 2;
     
-    do {
-        wave = new int[length];
-        thick = new int[length];
+    if (verticalShadow) {
+        do {
+            wave = new int[length];
+            thick = new int[length];
         
-        getWaveAndThickness(length, thickness, thick, wave, 5);
-        for (int i = 0; i < ys; i++) {
-            for (int j = 0; j <= thick[i]; j++) {
-                sub = getSub(x + wave[i] + j, i);
-                if (reservedForWhite[sub]) continue;
-                img[sub] = 0;
+            getWaveAndThickness(length, thickness, thick, wave, 5);
+            for (int i = 0; i < ys; i++) {
+                for (int j = 0; j <= thick[i]; j++) {
+                    sub = getSub(x + wave[i] + j, i);
+                    if (reservedForWhite[sub]) continue;
+                    img[sub] = 0;
+                }
             }
-        }
         
-        delete [] wave;
-        delete [] thick;
+            delete [] wave;
+            delete [] thick;
         
-        x += density + rand2() % 5 - 2;
-    } while (x < xs);
+            x += density + rand2() % 5 - 2;
+            int random = rand2() % 100;
+            if (random < 20) {
+                x += rand2() % 30;
+            }
+            
+        } while (x < xs);
+    }
     
     if (horizonShadow) {
         length = xs;
@@ -66,6 +74,11 @@ void generateShadow(int density, float img[], bool horizonShadow = false)
             delete [] thick;
             
             y += density + rand2() % 5 - 2;
+            
+            int random = rand2() % 100;
+            if (random < 20) {
+                y += rand2() % 30;
+            }
         } while(y < ys);
     }
 }
@@ -154,6 +167,13 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
     int thickness = 2;
     
     
+    for (i = minx; i <= maxx; i++)
+        for (j = miny; j <= maxy; j++){
+            sub = getSub(i, j);
+            brickId[sub] = brickCount;
+            //printf("%d\n", brickCount);
+        }
+    
     for (i = minx; i < maxx; i++) {
         length = maxx - minx + 10;
         wave = new int[length];
@@ -165,6 +185,7 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
             for (k = 0; k <= thickness; k++) {
                 sub = getSub(j, miny + wave[j - minx] + k);
                 brick[sub] = 0;
+                brickId[sub] = brickCount;
             }
         }
         
@@ -183,6 +204,7 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
             for (k = 0; k <= thickness; k++) {
                 sub = getSub(j, maxy + wave[j - minx] + k);
                 brick[sub] = 0;
+                brickId[sub] = brickCount;
             }
         }
         
@@ -201,6 +223,7 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
             for (k = 0; k <= thickness; k++) {
                 sub = getSub(minx + wave[j - miny] + k, j);
                 brick[sub] = 0;
+                brickId[sub] = brickCount;
             }
         }
         
@@ -219,6 +242,7 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
             for (k = 0; k <= thickness; k++) {
                 sub = getSub(maxx + wave[j - miny] + k, j);
                 brick[sub] = 0;
+                brickId[sub] = brickCount;
             }
         }
         
@@ -232,9 +256,8 @@ void drawBrick(int minx, int miny, int maxx, int maxy)
     }
     prevR = white;
     
-    printf("w: %d\n", white);
+    //printf("w: %d\n", white);
     if (white > 40) {
-        
         for (int i = minx; i < maxx; i++)
             for (int j = miny; j < maxy; j++) {
                 sub = getSub(i, j);
@@ -278,6 +301,7 @@ int brick_fun(float u, float v, GzColor color)
     if (reset) {
         xs = ys = 1000;
         brick = new float[xs * ys];
+        brickId = new int[xs * ys];
         grass = new float[xs * ys];
         reservedForWhite = new bool[xs * ys];
         
@@ -285,11 +309,13 @@ int brick_fun(float u, float v, GzColor color)
             brick[i] = 1;
             grass[i] = 1;
             reservedForWhite[i] = false;
+            brickId[i] = 0;
         }
         
         int brickHeight = 50;
         int brickWidth = 100;
         int brickBlank = 15;
+        brickCount = 101;
         
         int start[2] = {50, 0};
         int count = 0;
@@ -298,7 +324,8 @@ int brick_fun(float u, float v, GzColor color)
         y = 10;
         
         while (y < ys) {
-            //drawBrick(x, y, x + brickWidth, y + brickHeight);
+            drawBrick(x, y, x + brickWidth, y + brickHeight);
+            brickCount++;
             if (x + brickWidth + brickBlank <= xs) {
                 x += brickBlank + brickWidth;
             }
@@ -314,6 +341,13 @@ int brick_fun(float u, float v, GzColor color)
         shadow2 = new float[xs * ys];
         shadow3 = new float[xs * ys];
         
+        for (int i =0; i < 8; i++) {
+            shadows[i] = new float[xs * ys];
+            if (shadows[i] == NULL) {
+                printf("unable to create shadow tex.\n");
+            }
+        }
+        
         for (int i = 0; i < xs * ys; i++) {
             /*
             shadow1[i] = brick[i];
@@ -323,19 +357,38 @@ int brick_fun(float u, float v, GzColor color)
             shadow1[i] = 1;
             shadow2[i] = 1;
             shadow3[i] = 1;
+            for (int j = 0; j < 8; j++) {
+                shadows[j][i] = brick[i];//1;
+            }
         }        
         
-        generateShadow(30, shadow1, true);
-        generateShadow(20, shadow2, true);
-        generateShadow(10, shadow3, true);
+        generateShadow(30, shadow1, false, true);
+        generateShadow(20, shadow2, true, true);
+        generateShadow(10, shadow3, true, true);
+        
+        for (int i = 0; i < 8; i++) {
+            if (i < 4)
+                generateShadow(i * 5, shadows[i], true, true);
+            else
+                generateShadow(i * 5, shadows[i], false, true);
+        }
+
         
         grass_fun(grass, 20, 25);
         
         reset = 0;
+        
+        for (int i = 0; i < xs; i++) {
+            for (int j = 0; j < ys; j++) {
+                if (brickId[getSub(i, j)] == 0)
+                    printf("at %d, %d: %d\n", i, j, brickId[getSub(i, j)]);
+            }
+        }
     }
     
     /* bounds-test u,v to make sure nothing will overflow image array bounds */
     if (u < 0 || u > 1 || v < 0 || v > 1) {
+        printf("Invalid uv\n");
         color[0] = color[1] = color[2] = 0;
         return GZ_FAILURE;
     }
@@ -345,13 +398,29 @@ int brick_fun(float u, float v, GzColor color)
     
     float tone = color[0];
     float *shadow;
-    if (tone < 0.2) shadow = shadow3;
-    else if (tone < 0.7) shadow = shadow2;
+
+    tone *= 10;
+    if (tone >= 8) {
+        color[0] = color[1] = color[2] = 1;
+        return GZ_SUCCESS;
+    }
     else {
+        tone  = tone > 7 ? 7 : tone;
+        shadow = shadows[(int)tone];
+    }
+    
+    /*
+    if (tone < 0.2) shadow = shadow3;
+    else if (tone < 0.4) shadow = shadow2;
+    else if (tone < 0.7) {
         shadow = shadow1;
         // color[0] = color[1] = color[2] = 1;
         // return GZ_SUCCESS;
     }
+    else {
+        color[0] = color[1] = color[2] = 1;
+        return GZ_SUCCESS;
+    }*/
     /*
     for (int i = 0; i < 3; i++)
         color[i] = brick[y * xs + x];
@@ -390,7 +459,8 @@ int brick_fun(float u, float v, GzColor color)
          */
     }
     
-    return GZ_SUCCESS;
+    //printf("return: %d, %d\n", x, y);
+    return brickId[(int)y * xs + (int)x];
 }
 
 /* White */
