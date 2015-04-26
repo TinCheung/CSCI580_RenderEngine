@@ -325,7 +325,7 @@ int brick_fun(float u, float v, GzColor color)
             shadow3[i] = 1;
         }        
         
-        generateShadow(45, shadow1, true);
+        generateShadow(30, shadow1, true);
         generateShadow(20, shadow2, true);
         generateShadow(10, shadow3, true);
         
@@ -345,8 +345,8 @@ int brick_fun(float u, float v, GzColor color)
     
     float tone = color[0];
     float *shadow;
-    if (tone < 0.3) shadow = shadow3;
-    else if (tone < 0.5) shadow = shadow2;
+    if (tone < 0.2) shadow = shadow3;
+    else if (tone < 0.7) shadow = shadow2;
     else {
         shadow = shadow1;
         // color[0] = color[1] = color[2] = 1;
