@@ -357,8 +357,10 @@ int brick_fun(float u, float v, GzColor color)
             shadow1[i] = 1;
             shadow2[i] = 1;
             shadow3[i] = 1;
+            
             for (int j = 0; j < 8; j++) {
-                shadows[j][i] = brick[i];//1;
+                if (j == 7) shadows[j][i] = brick[i];
+                else shadows[j][i] = 1;
             }
         }        
         
@@ -369,21 +371,21 @@ int brick_fun(float u, float v, GzColor color)
         for (int i = 0; i < 8; i++) {
             if (i < 4)
                 generateShadow(i * 5, shadows[i], true, true);
-            else
+            else if (i < 7)
                 generateShadow(i * 5, shadows[i], false, true);
         }
         
         
-        grass_fun(grass, 20, 25);
+        //grass_fun(grass, 20, 25);
         
         reset = 0;
-        
+        /*
         for (int i = 0; i < xs; i++) {
             for (int j = 0; j < ys; j++) {
                 if (brickId[getSub(i, j)] == 0)
                     printf("at %d, %d: %d\n", i, j, brickId[getSub(i, j)]);
             }
-        }
+        }*/
     }
     
     /* bounds-test u,v to make sure nothing will overflow image array bounds */
