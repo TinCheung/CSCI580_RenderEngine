@@ -895,11 +895,11 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
     getEdgesFromTriangles(triangles, triangleNum, &edges);
     
     for (int i = 0; i < edges.size(); i++) {
-        //if (checkEdgeTonesDiff(triangles, triangleNum, edges[i])) drawEdge(render->display, edges[i], 2);
+        if (checkEdgeTonesDiff(triangles, triangleNum, edges[i])) drawEdge(render->display, edges[i], 2);
         if (!isAllVisible(triangles, triangleNum, visibity, edges[i]))
             drawEdge(render->display, edges[i], 2);
     }
-    GzContourCompletion(render->display);
+    //GzContourCompletion(render->display);
     //GzIndication(render->display);
     
     return GZ_SUCCESS;
