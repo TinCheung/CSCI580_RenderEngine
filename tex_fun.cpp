@@ -314,7 +314,7 @@ int brick_fun(float u, float v, GzColor color)
         
         int brickHeight = 50;
         int brickWidth = 100;
-        int brickBlank = 0;
+        int brickBlank = 15;
         brickCount = 101;
         
         int start[2] = {50, 0};
@@ -370,13 +370,13 @@ int brick_fun(float u, float v, GzColor color)
         
         for (int i = 0; i < 8; i++) {
             if (i < 4)
-                generateShadow(i * 5, shadows[i], true, true, false);
+                generateShadow(i * 3, shadows[i], true, true, false);
             else if (i < 7)
-                generateShadow(i * 5, shadows[i], false, true, false);
+                generateShadow(i * 3, shadows[i], false, true, false);
             else
                 generateShadow(10, shadows[i], true, false);
         }
-        
+
         
         //grass_fun(grass, 20, 25);
         
@@ -392,7 +392,6 @@ int brick_fun(float u, float v, GzColor color)
     
     /* bounds-test u,v to make sure nothing will overflow image array bounds */
     if (u < 0 || u > 1 || v < 0 || v > 1) {
-        printf("Invalid uv\n");
         color[0] = color[1] = color[2] = 0;
         return GZ_FAILURE;
     }
@@ -410,7 +409,7 @@ int brick_fun(float u, float v, GzColor color)
     }
     else {
         tone  = tone > 7 ? 7 : tone;
-        shadow = shadows[7];//shadows[(int)tone];
+        shadow = shadows[(int)tone];
     }
     
     /*
@@ -453,9 +452,9 @@ int brick_fun(float u, float v, GzColor color)
     for (int i = 0; i < 4; i++) {
         subscript = subscriptsX[i] + (subscriptsY[i] - 1) * (xs);
         
-        color[RED] += ((shadow[subscript] > 0 && shadows[7][subscript] > 0) ? 1 : 0) * combination[i];
-        color[GREEN] += ((shadow[subscript] > 0 && shadows[7][subscript] > 0) ? 1 : 0) * combination[i];
-        color[BLUE] += ((shadow[subscript] > 0 && shadows[7][subscript] > 0) ? 1 : 0) * combination[i];
+        color[RED] += shadows[7][subscript] * combination[i];//((shadow[subscript] < 1 || shadows[7][subscript] < 1) ? 0 : 1) * combination[i];
+        color[GREEN] += shadows[7][subscript] * combination[i];//((shadow[subscript] < 1 || shadows[7][subscript] < 1) ? 0 : 1) * combination[i];
+        color[BLUE] += shadows[7][subscript] * combination[i];//((shadow[subscript] < 1 || shadows[7][subscript] < 1) ? 0 : 1) * combination[i];
         /*
         color[RED] += grass[subscript] * combination[i];
         color[GREEN] += grass[subscript] * combination[i];

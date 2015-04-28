@@ -66,9 +66,9 @@ int PenInkApplication::run()
     
 #if 1 	/* set up app-defined camera if desired, else use camera defaults */
     
-    camera.position[X] = 2;
-    camera.position[Y] = 2;
-    camera.position[Z] = 2;
+    camera.position[X] = 1;
+    camera.position[Y] = 1;
+    camera.position[Z] = 1;
     
     camera.lookat[X] = 0;
     camera.lookat[Y] = 0;
@@ -94,11 +94,12 @@ int PenInkApplication::run()
     
     status |= GzPutCamera(render, &camera);
 #endif
-    /*
-    status |= GzPushMatrix(render, translateAndScale);
-    status |= GzPushMatrix(render, rotateY);
-    status |= GzPushMatrix(render, rotateX);
-    */
+
+    
+    //status |= GzPushMatrix(render, translateAndScale);
+    //status |= GzPushMatrix(render, rotateY);
+    //status |= GzPushMatrix(render, rotateX);
+    
     for (int i = 0; i < 3; i++)
         render->flatcolor[i] = 0;
     
@@ -193,7 +194,7 @@ int PenInkApplication::run()
     
     if (status) exit(GZ_FAILURE);
     //GzPenInkRender(render, (int)tempTriangles.size(), triangles);
-    
+
     setCube(triangles);
     GzPenInkRender(render, 12, triangles);
     

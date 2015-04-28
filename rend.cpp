@@ -564,7 +564,7 @@ int GzPutCamera(GzRender *render, GzCamera *camera)
     GzPushMatrix(render, render->camera.Xpi);
     GzPushMatrix(render, render->camera.Xiw);
     
-    printMatrix(render->Ximage[render->matlevel - 1]);
+    //printMatrix(render->Ximage[render->matlevel - 1]);
     
     return GZ_SUCCESS;
 }
@@ -704,7 +704,7 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
     // Record the front triangle for each pixel.
     for (t = 0; t < triangleNum; t++)
     {
-        printf("tri: %d\n", t);
+        // printf("tri: %d\n", t);
         float maxX, maxY, minX, minY, vertexUV[3][2];
         maxX = maxY = -1;
         minX = MAXXRES + 1;
@@ -901,6 +901,9 @@ int GzPenInkRender(GzRender *render, int triangleNum, GzTriangle triangles[])
     }
     //GzContourCompletion(render->display);
     //GzIndication(render->display);
+
+    
+    GzIndication(render->display);
     
     return GZ_SUCCESS;
 }
