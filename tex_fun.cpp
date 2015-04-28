@@ -314,7 +314,7 @@ int brick_fun(float u, float v, GzColor color)
         
         int brickHeight = 50;
         int brickWidth = 100;
-        int brickBlank = 15;
+        int brickBlank = 0;
         brickCount = 101;
         
         int start[2] = {50, 0};
@@ -452,9 +452,9 @@ int brick_fun(float u, float v, GzColor color)
     for (int i = 0; i < 4; i++) {
         subscript = subscriptsX[i] + (subscriptsY[i] - 1) * (xs);
         
-        color[RED] += shadows[7][subscript] * combination[i];//((shadow[subscript] < 1 || shadows[7][subscript] < 1) ? 0 : 1) * combination[i];
-        color[GREEN] += shadows[7][subscript] * combination[i];//((shadow[subscript] < 1 || shadows[7][subscript] < 1) ? 0 : 1) * combination[i];
-        color[BLUE] += shadows[7][subscript] * combination[i];//((shadow[subscript] < 1 || shadows[7][subscript] < 1) ? 0 : 1) * combination[i];
+        color[RED] += ((shadow[subscript] < 1 || shadows[7][subscript] < 1) ? 0 : 1) * combination[i];
+        color[GREEN] += ((shadow[subscript] < 1 || shadows[7][subscript] < 1) ? 0 : 1) * combination[i];
+        color[BLUE] += ((shadow[subscript] < 1 || shadows[7][subscript] < 1) ? 0 : 1) * combination[i];
         /*
         color[RED] += grass[subscript] * combination[i];
         color[GREEN] += grass[subscript] * combination[i];

@@ -469,11 +469,41 @@ void GzIndication(GzDisplay *display)
     }
 }
 
+void GzContourComplete(GzDisplay *display)
+{
+    int i, j, k, sub, pixelType, sub2, pixelType2;
+    int dx[4] = {0, 0, 1, -1};
+    int dy[4] = {1, -1, 0, 0};
+    
+    bool draw;
+    for (i = 1; i < display->xres - 1; i++) {
+        for (j = 1; j < display->yres - 1; j++) {
+            sub = j * display->xres + i;
+            pixelType = display->fbuf[sub].type;
+            if (pixelType == ZBUFFER_TEX) {
+                draw = false;
+                for (k = 0; k < 4; k++) {
+                    sub2 = (j + dy[k]) * display->xres + i + dx[k];
+                    pixelType2 = display->fbuf[sub2].type;
+                    if (pixelType2 == ZBUFFER_BACKGROUND) {
+                        draw = true;
+                        break;
+                    }
+                }
+                if (draw) {
+                    display->fbuf[sub].red = display->fbuf[sub].green =
+                    display->fbuf[sub].blue = 0;
+                    display->fbuf[sub].type = ZBUFFER_EDGE;
+                }
+            }
+        }
+    }
+}
+
 void GzPrintTexId(GzDisplay *display)
 {
     
-    int i, j, sub, pixelType, minX, minY;
-    float distance, b, c;
+    int i, j, sub, pixelType;
     
     for (i = 0; i < display->xres; i++) {
         for (j = 0; j < display->yres; j++) {

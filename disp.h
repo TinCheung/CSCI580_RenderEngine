@@ -73,5 +73,6 @@ void GzGetTrianglesVisibility(GzDisplay *display, int num, bool visibility[]);
 void GzIndication(GzDisplay *display);
 void GzInitIndicationFactor(GzDisplay *display);
 void GzPrintTexId(GzDisplay *display);
+void GzContourComplete(GzDisplay *display);
 
 #endif
